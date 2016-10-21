@@ -19,20 +19,16 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 
 class EBVol():
 
-    def __init__(self, process, aggregate):
+    def __init__(self, process):
         self.process = process
-        self.aggregate = aggregate
         self.artifacts = []
         self.passed_arts = []
         self.failed_arts = []
         self.final_vol = 5.0
 
     def get_artifacts(self):
-        if self.aggregate:
-            self.artifacts = self.process.all_inputs(unique=True)
-        else:
-            all_artifacts = self.process.all_outputs(unique=True)
-            self.artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
+        all_artifacts = self.process.all_outputs(unique=True)
+        self.artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
 
 
     def apply_calculations(self):
@@ -58,7 +54,7 @@ class EBVol():
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    EBV = EBVol(process, args.aggregate)
+    EBV = EBVol(process)
     EBV.get_artifacts()
     EBV.apply_calculations()
 
@@ -77,16 +73,9 @@ if __name__ == "__main__":
     parser.add_argument('--log', default=sys.stdout,
                         help=('File name for standard log file, '
                               'for runtime information and problems.'))
-    parser.add_argument('--aggregate', action='store_true',
-                        help=("Use this tag if your process is aggregating "
-                              "results. The default behaviour assumes it is "
-                              "the output artifact of type analyte that is "
-                              "modified while this tag changes this to using "
-                              "input artifacts instead"))
 
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
-    with EppLogger(args.log, lims=lims, prepend=True) as epp_logger:
-        main(lims, args)
+    main(lims, args)

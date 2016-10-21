@@ -40,10 +40,11 @@ class MissingReads():
             except:
                 udfs_ok = False
             if udfs_ok:
-                reads_min = 0.75*parse_application_tag(app_tag)['reads']/1000000
+                target_amount = parse_application_tag(app_tag)['reads']/1000000
+                reads_min = 0.75*target_amount
                 reads_missing = reads_min - reads_total
                 if reads_missing > 0:
-                    sample.udf['Reads missing (M)'] = reads_missing
+                    sample.udf['Reads missing (M)'] = target_amount
                     art.udf['Rerun'] = True
                     art.qc_flag = 'FAILED'
                 else:

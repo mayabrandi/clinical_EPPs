@@ -40,6 +40,9 @@ class SampleReceptionControle():
         sample.udf['Application Tag Version'] = latest_version
         sample.put()
 
+    def check_sample_id()
+        ###kolla bokstaver, siffror, samt "-" (bindestreck)
+
     def set_reads_missing(self):
         app_tag = sample.udf['Sequencing Analysis']
         reads_missing = 0.75*parse_application_tag(app_tag)['reads']/1000000
