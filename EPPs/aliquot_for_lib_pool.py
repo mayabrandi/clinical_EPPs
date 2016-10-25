@@ -70,7 +70,7 @@ class Pool2Sequence():
                     self.low_sample_vol = True
             except:
                 self.failed_arts.append(art)  
-        try:          
+        try:
             self.process.udf['EB Volume (ul)'] = str(round(self.total_vol - total_sample_vol, 2))
             self.process.udf['Total nr of Reads Requested (sum of reads to sequence)'] = str(total_reads)
             self.process.put()

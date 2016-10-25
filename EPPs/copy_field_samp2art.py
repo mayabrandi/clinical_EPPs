@@ -23,11 +23,12 @@ class CopyUDF():
         self.samp_udf = samp_udf
         self.art_udf = art_udf
         self.failded_udfs = False
-
+        self.missing_samp_udf = False
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
         self.artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
+
 
     def copy(self):
         for art in self.artifacts:
@@ -48,6 +49,7 @@ def main(lims, args):
         sys.exit('failed to copy some udfs')
     else:
         print >> sys.stderr, 'UDFs were succsessfully copied!'
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
