@@ -32,11 +32,11 @@ class MissingReads():
 
     def get_missing_reads(self):
         for art in self.artifacts:
-            sample = art.samples[0]
+            samples = art.samples
             udfs_ok = True
             try:
-                reads_total = sample.udf['Total Reads (M)']
-                app_tag = sample.udf['Sequencing Analysis']
+                reads_total = samples[0].udf['Total Reads (M)']
+                app_tag = samples[0].udf['Sequencing Analysis']
             except:
                 udfs_ok = False
             if udfs_ok:
@@ -44,11 +44,13 @@ class MissingReads():
                 reads_min = 0.75*target_amount
                 reads_missing = reads_min - reads_total
                 if reads_missing > 0:
-                    sample.udf['Reads missing (M)'] = target_amount
+                    for sample in samples:
+                        sample.udf['Reads missing (M)'] = target_amount - reads_total
                     art.udf['Rerun'] = True
                     art.qc_flag = 'FAILED'
                 else:
-                    sample.udf['Reads missing (M)'] = 0
+                    for sample in samples:
+                        sample.udf['Reads missing (M)'] = 0
                     art.udf['Rerun'] = False
                     art.qc_flag = 'PASSED'
                 art.put()
