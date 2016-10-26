@@ -19,38 +19,47 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 
 class ArtQC2SampUDF():
 
-    def __init__(self, process, dest_udf):
+    def __init__(self, process, dest_udf, sequencing):
         self.process = process
         self.dest_udf = dest_udf
-        self.artifacts = self.process.all_inputs(unique=True)
-        self.passed_arts = []
-        self.failed_arts = []
+        if sequencing:
+            all_artifacts = self.process.all_outputs(unique=True)
+            self.artifacts = filter(lambda a: a.output_type == "Analyte" ,all_artifacts)
+        else:
+            self.artifacts = self.process.all_inputs(unique=True)
+        self.passed_samps = []
+        self.failed_samps = []
 
 
     def set_udf(self):
         for art in self.artifacts:
-            samp = art.samples[0]
             try:
                 if art.qc_flag == 'PASSED':
-                    samp.udf[self.dest_udf] = 'True'
+                    for samp in art.samples:
+                        ## if art is pool, the art.qc_flagg is "copied" to all samps in the pool
+                        samp.udf[self.dest_udf] = 'True'
+                        samp.put()
+                        self.passed_samps.append(samp)
                 else:
-                    samp.udf[self.dest_udf] = 'False'
-                samp.put()
-                self.passed_arts.append(art)
+                    for samp in art.samples:
+                        samp.udf[self.dest_udf] = 'False'
+                        samp.put()
+                        self.passed_samps.append(samp)
             except:
-                self.failed_arts.append(art)
-
+                self.failed_samps.append(art)
+        self.passed_samps = list(set(self.passed_samps))
+        self.failed_samps = list(set(self.failed_samps))
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    A2S = ArtQC2SampUDF(process, args.dest_udf)
+    A2S = ArtQC2SampUDF(process, args.dest_udf, args.sequencing)
     A2S.set_udf()
     d = {'du': A2S.dest_udf,
-         'fa': len(A2S.failed_arts),
-         'pa': len(A2S.passed_arts)}
+         'fa': len(A2S.failed_samps),
+         'pa': len(A2S.passed_samps)}
 
-    if A2S.failed_arts:
-        abstract = ("Could not set '{du}' UDF for {fa} sample(s). Either the qc-falg(s) were "
+    if A2S.failed_samps:
+        abstract = ("Could not set '{du}' UDF for some sample(s). Either the qc-falg(s) were "
                     "not set, or there is no {du} on sample level").format(**d)
         sys.exit(abstract)
     else:
@@ -67,6 +76,8 @@ if __name__ == "__main__":
                               'for runtime information and problems.'))
     parser.add_argument('--dest_udf',
                         help=("Sample udf to be set based on artifact qc_flagg"))
+    parser.add_argument('--sequencing', action='store_true',
+                        help=("Use this tag if current Process is a sequencing step"))
 
     args = parser.parse_args()
 
