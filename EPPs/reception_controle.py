@@ -30,115 +30,99 @@ class SampleReceptionControle():
         self.sample_name = sample.name        
         self.udfs = sample.udf
 
-    def get_app_tag_details(self):
-        app_tag = sample.udf['Sequencing Analysis']
-        app_tag_versions = ApplicationDetails.query.filter_by(application_tag = app_tag).first()
+    def app_tag_version(self):
+        ## Get app tag version from db and set sample udf
+        app_tag = self.sample.udf['Sequencing Analysis']
+        app_tag_versions = ApplicationDetails.query.filter_by(application_tag = app_tag).all()
+        if not app_tag_versions:
+            sys.exit('Application tag '+app_tag + ' does not exist in ApplicationDetails table in the admin database.')        
         latest_version = 0
         for version in app_tag_versions:
             if int(version.version) > latest_version:
                 latest_version = version.version
-        sample.udf['Application Tag Version'] = latest_version
-        sample.put()
+        self.sample.udf['Application Tag Version'] = latest_version
+        self.sample.put()
 
-    def check_sample_id()
-        ###kolla bokstaver, siffror, samt "-" (bindestreck)
-
-    def set_reads_missing(self):
-        app_tag = sample.udf['Sequencing Analysis']
-        reads_missing = 0.75*parse_application_tag(app_tag)['reads']/1000000
-        self.sample.udf['Reads missing (M)'] = reads_missing
-
-    def check_duplicated_sample_names(self):
-        """om ett prov namn förekommer på två prover inom samma customer så kolla om gamla provets udf "cancelled"==yes, annars varna
-        """
-        dup_samps = get_samples(name = self.sample_name, udf={'customer' : self.udfs['customer']})
-        for dup_samp in dup_samps:
-            if samp.id != self.sample.id:
-                dup_samp_udfs = dict(dup_samp.udf.items())
-                if "cancelled" in dup_samp_udfs and dup_samp_udfs["cancelled"] == 'yes':
-                    ### 'no problem'
-                else:
-                    ### 'warn'
-                
-
-    def check_familyID(self):
-        samps_to_check = get_samples(udf={'customer' : self.udfs['customer'], 'familyID' : self.udfs['familyID']})
-        for samp in samps_to_check:
-            if samp.id != self.sample.id:
-                samp_udfs = dict(samp.udf.items())
-                if 'motherID' in samp_udfs or 'fatherID' in samp_udfs:
-                elif
-                samp.udf['motherID']
-                'fatherID'
-        #om ett familjeid+customer fins i lims redan:
-        #    Kolla om barn: dvs om den nya har mother och/eller father:
-        #        om ja så ok
-        #        annars:
-        #            kolla om parrent to fins:
-        #                om ja:
-        #                     och sätt barnets mother/father
-        #                annars:
-        #                    varna fail
-
-    def check_family_relations(self):
-        #Om udferna mammas namn eller pappas namn är satta, kolla att de fins i lims, faila eller varna om inte
-
-    def check_trio(self):
-        #om tre prov innom samma projekt har application tag som börjar med WGS och har samma family id, så byt till WGT
-
-    def check_volume(self):
-        #om RML, EXX, WGX prov så volym inte requiered. Men annas
-
-    def check_capture_kit(self):
-        #om EXX så måste finnas capture kit
-
-    def check_gene_list(self):
-        #om genlista så separera alltid med endast ;. Om något annat, byt ut
-
-
+#    def check_sample_id()
+#        ###kolla bokstaver, siffror, samt "-" (bindestreck)
+#
+#    def set_reads_missing(self):
+#        app_tag = sample.udf['Sequencing Analysis']
+#        target_amount = parse_application_tag(app_tag)['reads']/1000000
+#        self.sample.udf['Reads missing (M)'] = target_amount
+#
+#    def check_duplicated_sample_names(self):
+#        """om ett prov namn forekommer pa tva prover inom samma customer sa kolla om gamla provets udf "cancelled"==yes, annars varna
+#        """
+#        dup_samps = get_samples(name = self.sample_name, udf={'customer' : self.udfs['customer']})
+#        for dup_samp in dup_samps:
+#            if samp.id != self.sample.id:
+#                dup_samp_udfs = dict(dup_samp.udf.items())
+#                if "cancelled" in dup_samp_udfs and dup_samp_udfs["cancelled"] == 'yes':
+#                    ### 'no problem'
+#                else:
+#                    ### 'warn'
+#                
+#
+#    def check_familyID(self):
+#        samps_to_check = get_samples(udf={'customer' : self.udfs['customer'], 'familyID' : self.udfs['familyID']})
+#        for samp in samps_to_check:
+#            if samp.id != self.sample.id:
+#                samp_udfs = dict(samp.udf.items())
+#                if 'motherID' in samp_udfs or 'fatherID' in samp_udfs:
+#                elif
+#                samp.udf['motherID']
+#                'fatherID'
+#        #om ett familjeid+customer fins i lims redan:
+#        #    Kolla om barn: dvs om den nya har mother och/eller father:
+#        #        om ja sa ok
+#        #        annars:
+#        #            kolla om parrent to fins:
+#        #                om ja:
+#        #                     och satt barnets mother/father
+#        #                annars:
+#        #                    varna fail
+#
+#    def check_family_relations(self):
+#        #Om udferna mammas namn eller pappas namn ar satta, kolla att de fins i lims, faila eller varna om inte
+#
+#    def check_trio(self):
+#        #om tre prov innom samma projekt har application tag som borjar med WGS och har samma family id, sa byt till WGT
+#
+#    def check_volume(self):
+#        #om RML, EXX, WGX prov sa volym inte requiered. Men annas
+#
+#    def check_capture_kit(self):
+#        #om EXX sa maste finnas capture kit
+#
+#    def check_gene_list(self):
+#        #om genlista sa separera alltid med endast ;. Om nagot annat, byt ut
 
 
-class GetLimsData():
+
+
+class ReceptionControle():
     def __init__(self, process):
         self.process = process
         self.samples = []
-        self.passed_arts = []
-        self.failed_arts = []
-        self.sample_info = {}
-        self.process_info = {}
+       # self.passed_arts = []
+       # self.failed_arts = []
 
-
-
-    def format_data(self):
+    def get_samples(self):
         all_artifacts = self.process.all_inputs(unique=True)
         artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
         self.samples = list(set([a.samples[0] for a in artifacts]))
+
+    def check_samples(self):
         for samp in self.samples:
-            s_id = samp.id
-            udfs = samp.udf
-            self.sample_info[s_id] = {'Prov':'',
-                        'Clinical Genomics ID':'',
-                        'Analys':'',
-                        'Order ID':'',
-                        'Kommentar':'',
-                        'Pris':''}
-            ##try except...
-            app_tag = udfs['Sequencing Analysis']
-            priority = udfs['priority']
-            version = udfs['Application Tag Version']
-            price = self._price(app_tag, priority, version)
-            self.sample_info[s_id]['Prov'] = samp.name
-            self.sample_info[s_id]['Clinical Genomics ID'] = samp.id
-            self.sample_info[s_id]['Analys'] = app_tag
-            self.sample_info[s_id]['Kommentar'] = samp.date_received
-            self.sample_info[s_id]['Order ID'] = samp.project.name
-            self.sample_info[s_id]['Pris'] = price 
+            SRC = SampleReceptionControle(samp)
+            SRC.app_tag_version()
 
-
-def main(lims, pid): # aggregate
+def main(lims, pid): 
     process = Process(lims, id = pid)
-    GLD = GetLimsData(process) #aggregate
-    GLD.format_data()
+    RC = ReceptionControle(process)
+    RC.get_samples()
+    RC.check_samples()
 
 #    d = {'ca': len(EBV.passed_arts),
 #         'ia': len(EBV.failed_arts)}
@@ -156,5 +140,5 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
 
-    main(lims, args.pid,  args.file)
+    main(lims, args.pid)
 

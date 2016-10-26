@@ -152,8 +152,7 @@ class BCLconv():
             outpt = input_output[1]
             if outpt['output-type'] == 'ResultFile':
                 art = outpt['uri']
-                sampname = art.samples[0].name          # when in prod. Del this
-                #sampname = art.samples[0].id           # when in prod, uncomment
+                sampname = art.samples[0].id  
                 well = inpt['uri'].location[1][0]
                 if not sampname in self.artifacts:
                     self.artifacts[sampname] = {well: art}
@@ -204,7 +203,7 @@ def main(lims, args):
     d = {'ca': BCL.passed_arts,'wa' : BCL.total_nr_arts - BCL.passed_arts}
     abstract = ("Updated {ca} artifact(s). Skipped {wa} due to missing data in the demultiplex database.").format(**d)
 
-    print >> sys.stderr, abstract # stderr will be logged and printed in GUI
+    print >> sys.stderr, abstract
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
