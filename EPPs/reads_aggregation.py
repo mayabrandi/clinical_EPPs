@@ -35,7 +35,7 @@ class SumReads():
         """Sum passed sample reads from all lanes and runs. Return total reads in Milions"""
         total_reads = 0.0
         arts = lims.get_artifacts(samplelimsid = sample.id, 
-               process_type = ["CG002 - Bcl Conversion & Demultiplexing (Illumina SBS) 4.0"]) 
+               process_type = ["CG002 - Bcl Conversion & Demultiplexing (Illumina SBS)"]) 
         for art in arts:
             if art.qc_flag == 'PASSED' and '# Reads' in art.udf:
                 total_reads += float(art.udf.get('# Reads'))
