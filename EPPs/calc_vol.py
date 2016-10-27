@@ -47,7 +47,7 @@ class EBVolume():
                 if amount_needed == 3000:
                     artifact.udf['EB Volume (ul)'] = 130 - samp_vol
                 elif amount_needed == 1100:
-                    artifact.udf['EB Volume (ul)'] = 50 - samp_vol
+                    artifact.udf['EB Volume (ul)'] = 55 - samp_vol
                 elif amount_needed == 200:
                     artifact.udf['EB Volume (ul)'] = 50 - samp_vol
                 else:
