@@ -28,7 +28,7 @@ class QpcrDilution():
 
     def __init__(self, process):
         self.process = process
-        self.artifacts = []
+        self.artifacts = {}
         self.passed_arts = 0
         self.failed_arts = 0
         self.dilution_data = {}
@@ -54,10 +54,12 @@ class QpcrDilution():
                             'Cq' : {'1E03':[],'2E03':[],'1E04':[]}}
                     self.dilution_data[orwell]['SQ'][dilut].append(SQ)
                     self.dilution_data[orwell]['Cq'][dilut].append(Cq)
-                    
+
     def calculate_molar(self, artifact):
         size_bp = 470 # standard size bp used is: 470
-        well = artifact.location[1]
+        inart = artifact['in']
+        outart = artifact['out']
+        well = inart.location[1]
         SQ_1E03 = mean(self.dilution_data[well]['SQ']['1E03'])
         SQ_2E03 = mean(self.dilution_data[well]['SQ']['2E03'])
         SQ_1E04 = mean(self.dilution_data[well]['SQ']['1E04'])
@@ -68,33 +70,42 @@ class QpcrDilution():
         Cq_2E03 = mean(self.dilution_data[well]['Cq']['2E03'])
         Cq_1E04 = mean(self.dilution_data[well]['Cq']['1E04'])
 
+
         try:
-            artifact.udf['Concentration'] = size_adjust_conc_M
-            artifact.udf['Size (bp)'] = size_bp
-            artifact.udf['Concentration (nM)'] = size_adjust_conc_nM
-            if artifact.udf['Concentration (nM)'] < 2:
-                artifact.qc_flag = "FAILED"
+            outart.udf['Concentration'] = size_adjust_conc_M
+            outart.udf['Size (bp)'] = int(size_bp)
+            outart.udf['Concentration (nM)'] = size_adjust_conc_nM
+            if outart.udf['Concentration (nM)'] < 2:
+                outart.qc_flag = "FAILED"
             else:
-                artifact.qc_flag = "PASSED"
-            artifact.put()
+                outart.qc_flag = "PASSED"
+            outart.put()
             self.passed_arts +=1
         except:
             self.failed_arts +=1
 
     def set_udf(self):
-        for art in self.artifacts:
-            self.calculate_molar(art)        
+        for samp_id, art in self.artifacts.items():
+            self.calculate_molar(art)
 
     def get_artifacts(self):
-        self.artifacts = self.process.all_inputs(unique=True)
+        in_arts = self.process.all_inputs(unique=True)
+        all_artifacts = self.process.all_outputs(unique=True)
+        out_artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
+        for a in in_arts:
+            samp = a.samples[0].id
+            self.artifacts[samp] = {'in': a}
+        for a in out_artifacts:
+            samp = a.samples[0].id
+            self.artifacts[samp]['out'] = a
 
     def get_file(self):
-        for f in self.process.shared_result_files():   
+        for f in self.process.shared_result_files():
             if f.name =='qPCR Result File':
                 qPCR_file = f.files[0]
-        return qPCR_file.content_location.split('clinical-lims-stage.scilifelab.se')[1]
-        
-        
+        return qPCR_file.content_location.split('scilifelab.se')[1]
+
+
 def main(lims, args):
     process = Process(lims, id = args.pid)
     QD = QpcrDilution(process)
@@ -110,7 +121,7 @@ def main(lims, args):
     if QD.failed_arts:
         sys.exit(abstract)
     else:
-        print >> sys.stderr, abstract 
+        print >> sys.stderr, abstract
 
 if __name__ == "__main__":
     # Initialize parser with standard arguments and description
@@ -130,3 +141,4 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
+
