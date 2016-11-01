@@ -13,7 +13,6 @@ from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
-from genologics.epp import EppLogger
 
 import logging
 import sys
@@ -34,6 +33,9 @@ class MolarConc():
         else:
             all_artifacts = self.process.all_outputs(unique=True)
             self.artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
+
+    def get_treshold(self):
+        self.process.udf['Minimum']
 
 
     def apply_calculations(self):
@@ -82,9 +84,6 @@ if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('--pid',
                         help='Lims id for current Process')
-    parser.add_argument('--log', default=sys.stdout,
-                        help=('File name for standard log file, '
-                              'for runtime information and problems.'))
     parser.add_argument('--aggregate', action='store_true',
                         help=("Use this tag if your process is aggregating "
                               "results. The default behaviour assumes it is "
@@ -96,5 +95,4 @@ if __name__ == "__main__":
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
-    with EppLogger(args.log, lims=lims, prepend=True) as epp_logger:
-        main(lims, args)
+    main(lims, args)
