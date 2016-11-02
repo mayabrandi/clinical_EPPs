@@ -46,15 +46,16 @@ class MissingReads():
                 if reads_missing > 0:
                     for sample in samples:
                         sample.udf['Reads missing (M)'] = target_amount - reads_total
+                        sample.put()
                     art.udf['Rerun'] = True
                     art.qc_flag = 'FAILED'
                 else:
                     for sample in samples:
                         sample.udf['Reads missing (M)'] = 0
+                        sample.put()
                     art.udf['Rerun'] = False
                     art.qc_flag = 'PASSED'
                 art.put()
-                sample.put()
                 self.passed_arts.append(art)
             else:
                 self.failed_arts.append(art)            

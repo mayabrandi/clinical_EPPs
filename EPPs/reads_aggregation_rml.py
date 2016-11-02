@@ -68,7 +68,7 @@ class SumReadsRML():
         self.passed_pool_replicates[pool_name] = 0
         for pool in pool_replicates:
             if pool.qc_flag == 'PASSED' and 'Clusters PF R1' in pool.udf:
-                total_reads += float(i.udf.get('Clusters PF R1'))
+                total_reads += float(pool.udf.get('Clusters PF R1'))
                 self.passed_pool_replicates[pool_name] +=1
         M_reads = total_reads/1000000
         for s in pool_replicates[0].samples:
@@ -90,8 +90,8 @@ def main(lims, args):
     SR.set_udfs()
 
     abstract = "Reads summed for: "
-    for k, v in SR.passed_pool_replicates:
-        abstract.append( k +'from '+v+' lanes, ')
+    for k, v in SR.passed_pool_replicates.items():
+        abstract += str(k) +' from '+str(v)+' lanes, '
 
     print >> sys.stderr, abstract 
 

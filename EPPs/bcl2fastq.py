@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
-from cinical_EPPs.config import DEMULTIPLEX_DATABASE_URI
+from clinical_EPPs.config import SQLALCHEMY_DATABASE_URI
 
 from genologics.entities import Process
 from genologics.epp import EppLogger
