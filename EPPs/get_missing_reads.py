@@ -7,7 +7,7 @@ from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
 from genologics.epp import EppLogger
-from lims.utils.core import parse_application_tag
+from clinical_EPPs.EPP_utils import parse_application_tag
 import logging
 import sys
 

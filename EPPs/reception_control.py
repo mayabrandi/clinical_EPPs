@@ -13,7 +13,7 @@ from genologics.epp import set_field
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from clinicaladmin.database import db, app, ApplicationDetails, ApplicationTagData, MethodDescription, Customers
-from lims.utils.core import parse_application_tag
+from clinical_EPPs.EPP_utils import parse_application_tag
 
 
 from datetime import date
