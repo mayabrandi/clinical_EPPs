@@ -69,7 +69,7 @@ class SampleReceptionControle():
                 if "cancelled" in dup_samp.udf and dup_samp.udf["cancelled"] == 'yes':
                     self.log.write('    INFO: NP! dup samp name but one is canceled\n')
                 else:
-                    self.log.write("    FAIL: WOWOWOw sample duplicated"+dup_samp.name+'\n')
+                    self.log.write("    FAIL: Sample name duplicates: "+dup_samp.name+'\n')
                     self.all_right = False                
 
     def check_family_members_has_relations(self):
