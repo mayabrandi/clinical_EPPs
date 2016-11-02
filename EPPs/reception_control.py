@@ -75,16 +75,16 @@ class SampleReceptionControle():
     def check_family_members_has_relations(self):
         #self.log.write("Checking family member relations \n")
         samps_to_check = lims.get_samples(udf={'customer' : self.udfs['customer'], 'familyID' : self.udfs['familyID']})
-        no_relation = []
+        relation = False
         for samp_to_check in samps_to_check:
             if samp_to_check.id != self.sample.id:
                 relation = self.check_relation(self.sample, samp_to_check)
                 if not relation:
                     relation = self.check_relation(samp_to_check, self.sample)
-                if not relation:
-                    no_relation.append(samp_to_check.name)
-        if no_relation:
-            self.log.write("    FAIL: Family member(s): "+', '.join(no_relation)+" have no relation to the sample. Set mohterID, fatherID ore other relation.\n") 
+                if relation:
+                    break 
+        if not relation:
+            self.log.write("    FAIL: Sample has no relation to any of its family members. Set mohterID, fatherID ore other relation.\n") 
             self.all_right = False
 
     def check_relation(self, s1, s2):
