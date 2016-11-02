@@ -92,7 +92,10 @@ def routeAnalytes(Inv, Seq, stop_processes):
     Mi_r = pack_and_go( Seq, GoTo_Seq)
     Hi_r = pack_and_go( Inv, GoTo_Inv)
 
-    msg = str( len(GoTo_Seq) ) + " Samples were added to the " + args.rerun_step + " Step. " + str( len(GoTo_Inv) ) + " Samples were added to the " + args.continue_step + " Step."
+    nr_seq = len(list(set(GoTo_Seq)))
+    nr_inv =  len(list(set(GoTo_Inv)))
+
+    msg = str( nr_seq ) + " Samples were added to the " + args.rerun_step + " Step. " + str( nr_inv ) + " Samples were added to the " + args.continue_step + " Step."
     print msg
     status = "OK"
     api.reportScriptStatus( args.stepURI, status, msg )
