@@ -13,7 +13,7 @@ from genologics.epp import set_field
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from clinicaladmin.database import db, app, ApplicationDetails, ApplicationTagData, MethodDescription, Customers
+from clinicaladmin.database import db, app, ApplicationDetails, ApplicationTagData, MethodDescription, Customers, Invoice
 from clinical_EPPs.invoice_templates import InvoiceTemplate
 
 from datetime import date
@@ -22,10 +22,12 @@ from datetime import date
 DESC = """"""
 
 class GetLimsData():
-    def __init__(self, process):
+    def __init__(self, process, split):
         self.process = process
+        self.invoicer_name = None
         self.invoicer = None
         self.client = None
+        self.final_client = None
         self.samples = []
         self.passed_arts = []
         self.failed_arts = []
@@ -36,31 +38,35 @@ class GetLimsData():
         self.to_info = []
         self.comment = []
         self.invoice_ref = ''
+        self.split = split
 
     def set_invoicer_and_client(self, invoicer, client):
+        self.invoicer_name = invoicer
         if invoicer == 'KTH':
-            self.invoicer = 'cust001'#'cust000'
+            self.invoicer = 'cust000'
         elif invoicer == 'KI':
-            self.invoicer = 'cust002'#'cust999'
+            self.invoicer = 'cust999'
         else:
             sys.exit('invoicer must be KTH ore KI!')
-        if client == 'KI':
-            self.client = 'cust002'#'cust999'
-        elif client == 'cust':
-            try:
-                self.client = self.process.all_outputs()[0].samples[0].udf['customer']
-            except:
-                sys.exit('Could not find customer id')
-        else:
+        if not client in ['KI', 'cust']:
             sys.exit('client must be KI ore cust')
-        
+        if client == 'KI':
+            self.client = 'cust999'
+        try:
+            self.final_client = self.client = self.process.all_outputs()[0].samples[0].udf['customer']
+            if client == 'cust':
+                self.client = self.final_client 
+        except:
+            sys.exit('Could not find customer id')
 
 
     def get_price(self, app_tag, priority, version):
         ## getting price from admin database
         app_tag = ApplicationDetails.query.filter_by(application_tag = app_tag, version = version).first()
-        price = app_tag.__dict__[priority + '_price']
-        return int(price.replace(' ',''))
+        price = float(app_tag.__dict__[priority + '_price'])
+        if self.split and self.invoicer_name == 'KTH':
+            price = price*float(app_tag.percent_charged_to_kth.rstrip('%'))*0.01
+        return price
 
     def _get_sample_udfs(self, samp):
         ##GETTING LIMS SAMPLE UDFS
@@ -76,7 +82,9 @@ class GetLimsData():
     def format_sample_info(self):
         all_artifacts = self.process.all_inputs(unique=True)
         artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
-        self.samples = list(set([a.samples[0] for a in artifacts]))
+        for a in artifacts:
+            self.samples+=a.samples
+        self.samples = list(set(a.samples))
         for samp in self.samples:
             s_id = samp.id
             self.sample_info[s_id] = {'Prov':'',
@@ -95,12 +103,13 @@ class GetLimsData():
             self.sample_info[s_id]['Kommentar'] = samp.date_received
             self.sample_info[s_id]['Order ID'] = samp.project.name
 
+
     def format_from_info(self):
         admin_db_data = Customers.query.filter_by(customer_number = self.invoicer).first()
-        if self.invoicer == 'cust001': #cust000
+        if self.invoicer == 'cust000': 
             self.from_info.append(('Enhet','Clinical Genomics'))
             self.from_info.append(('Projektnummer', admin_db_data.clinical_genomics_project_account_KTH))
-        elif self.invoicer == 'cust002': #cust999 
+        elif self.invoicer == 'cust999':  
             self.from_info.append(('Enhet','Karolinska Institutet')) 
             self.from_info.append(('Projektnummer', admin_db_data.clinical_genomics_project_account_KI))
         else:
@@ -123,11 +132,18 @@ class GetLimsData():
                         ('Avser analyser under perioden', 'last invoice date - ' + str(date.today()))] 
 
     def format_invoice_ref(self):
-        self.invoice_ref = '000_15_KTH'
+        old_invoices = Invoice.query.filter_by(customer = self.final_client).all()
+        inv_id = 0 
+        for i in old_invoices:
+            if int(i.invoice_id) > inv_id:
+                inv_id = int(i.invoice_id) 
+        inv_id +=1
+        self.invoice_ref = '_'.join([self.final_client.replace('cust',''), str(inv_id), self.invoicer_name])#  '000_15_KTH'
+
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    GLD = GetLimsData(process)
+    GLD = GetLimsData(process, args.split)
     GLD.set_invoicer_and_client(args.invoicer, args.client)
     GLD.format_sample_info()
     GLD.format_from_info()
@@ -163,6 +179,9 @@ if __name__ == "__main__":
                         help=('KTH ore KI'))
     parser.add_argument('-c', dest = 'client',
                         help=('KI ore cust'))
+    parser.add_argument('-s', dest = 'split', action='store_true',
+                        help=('Split invoice'))
+
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
