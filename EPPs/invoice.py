@@ -39,6 +39,7 @@ class GetLimsData():
         self.comment = []
         self.invoice_ref = ''
         self.split = split
+        self.abstract = ''    
 
     def set_invoicer_and_client(self, invoicer, client):
         self.invoicer_name = invoicer
@@ -133,12 +134,17 @@ class GetLimsData():
 
     def format_invoice_ref(self):
         old_invoices = Invoice.query.filter_by(customer = self.final_client).all()
-        inv_id = 0 
-        for i in old_invoices:
-            if int(i.invoice_id) > inv_id:
-                inv_id = int(i.invoice_id) 
-        inv_id +=1
-        self.invoice_ref = '_'.join([self.final_client.replace('cust',''), str(inv_id), self.invoicer_name])#  '000_15_KTH'
+        new_inv_nr = 0 
+        for inv in old_invoices:
+            inv_nr = inv.invoice_id.split('_')[1]
+            if int(inv_nr) > new_inv_nr:
+                new_inv_nr = int(inv_nr) 
+        new_inv_nr = str(new_inv_nr + 1)
+        if len(new_inv_nr)==1:
+            new_inv_nr = '0' + new_inv_nr
+        self.invoice_ref = '_'.join([self.final_client.replace('cust',''), str(new_inv_nr), self.invoicer_name])#  '000_15_KTH'
+        if new_inv_nr == '01':
+            self.abstract += 'Could not find old invoice in the admin database. Invoice nr is set to 01. '
 
 
 def main(lims, args):
@@ -162,9 +168,10 @@ def main(lims, args):
     IT.make_samples_section(GLD.sample_info)
     workbook.close()
 
-
     if GLD.failed_samps:
         sys.exit('Could not generate complete invoice. Some requiered sample udfs are missing. Requiered udfs are : "Sequencing Analysis", "priority" and "Application Tag Version"')
+    elif GLD.abstract:
+        print >> sys.stderr, GLD.abstract
     else:
         print >> sys.stderr, 'Invoice generated successfully!'
 
