@@ -85,7 +85,7 @@ class GetLimsData():
         artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
         for a in artifacts:
             self.samples+=a.samples
-        self.samples = list(set(a.samples))
+        self.samples = list(set(self.samples))
         for samp in self.samples:
             s_id = samp.id
             self.sample_info[s_id] = {'Prov':'',
