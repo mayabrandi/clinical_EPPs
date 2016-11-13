@@ -81,8 +81,7 @@ class GetLimsData():
             return None
 
     def format_sample_info(self):
-        all_artifacts = self.process.all_inputs(unique=True)
-        artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
+        artifacts = self.process.all_inputs(unique=True)
         for a in artifacts:
             self.samples+=a.samples
         self.samples = list(set(self.samples))
