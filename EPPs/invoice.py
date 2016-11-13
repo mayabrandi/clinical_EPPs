@@ -24,6 +24,7 @@ DESC = """"""
 class GetLimsData():
     def __init__(self, process, split):
         self.process = process
+        self.discount = float(process.udf['Discount (%)'])
         self.invoicer_name = None
         self.invoicer = None
         self.client = None
@@ -65,6 +66,8 @@ class GetLimsData():
         ## getting price from admin database
         app_tag = ApplicationDetails.query.filter_by(application_tag = app_tag, version = version).first()
         price = float(app_tag.__dict__[priority + '_price'])
+        if self.discount > 0:
+            price = price * (100 - self.discount) /100.0
         if self.split and self.invoicer_name == 'KTH':
             price = price*float(app_tag.percent_charged_to_kth.rstrip('%'))*0.01
         return price
@@ -141,7 +144,7 @@ class GetLimsData():
         new_inv_nr = str(new_inv_nr + 1)
         if len(new_inv_nr)==1:
             new_inv_nr = '0' + new_inv_nr
-        self.invoice_ref = '_'.join([self.final_client.replace('cust',''), str(new_inv_nr), self.invoicer_name])#  '000_15_KTH'
+        self.invoice_ref = '_'.join([self.final_client.replace('cust',''), str(new_inv_nr), self.invoicer_name])
         if new_inv_nr == '01':
             self.abstract += 'Could not find old invoice in the admin database. Invoice nr is set to 01. '
 
@@ -166,13 +169,14 @@ def main(lims, args):
     IT.make_comments_section(GLD.comment)
     IT.make_samples_section(GLD.sample_info)
     workbook.close()
-
+ 
     if GLD.failed_samps:
         sys.exit('Could not generate complete invoice. Some requiered sample udfs are missing. Requiered udfs are : "Sequencing Analysis", "priority" and "Application Tag Version"')
-    elif GLD.abstract:
-        print >> sys.stderr, GLD.abstract
-    else:
-        print >> sys.stderr, 'Invoice generated successfully!'
+    if not GLD.abstract:
+        GLD.abstract = 'Invoice generated successfully! '
+    if GLD.discount:
+        GLD.abstract += "Discount: "+str(GLD.discount)+"%."
+    print >> sys.stderr, GLD.abstract
 
 
 if __name__ == "__main__":
