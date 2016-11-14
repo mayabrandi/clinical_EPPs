@@ -71,7 +71,7 @@ class GetLimsData():
         if self.split and self.invoicer_name == 'KTH':
             price = price*float(app_tag.percent_charged_to_kth.rstrip('%'))*0.01
         elif self.split and self.invoicer_name == 'KI':
-            price = price*(1 - float(app_tag.percent_charged_to_kth.rstrip('%')))*0.01
+            price = price*(1 - float(app_tag.percent_charged_to_kth.rstrip('%'))*0.01 )
         return price
 
     def _get_sample_udfs(self, samp):
