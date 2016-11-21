@@ -33,7 +33,8 @@ class SampleReceptionControle():
         self.all_right = True
 
     def app_tag_version(self):
-        #self.log.write("Setting UDF: 'Application Tag Version' \n")
+        """Gets latest app tag version from admin database.
+        Sets 'Application Tag Version' udf on sample."""
         app_tag = self.sample.udf['Sequencing Analysis']
         app_tag_versions = ApplicationDetails.query.filter_by(application_tag = app_tag).all()
         if not app_tag_versions:
@@ -46,23 +47,23 @@ class SampleReceptionControle():
         self.sample.put()
 
     def check_sample_name(self):
-        #self.log.write("Checking sample name \n")
+        """Warning if sample name is not alphanumeric. 
+        Exception for '-', witch is allowed."""
         no_dash = self.sample.name.replace('-','')
         if not no_dash.isalnum():
             self.log.write('    FAIL: Sample name not ok!\n')
             self.all_right = False
 
     def set_reads_missing(self):
-        #self.log.write("Setting UDF: 'Reads missing (M)' \n")
+        """Sets the 'Reads missing (M)' udf, based on the application tag"""
         app_tag = self.sample.udf['Sequencing Analysis']
         target_amount = parse_application_tag(app_tag)['reads']/1000000
         self.sample.udf['Reads missing (M)'] = target_amount
         self.sample.put()
 
     def check_duplicated_sample_names(self):
-        #self.log.write("Checking duplicated sample names \n")
-        """om ett prov namn forekommer pa tva prover inom samma customer sa kolla om gamla provets udf "cancelled"==yes, annars varna
-        """
+        """If the sample name appears more then once within the same cus, check 
+        that the old samp has "cancelled"==yes, otherwise warning!"""
         dup_samps = lims.get_samples(name = self.sample_name, udf={'customer' : self.udfs['customer']})
         for dup_samp in dup_samps:
             if dup_samp.id != self.sample.id:
@@ -73,7 +74,7 @@ class SampleReceptionControle():
                     self.all_right = False                
 
     def check_family_members_has_relations(self):
-        #self.log.write("Checking family member relations \n")
+        """Warns if sample has family members (same familyID), but no relation to any of them."""
         samps_to_check = lims.get_samples(udf={'customer' : self.udfs['customer'], 'familyID' : self.udfs['familyID']})
         relation = False
         for samp_to_check in samps_to_check:
@@ -99,8 +100,8 @@ class SampleReceptionControle():
             return False
 
     def check_family_relations_exists(self):
-        #self.log.write("Checking relatives (mother, father, other) exist in lims \n")
-        """If there are relatives specifyed, do they exist in lims?"""
+        """If there are relatives specifyed (mother, father, other), 
+        do they exist in lims? Warns if not."""
         missing_relatives = {}
         for k, v in self.sample.udf.items():
             if k in ['motherID', 'fatherID', 'Other relations']:
@@ -112,8 +113,8 @@ class SampleReceptionControle():
             self.all_right = False
 
     def check_trio(self):
-        #self.log.write("Checking trio Application Tags \n")
         """If thre samples in one family has apptag, beginning with WGS, change to WGT"""
+        ##  This function should be recursive to handle more than one trio.
         relatives = lims.get_samples(udf={'customer' : self.udfs['customer'], 'familyID' : self.udfs['familyID']})
         trio = []
         for samp in relatives:
@@ -122,10 +123,11 @@ class SampleReceptionControle():
         if len(trio) > 2:
             for samp in trio[0:3]:
                 samp.udf['Sequencing Analysis'] = 'WGTPCFC030' 
+                samp.put()
             self.log.write("    INFO: application tag WGSPCFC030, switched to WGTPCFC030 on samples: "+', '.join(trio[0:3])+"\n")
 
     def check_capture_kit(self):
-        #self.log.write("Checking capture bait kit \n")
+        """Warns if 'Capture Library version' == NA but application tag begins with EXX"""
         appt = self.sample.udf['Sequencing Analysis']
         captb = self.sample.udf['Capture Library version']
         if appt[0:3] == 'EXX' and captb == 'NA':
