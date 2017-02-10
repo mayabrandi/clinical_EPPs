@@ -100,11 +100,13 @@ class QpcrDilution():
             self.artifacts[samp]['out'] = a
 
     def get_file(self):
-        for f in self.process.shared_result_files():
-            if f.name =='qPCR Result File':
-                qPCR_file = f.files[0]
-        return qPCR_file.content_location.split('scilifelab.se')[1]
-
+        try:
+            for f in self.process.shared_result_files():
+                if f.name =='qPCR Result File':
+                    qPCR_file = f.files[0]
+            return qPCR_file.content_location.split('scilifelab.se')[1]
+        except:
+            sys.exit('could not read dilutionfile')
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
@@ -141,4 +143,3 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
-
