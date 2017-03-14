@@ -29,7 +29,7 @@ class Pool2Sequence():
         self.nr_samps = None
         self.average_reads = None
         self.low_sample_vol = False
-        self.final_concentration_in_pool = 2
+        self.final_concentration_in_pool = 2.5
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
@@ -71,7 +71,7 @@ class Pool2Sequence():
             except:
                 self.failed_arts.append(art)
         try:
-            self.process.udf['EB Volume (ul)'] = str(round(self.total_vol - total_sample_vol, 2.5))
+            self.process.udf['EB Volume (ul)'] = str(round(self.total_vol - total_sample_vol, 2))
             self.process.udf['Total nr of Reads Requested (sum of reads to sequence)'] = str(total_reads)
             self.process.put()
         except:
