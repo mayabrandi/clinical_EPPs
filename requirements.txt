@@ -1,0 +1,4 @@
+-e git+https://github.com/SciLifeLab/genologics.git                               
+beautifulsoupo
+Flask
+flask_sqlalchemy
