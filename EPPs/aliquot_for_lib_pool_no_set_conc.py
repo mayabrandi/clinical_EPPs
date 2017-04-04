@@ -39,7 +39,7 @@ class Pool2Sequence():
         try:
             self.total_vol = float(self.process.udf['Total Volume (ul)'])
             self.reads_expected = self.process.udf['Number of Reads Expected']
-            self.final_concentration_in_pool = int(self.process.udf['Number of Reads Expected'])
+            self.final_concentration_in_pool = float(self.process.udf['Final Concentration (nM)'])
         except:
             sys.exit('Seems like some process udfs have not been filed in!')
 
