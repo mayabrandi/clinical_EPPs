@@ -157,12 +157,12 @@ class ReceptionControle():
             self.log.write('\n###  Checking sample ' + samp.id+', with sample name ' + samp.name +" ###\n")
             SRC = SampleReceptionControle(samp, self.log)
             SRC.app_tag_version()
-            SRC.check_sample_name()
-            SRC.set_reads_missing()
-            SRC.check_duplicated_sample_names()
-            SRC.check_family_members_has_relations()
-            SRC.check_family_relations_exists()
-            SRC.check_trio()
+            #SRC.check_sample_name()
+            #SRC.set_reads_missing()
+            #SRC.check_duplicated_sample_names()
+            #SRC.check_family_members_has_relations()
+            #SRC.check_family_relations_exists()
+            #SRC.check_trio()
             if not SRC.all_right:
                 self.failed_samples +=1
                 art.qc_flag = "FAILED"
