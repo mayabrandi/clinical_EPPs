@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/glsai/miniconda2/envs/epp_master/bin/python
 DESC="""EPP script to calculate sample volume and EB volume from concentration and volume
 udf:s in Clarity LIMS.
 Maya Brandi
