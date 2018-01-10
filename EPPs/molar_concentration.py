@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/glsai/miniconda2/envs/epp_master/bin/python
 DESC = """EPP script to calculate molar concentration given the 
 weight concentration, in Clarity LIMS. Before updating the artifacts, 
 the script verifies that 'Concentration' and 'Size (bp)' udf:s are not blank,
@@ -20,9 +20,10 @@ import sys
 
 class MolarConc():
 
-    def __init__(self, process, aggregate):
+    def __init__(self, process, aggregate, size_udf):
         self.process = process
         self.aggregate = aggregate
+        self.size_udf = size_udf
         self.artifacts = []
         self.passed_arts = []
         self.failed_arts = []
@@ -41,13 +42,13 @@ class MolarConc():
     def apply_calculations(self):
         for art in self.artifacts:
             udfs_ok = True
-            for udf in ['Size (bp)', 'Concentration']:
+            for udf in [self.size_udf, 'Concentration']:
                 try:
                     float(art.udf[udf])
                 except:
                     udfs_ok = False
             if udfs_ok:
-                factor = 1e6 / (328.3 * 2 * art.udf['Size (bp)'])
+                factor = 1e6 / (328.3 * 2 * float(art.udf[self.size_udf]))
                 cons_nM = art.udf['Concentration'] * factor
                 art.udf['Concentration (nM)'] = cons_nM
                 if cons_nM > 2:
@@ -63,7 +64,7 @@ class MolarConc():
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    MC = MolarConc(process, args.aggregate)
+    MC = MolarConc(process, args.aggregate, args.size_udf)
     MC.get_artifacts()
     MC.apply_calculations()
 
@@ -90,7 +91,8 @@ if __name__ == "__main__":
                               "the output artifact of type analyte that is "
                               "modified while this tag changes this to using "
                               "input artifacts instead"))
-
+    parser.add_argument('--size_udf', default= "Size (bp)",
+                        help=(""))
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
