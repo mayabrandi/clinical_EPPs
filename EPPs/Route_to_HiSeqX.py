@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/glsai/miniconda2/envs/epp_master/bin/python
 # -*- coding: utf-8 -*-
 
 from optparse import OptionParser
