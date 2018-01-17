@@ -29,7 +29,7 @@ class SamplePlacementMap():
         self.process = process
         self.hist_dict = make_hist_dict_no_stop(process.id)
         self.mastermap = {}
-        self.udf_list = ['Sample Volume (ul)']
+        self.udf_list = ['Sample Volume (ul)', 'Volume of sample (ul)']
 
     def make_mastermap(self):
         for art, orig_art in self.hist_dict.items():
