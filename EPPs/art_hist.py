@@ -11,6 +11,46 @@ BASEURI='http://localhost:9080'
 lims = Lims(BASEURI, USERNAME, PASSWORD, VERSION)
 lims.check_version()
 
+def make_hist_dict_no_stop(process_id):
+    """ arg stop_processes: list of process type names - eg: 
+        ['CG002 - Aliquot Samples for Library Pooling', 'CG002 - Sort HiSeq X Samples (HiSeq X)']
+
+        For each output artifact (assumed not to be pooles) of the current process:
+        walk throuh its history untill a stop_process is encountered. 
+        Get its corresponding input artifact to the stop_process.
+        Add to the hist_dict
+            key:    output artifact of current process
+            value:  input artifact of the stop process"""
+    current_process = Process(lims, id = process_id)
+    out_arts = [a for a in current_process.all_outputs() if a.type=='Analyte']
+    hist_dict = {}
+    for out_art in out_arts:
+        sample = out_art.samples[0].name
+        parent_process = out_art.parent_process
+        first_process = parent_process
+        while parent_process:
+            #We folow the sample history until it's parent process is the one we look for
+            parent_inputs = [a for a in parent_process.all_inputs() if a.type=='Analyte']
+            for parent_input in parent_inputs:
+                sample_names = [s.name  for s in parent_input.samples]
+                if sample in sample_names:
+                    parent_process = parent_input.parent_process
+                    if parent_process:
+                        first_process = parent_process
+                    break
+        # Appends the in_art to the stop_process, that corresponds to the out_art of 
+        # the current_process. Assumes a 1-1 relation.
+        parent_inputs = [a for a in first_process.all_inputs() if a.type=='Analyte']
+        for parent_input in parent_inputs:
+            sample_names = [s.name  for s in parent_input.samples]
+            if sample in sample_names:
+                hist_dict[out_art] = parent_input
+                break
+                #   assumes only one in_art analyte per out_art analyte, to the stop_ptocess
+
+
+    return hist_dict
+
 
 def make_hist_dict(process_id, stop_processes):
     """ arg stop_processes: list of process type names - eg: 
@@ -28,7 +68,6 @@ def make_hist_dict(process_id, stop_processes):
     for out_art in out_arts:
         sample = out_art.samples[0].name
         parent_process = out_art.parent_process
-       
         while parent_process and parent_process.type.name not in stop_processes: 
             #We folow the sample history until it's parent process is the one we look for
             parent_inputs = [a for a in parent_process.all_inputs() if a.type=='Analyte']
@@ -36,7 +75,6 @@ def make_hist_dict(process_id, stop_processes):
                 sample_names = [s.name  for s in parent_input.samples]
                 if sample in sample_names:
                     parent_process = parent_input.parent_process
-                    
                     break
         if not parent_process:
             # This will hapen if the sample did never pass throuh any of the stop_processes
@@ -48,7 +86,7 @@ def make_hist_dict(process_id, stop_processes):
             for parent_input in parent_inputs:
                 sample_names = [s.name  for s in parent_input.samples]
                 if sample in sample_names:
-                    hist_dict[out_art.uri] = parent_input.uri
+                    hist_dict[out_art] = parent_input
                     break
                     #   assumes only one in_art analyte per out_art analyte, to the stop_ptocess
 
