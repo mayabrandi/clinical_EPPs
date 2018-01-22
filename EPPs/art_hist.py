@@ -23,6 +23,9 @@ def make_hist_dict_no_stop(process_id):
             value:  input artifact of the stop process"""
     current_process = Process(lims, id = process_id)
     out_arts = [a for a in current_process.all_outputs() if a.type=='Analyte']
+    if not out_arts:
+        out_arts = [a for a in current_process.all_inputs() if a.type=='Analyte']
+
     hist_dict = {}
     for out_art in out_arts:
         sample = out_art.samples[0].name
@@ -40,6 +43,8 @@ def make_hist_dict_no_stop(process_id):
                     break
         # Appends the in_art to the stop_process, that corresponds to the out_art of 
         # the current_process. Assumes a 1-1 relation.
+        if not first_process:
+            first_process = current_process
         parent_inputs = [a for a in first_process.all_inputs() if a.type=='Analyte']
         for parent_input in parent_inputs:
             sample_names = [s.name  for s in parent_input.samples]
@@ -86,7 +91,7 @@ def make_hist_dict(process_id, stop_processes):
             for parent_input in parent_inputs:
                 sample_names = [s.name  for s in parent_input.samples]
                 if sample in sample_names:
-                    hist_dict[out_art] = parent_input
+                    hist_dict[out_art.uri] = parent_input.uri
                     break
                     #   assumes only one in_art analyte per out_art analyte, to the stop_ptocess
 
