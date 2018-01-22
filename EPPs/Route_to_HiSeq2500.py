@@ -12,12 +12,20 @@ DEBUG = False
 ### For this ex, UDF names "For HiSeq2500" need to checkbox UDFs configured in LIMS under analyte
 
 HiSeq2500 = {   'WF' : 'CG003 SureSelect XT',
-            'Stage' : 'CG002 - Aliquot Samples for Library Pooling',
-            'UDF' : "HiSeq2500"
-        }
+                'Stage' : 'CG002 - Aliquot Samples for Library Pooling',
+                'UDF' : "HiSeq2500"
+            }
+
+HiSeqX = {   'WF' : 'CG003 WGS PCR free',
+                'Stage' : 'CG002 - Sort HiSeq X Samples (HiSeq X)',
+                'UDF' : "HiseqX"
+                }
 
 
-availableStages = [ HiSeq2500 ]
+
+
+
+availableStages = [ HiSeq2500, HiSeqX]
 # Add more stages by adding to this list.
 
 #####################################################################################
