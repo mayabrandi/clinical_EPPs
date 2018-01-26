@@ -143,7 +143,7 @@ class SamplePlacementMap():
             html.append( '</body></table>')
         html.append('</html>')
         file = open( str( resultfile ) + ".html", "w" )
-        file.write( ''.join( html ) )
+        file.write( ''.join( html ).encode('utf-8') )
         file.close()
 
     def make_html_for_sequencing(self,resultfile):
