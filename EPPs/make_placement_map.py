@@ -133,7 +133,7 @@ class SamplePlacementMap():
                         html.append('Original Well : ' + well_info['orig_well'] + '<br>')
                         for udf in self.udf_list:
                             try:
-                                html.append(udf + ' : ' + str(well_info['artifact'].udf[udf])+ '<br>')
+                                html.append(udf + ' : ' + str(round(well_info['artifact'].udf[udf],2))+ '<br>')
                             except:
                                 pass
                     else:
