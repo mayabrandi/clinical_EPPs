@@ -34,8 +34,8 @@ class BravoCSV():
         with open( self.csv , 'wb') as bravo_csv:
             wr = csv.writer(bravo_csv)
             art_dict = {a.location[1] : a  for a in self.artifacts}
-            for row in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
-                for col in range(1,13):
+            for col in range(1,13):
+                for row in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
                     well = row + ':' + str(col)
                     if well in art_dict:
                         art = art_dict[well]
