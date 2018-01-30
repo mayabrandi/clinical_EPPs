@@ -33,15 +33,17 @@ class BravoCSV():
     def make_csv(self):
         with open( self.csv , 'wb') as bravo_csv:
             wr = csv.writer(bravo_csv)
-            art_list = [(a.location[1][2], a.location[1][0] , a) for a in self.artifacts]
-            art_list.sort() 
-            for col, row, art  in art_list:
-                well = art.location[1].replace(':','')
-                try:
-                    row_list = [well, str(art.udf['Volume Buffer (ul)']), str(art.udf['Sample Volume (ul)'])]
-                    wr.writerow(row_list)
-                except:
-                    self.failed_arts.append(art.name)
+            art_dict = {a.location[1] : a  for a in self.artifacts}
+            for row in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
+                for col in range(1,13):
+                    well = row + ':' + str(col)
+                    if well in art_dict:
+                        art = art_dict[well]
+                        try:
+                            row_list = [row + str(col) , str(art.udf['Volume Buffer (ul)']), str(art.udf['Sample Volume (ul)'])]
+                            wr.writerow(row_list)
+                        except:
+                            self.failed_arts.append(art.name)
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
