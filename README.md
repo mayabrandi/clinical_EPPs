@@ -2,19 +2,13 @@
 
 Scripts to be run from LIMS
 
-## EPPs
-
-These are all scripts thar are run from different steps within lims. 
-
 ### Prerequisites
 
 
-[genologics](https://github.com/SciLifeLab/genologics/tree/master/genologics)
+[SciLifeLab/genologics](https://github.com/SciLifeLab/genologics/tree/master/genologics)
 
-### EPPs
+## EPPs
 
-
-These are all scripts thar are run from different steps within lims.
 
 Script | Step | Comment
 --- | --- | ---
@@ -66,7 +60,10 @@ set_qc.py|CG002 - Qubit QC (DNA)|
 ||CG002 - Qubit QC (Library Validation)|
 
 
+#### Scripts no longer in use
 
+
+```python
 concentration2qc.py
 aliquot_for_lib_pool_2_5_nM.py  
 copy_field_art2samp.py
@@ -79,4 +76,4 @@ make_MAF_plate_layout.py
 microbial_copyUDFs_from_aggregateQC.py
 qPCR_dilution_old.py
 reagent-label.py
-
+```
