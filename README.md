@@ -1,6 +1,5 @@
 # clinical_EPPs 
-
-Scripts to be run from LIMS
+Should be updated whenever a new script is added ore removed from the directory and whenever a script is used in a new lims step.
 
 ### Prerequisites
 
@@ -8,6 +7,8 @@ Scripts to be run from LIMS
 [SciLifeLab/genologics](https://github.com/SciLifeLab/genologics/tree/master/genologics)
 
 ## EPPs
+Scripts to be run from LIMS.
+
 
 
 Script | Step | Comment
