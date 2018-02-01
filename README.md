@@ -13,7 +13,6 @@ Scripts to be run from LIMS.
 
 Script | Step | Comment
 --- | --- | ---
-rerun.py |CG002 - Sequence Aggregation  | Rerun HiseqX, Rerun Hisq2500, Rerun (RML) 
 aliquot_covaris_microbial.py|CG002 - Normalization of microbial samples|
 aliquot_for_lib_pool_no_set_conc.py|G002 - Aliquot Samples for Library Pooling|
 aliquot_for_lib_pool.py|G002 - Aliquot Samples for Library Pooling|
