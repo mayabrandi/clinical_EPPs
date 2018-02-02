@@ -91,8 +91,9 @@ def main(lims, args):
                 "wrong and/or blank values for some udfs. ").format(**d)
     if P2S.low_sample_vol:
         abstract += "WARNING: LOW SAMPLE VOLUME(S)!"
-
-    print >> sys.stderr, abstract 
+        sys.exit(abstract)
+    else:
+        print >> sys.stderr, abstract 
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
