@@ -46,11 +46,10 @@ class Pool2Sequence():
     def calculate_stuff(self):
         total_reads = 0
         for art in self.artifacts:
-            sample = art.samples[0]
             try:
-                total_reads +=  int(sample.udf['Reads missing (M)'])
+                total_reads +=  int(art.udf['Reads to sequence (M)'])
             except:
-                sys.exit("'Reads missing (M)' - missing for some samples!")
+                sys.exit("'Reads to sequence (M)' - missing for some samples!")
 
         self.nr_samps = len(self.artifacts)
         self.average_reads = float(total_reads)/self.nr_samps
@@ -60,10 +59,9 @@ class Pool2Sequence():
         total_sample_vol = 0
         total_reads = 0
         for art in self.artifacts:
-            sample = art.samples[0]
             try:
                 conc = art.udf['Concentration (nM)']
-                reads = float(sample.udf['Reads missing (M)'])
+                reads = float(art.udf['Reads to sequence (M)'])
                 art.udf['Sample Volume (ul)'] = self.total_vol/self.nr_samps*(self.final_concentration_in_pool/conc)*(reads/self.average_reads)
                 total_sample_vol += art.udf['Sample Volume (ul)']
                 total_reads += reads
