@@ -45,6 +45,7 @@ class BufferVolume():
             if concentration <= self.final_concentration:
                 artifact.udf['Volume Buffer (ul)'] = 0
                 self.passed_arts +=1
+                artifact.udf['Total Volume (uL)'] = samp_vol
             elif concentration > self.final_concentration:
                 total_volume = (concentration*samp_vol)/self.final_concentration
                 eb_volume = total_volume - samp_vol
