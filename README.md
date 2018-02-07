@@ -36,7 +36,6 @@ help_get_stuff.py||silly development helper
 LibNorm_calc_vol.py|CG002 - Library Normalization (HiSeq X)|
 MAF_calc_vol.py|CG002 - Plate Setup MAF|
 make_bravo_csv.py|CG002 - Normalization of microbial samples|
-||CG002 - Setup Workset/Plate|
 ||CG002 - Normalization of microbial samples for sequencing|
 make_MAF_sample_table.py|CG002 - Plate Setup MAF|
 make_placement_map.py|CG002 - Aliquot Samples for Covaris|
