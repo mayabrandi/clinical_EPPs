@@ -14,9 +14,9 @@ Scripts to be run from LIMS.
 Script | Step | Comment
 --- | --- | ---
 aliquot_covaris_microbial.py|CG002 - Normalization of microbial samples|
-aliquot_for_lib_pool_no_set_conc.py|G002 - Aliquot Samples for Library Pooling|
 aliquot_for_lib_pool.py|G002 - Aliquot Samples for Library Pooling|
 aliquot_sequencing_microbial.py|CG002 - Normalization of microbial samples for sequencing|
+amount2qc.py|CG002 - Quantit QC (DNA)|
 art_hist.py|| Helper script, used by other EPPS
 bcl2fastq.py|CG002 - Bcl Conversion & Demultiplexing (Illumina SBS)|
 calculate_amount.py|CG002 - Qubit QC (DNA)|
@@ -75,4 +75,5 @@ make_MAF_plate_layout.py
 microbial_copyUDFs_from_aggregateQC.py
 qPCR_dilution_old.py
 reagent-label.py
+aliquot_for_lib_pool_no_set_conc.py
 ```

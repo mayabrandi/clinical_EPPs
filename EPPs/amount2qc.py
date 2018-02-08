@@ -2,11 +2,8 @@
 DESC="""EPP script to calculate amount in ng from concentration and volume 
 udf:s in Clarity LIMS. The script checks that the 'Volume (ul)' and 
 'Concentration' udf:s are defined. Sets qc-flaggs based on amount treshold
-
 Johannes Alneberg, 
 Maya Brandi
-
-
 Science for Life Laboratory, Stockholm, Sweden
 """ 
 from argparse import ArgumentParser
