@@ -34,14 +34,12 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 
 class File2UDF():
 
-    def __init__(self, process, result_file, udfs, col_names):
+    def __init__(self, process, result_file):
         self.process = process
         self.artifacts = {}
         self.passed_arts = []
         self.failed_arts = []
         self.result_file = result_file
-        self.udfs = udfs
-        self.col_names = col_names
 
 
     def get_artifacts(self):
@@ -58,15 +56,14 @@ class File2UDF():
         """"""
         df = pd.read_excel(self.result_file)
         for i, row in df.iterrows():
-            well = row['Well']
+            well = row[0]
             if well in self.artifacts:
                 art = self.artifacts[well]
-                for ind, col_name in enumerate(self.col_names):
-                    try:
-                        art.udf[self.udfs[ind]] = row[col_name]
-                        self.passed_arts.append(art.id)
-                    except:
-                        self.failed_arts.append(art.id)
+                try:
+                    art.udf['Concentration'] = row[1]
+                    self.passed_arts.append(art.id)
+                except:
+                    self.failed_arts.append(art.id)
                 art.put()
 
 
@@ -74,7 +71,7 @@ class File2UDF():
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    F2UDF = File2UDF(process, args.result_file, args.udfs, args.col_names)
+    F2UDF = File2UDF(process, args.result_file)
     F2UDF.get_artifacts()
     F2UDF.set_udfs()
 
@@ -101,18 +98,10 @@ if __name__ == "__main__":
     parser.add_argument('--result_file', default=None,
                        help=(''))
 
-    parser.add_argument('--udfs', default=None, nargs='+',
-                       help=(''))
-    parser.add_argument('--col_names', default=None, nargs='+',
-                       help=(''))
-
 
     args = parser.parse_args()
     if not args.result_file:
-        sys.exit('Dilution File missing!')
-    if len(args.udfs)!=len(args.col_names):
-        sys.exit('udfs to be set has to be of the same numer as col_names!')
-
+        sys.exit('file missing!')
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()

@@ -29,6 +29,7 @@ copyUDFs_from_aggregateQC_or_other.py|CG002 - Aliquot Samples for Library Poolin
 copyUDFs_from_aggregateQC.py|G002 - Aliquot Samples for Library Pooling
 ||CG002 - Library Normalization (HiSeq X)|
 demultiplexdata2qc.py|CG002 - Bcl Conversion & Demultiplexing (Illumina SBS)|
+file2udf_quantit_qc.py|CG002 - Quantit QC (DNA)|
 get_average_size.py|CG002 - Tapestation Microbial QC|
 get_EB_vol.py| CG002 - Aliquot Libraries for Hybridization (SS XT)|
 get_missing_reads.py|CG002 - Sequence Aggregation|
@@ -76,4 +77,5 @@ microbial_copyUDFs_from_aggregateQC.py
 qPCR_dilution_old.py
 reagent-label.py
 aliquot_for_lib_pool_no_set_conc.py
+set_udf_from_excel.py
 ```
