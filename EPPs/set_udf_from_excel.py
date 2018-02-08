@@ -34,24 +34,34 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 
 class File2UDF():
 
-    def __init__(self, process, result_file, udfs, col_names):
+    def __init__(self, process, udfs, col_names):
         self.process = process
+        self.all_artifacts = process.all_outputs(unique=True)
         self.artifacts = {}
         self.passed_arts = []
         self.failed_arts = []
-        self.result_file = result_file
+        self.result_file = None
         self.udfs = udfs
         self.col_names = col_names
 
 
     def get_artifacts(self):
-        in_arts = self.process.all_inputs(unique=True)
-        all_artifacts = self.process.all_outputs(unique=True)
-        out_artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
+        out_artifacts = filter(lambda a: a.output_type == "ResultFile" , self.all_artifacts)
         for out_art in out_artifacts:
             art =  out_art.input_artifact_list()[0]
             well = art.location[1].replace(':','')
             self.artifacts[well] = out_art
+
+    def get_result_file(self, result_file):
+        if os.path.isfile(result_file):
+            self.result_file = result_file
+        else:
+            shared_files = filter(lambda a: a.output_type == "SharedResultFile" , self.all_artifacts)
+            for shared_file in shared_files:
+                if shared_file.id == result_file:
+                    self.result_file = shared_file.files[0].content_location.split('scilifelab.se')[1]
+                    break
+
 
 
     def set_udfs(self):
@@ -71,10 +81,10 @@ class File2UDF():
 
 
 
-
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    F2UDF = File2UDF(process, args.result_file, args.udfs, args.col_names)
+    F2UDF = File2UDF(process,args.udfs, args.col_names)
+    F2UDF.get_result_file(args.result_file)
     F2UDF.get_artifacts()
     F2UDF.set_udfs()
 
