@@ -37,7 +37,7 @@ class EBVol():
             except:
                 udfs_ok = False
             if udfs_ok:
-                art.udf['EB Volume (ul)'] = 750/art.udf['Concentration']
+                art.udf['Sample Volume (ul)'] = 750/art.udf['Concentration']
                 art.put()
                 self.passed_arts.append(art)
             else:
