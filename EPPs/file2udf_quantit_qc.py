@@ -67,7 +67,7 @@ class File2UDF():
 
     def set_udfs(self):
         """"""
-        df = pd.read_excel(self.result_file)
+        df = pd.read_excel(self.result_file, header=None)
         for i, row in df.iterrows():
             well = row[0]
             if well in self.artifacts:
