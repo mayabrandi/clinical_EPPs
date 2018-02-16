@@ -68,7 +68,7 @@ class QpcrDilution():
         for self.index, row in df.iterrows():
             well = row['Well']
             Cq = round(row['Cq'],3)
-            SQ = row['Starting Quantity (SQ)']
+            SQ = row['SQ']
             if not (numpy.isnan(Cq) or numpy.isnan(SQ)):
                 orwell = WELL_TRANSFORMER[well]['well']
                 dilut = WELL_TRANSFORMER[well]['dilut']
