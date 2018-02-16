@@ -24,12 +24,15 @@ calculate_amount.py|CG002 - Qubit QC (DNA)|
 calc_vol.py|CG002 - Aliquot Samples for Covaris|
 copy_field_samp2art.py|CG002 - Aliquot Samples for Library Pooling|
 copy_orig_well_art2samp.py|CG002 - Reception Control|
+copy_process_UDF_to_arts.py|CG002 - Library Normalization (HiSeq X)|
 copy_UDFs_between_WFs.py|CG002 - Plate Setup MAF|
 copyUDFs_from_aggregateQC_or_other.py|CG002 - Aliquot Samples for Library Pooling|
 copyUDFs_from_aggregateQC.py|G002 - Aliquot Samples for Library Pooling
 ||CG002 - Library Normalization (HiSeq X)|
 demultiplexdata2qc.py|CG002 - Bcl Conversion & Demultiplexing (Illumina SBS)|
 file2udf_quantit_qc.py|CG002 - Quantit QC (DNA)|
+||CG002 - Quantit QC (normalization)|
+||CG002 - Quantit QC (Library Validation)|
 get_average_size.py|CG002 - Tapestation Microbial QC|
 get_EB_vol.py| CG002 - Aliquot Libraries for Hybridization (SS XT)|
 get_missing_reads.py|CG002 - Sequence Aggregation|
