@@ -7,7 +7,8 @@ from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
 from genologics.epp import EppLogger
-from clinical_EPPs.EPP_utils import parse_application_tag
+from clinical_EPPs.config import CG_URL
+from cgface.api import CgFace
 import logging
 import sys
 
@@ -24,6 +25,7 @@ class MissingReads():
         self.artifacts = []
         self.passed_arts = []
         self.failed_arts = []
+        self.cgface_obj = CgFace(url=CG_URL)
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
@@ -40,7 +42,8 @@ class MissingReads():
             except:
                 udfs_ok = False
             if udfs_ok:
-                target_amount = parse_application_tag(app_tag)['reads']/1000000
+                target_amount_reads = self.cgface_obj.apptag(tag_name = app_tag, key = 'target_reads')
+                target_amount = target_amount_reads/1000000
                 reads_min = 0.75*target_amount
                 reads_missing = reads_min - reads_total
                 if reads_missing > 0:
@@ -58,9 +61,9 @@ class MissingReads():
                 art.put()
                 self.passed_arts.append(art)
             else:
-                self.failed_arts.append(art)            
+                self.failed_arts.append(art)
 
-        
+
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
@@ -89,3 +92,4 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
+

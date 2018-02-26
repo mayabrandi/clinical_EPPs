@@ -57,7 +57,7 @@ qc2udf_art2samp.py| CG002 - Aggregate QC (DNA)|
 qPCR_dilution.py|CG002 - qPCR QC (Library Validation)|
 reads_aggregation.py|CG002 - Sequence Aggregation|
 reads_aggregation_rml.py|CG002 - Sequence Aggregation|
-reception_control.py|CG002 - Reception Control|
+prepare_new_samples.py|CG002 - Reception Control|
 rerun.py|CG002 - Sequence Aggregation|
 set_qc.py|CG002 - Qubit QC (DNA)|
 ||CG002 - Qubit QC (Library Validation)|
@@ -67,6 +67,7 @@ set_qc.py|CG002 - Qubit QC (DNA)|
 
 
 ```python
+reception_control.py
 concentration2qc.py
 aliquot_for_lib_pool_2_5_nM.py  
 copy_field_art2samp.py
