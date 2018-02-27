@@ -26,7 +26,7 @@ class MolarConc():
         self.size_udf = size_udf
         self.artifacts = []
         self.passed_arts = []
-        self.failed_arts = []
+        self.nr_inputs = len(self.process.all_inputs(unique=True))
 
     def get_artifacts(self):
         if self.aggregate:
@@ -57,8 +57,6 @@ class MolarConc():
                     art.qc_flag = "FAILED"
                 art.put()
                 self.passed_arts.append(art)
-            else:
-                self.failed_arts.append(art)            
 
 
 
@@ -70,12 +68,11 @@ def main(lims, args):
 
 
     d = {'ca': len(MC.passed_arts),
-         'ia': len(MC.failed_arts)}
+         'ia': MC.nr_inputs}
 
-    abstract = ("Updated {ca} artifact(s), skipped {ia} artifact(s) with "
-                "wrong and/or blank values for some udfs.").format(**d)
+    abstract = ("Updated {ca} out of {ia} artifact(s).").format(**d)
 
-    if MC.failed_arts:
+    if MC.nr_inputs > len(MC.passed_arts):
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
