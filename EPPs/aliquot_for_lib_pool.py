@@ -47,7 +47,7 @@ class Pool2Sequence():
         total_reads = 0
         for art in self.artifacts:
             try:
-                total_reads +=  int(art.udf['Reads to sequence (M)'])
+                total_reads +=  float(art.udf['Reads to sequence (M)'])
             except:
                 sys.exit("'Reads to sequence (M)' - missing for some samples!")
 
