@@ -202,8 +202,11 @@ class SamplePlacementMap():
 def main(lims, args):
     process = Process(lims, id = args.pid)
     SPM= SamplePlacementMap(process)
-    if args.orig:
-        SPM.make_mastermap_orig()
+    if args.dest_96well:
+        if args.orig:
+            SPM.make_mastermap_orig()
+        else:
+            SPM.make_mastermap()
         SPM.make_html(args.res)
     else:
         SPM.make_mastermap()
@@ -219,6 +222,8 @@ if __name__ == "__main__":
     parser.add_argument('--orig', action='store_true',
                         help=("Use this tag if you want the source wells to be original wells"
                               "input artifacts instead"))
+    parser.add_argument('--dest_96well', action='store_true',
+                        help=("Use this tag if destination is 96 well plate"))
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)

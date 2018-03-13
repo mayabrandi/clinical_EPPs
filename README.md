@@ -27,7 +27,7 @@ copy_orig_well_art2samp.py|CG002 - Reception Control|
 copy_process_UDF_to_arts.py|CG002 - Library Normalization (HiSeq X)|
 copy_UDFs_between_WFs.py|CG002 - Plate Setup MAF|
 copyUDFs_from_aggregateQC_or_other.py|CG002 - Aliquot Samples for Library Pooling|
-copyUDFs_from_aggregateQC.py|G002 - Aliquot Samples for Library Pooling
+copyUDFs_from_aggregateQC.py|G002 - Aliquot Samples for Library Pooling|
 ||CG002 - Library Normalization (HiSeq X)|
 demultiplexdata2qc.py|CG002 - Bcl Conversion & Demultiplexing (Illumina SBS)|
 file2udf_quantit_qc.py|CG002 - Quantit QC (DNA)|
@@ -45,6 +45,7 @@ make_MAF_sample_table.py|CG002 - Plate Setup MAF|
 make_placement_map.py|CG002 - Aliquot Samples for Covaris|
 ||CG002 - Plate Setup MAF|
 ||CG002 - Library Normalization (HiSeq X)|
+||G002 - Aliquot Samples for Library Pooling|
 molar_concentration.py|CG002 - Aggregate QC (Library Validation)|
 ||CG002 - Qubit QC RML|
 move_samples.py|CG002 - Aggregate QC (Library Validation)|
