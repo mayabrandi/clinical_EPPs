@@ -35,6 +35,7 @@ class BufferVolume():
         except:
             #amount_needed = None
             self.missing_udfs = True
+            concentration = None 
         return concentration
 
     def apply_calculations(self):
@@ -42,10 +43,10 @@ class BufferVolume():
             concentration = self.check_udfs(artifact)
             samp_vol = 5
             artifact.udf['Sample Volume (ul)'] = samp_vol
-            if concentration <= self.final_concentration:
+            if concentration and (concentration <= self.final_concentration):
                 artifact.udf['Volume Buffer (ul)'] = 0
                 self.passed_arts +=1
-            elif concentration > self.final_concentration:
+            elif concentration and (concentration > self.final_concentration):
                 total_volume = (concentration*samp_vol)/self.final_concentration
                 eb_volume = total_volume - samp_vol
                 artifact.udf['Volume Buffer (ul)'] = eb_volume
