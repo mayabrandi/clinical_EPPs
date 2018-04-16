@@ -42,7 +42,10 @@ class MissingReads():
             except:
                 udfs_ok = False
             if udfs_ok:
-                target_amount_reads = self.cgface_obj.apptag(tag_name = app_tag, key = 'target_reads')
+                try:
+                    target_amount_reads = self.cgface_obj.apptag(tag_name = app_tag, key = 'target_reads')
+                except:
+                    sys.exit("Could not find application tag: "+app_tag+' in database.')
                 target_amount = target_amount_reads/1000000
                 reads_min = 0.75*target_amount
                 reads_missing = reads_min - reads_total
