@@ -55,7 +55,7 @@ class SumReadsRML():
         pool.samples.sort()
         for inp in inputs:
             inp.samples.sort()
-            if set(pool.samples) < set(inp.samples): ## if pool.samples is subset of inp.samples
+            if set(pool.samples) <= set(inp.samples): ## if pool.samples is subset of inp.samples
                 pool_replicates.append(inp)
         return pool_replicates
 
