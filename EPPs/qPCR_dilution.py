@@ -109,7 +109,7 @@ class QpcrDilution():
                         self.failed_arts +=1
             except:
                 self.log.write('Could not make calculations for this sample. Some data might be missing in the dilution file.\n')
-
+                self.failed_arts +=1
 
 class PerArtifact():
     """Artifact specific class do determine messuement outlyers and calculate dilution.
