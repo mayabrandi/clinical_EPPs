@@ -87,25 +87,28 @@ class QpcrDilution():
         for samp_id, art in self.artifacts.items():
             self.log.write('\n############################################\n')
             self.log.write('Sample: ' + samp_id + '\n')
-            PA = PerArtifact(art, self.dilution_data, samp_id, self.log)
-            PA.check_dilution_range()
-            PA.check_distance_find_outlyer()
-            for dil in PA.index.keys():
-                ind = PA.index[dil]
-                if type(ind)==int:
-                    self.removed_replicates += 1
-                if ind != 'Fail':
-                    self.log.write(dil + ' Measurements : ' + str(PA.Cq[dil])+'\n')
-                    if PA.poped_dilutes[dil]:
-                        self.log.write('Removed measurement: ' + str(PA.poped_dilutes[dil]) + '\n')
-            if PA.failed_sample:
-                self.failed_samples +=1
-            else:
-                passed = PA.set_udfs()
-                if passed:
-                    self.passed_arts +=1
+            try:
+                PA = PerArtifact(art, self.dilution_data, samp_id, self.log)
+                PA.check_dilution_range()
+                PA.check_distance_find_outlyer()
+                for dil in PA.index.keys():
+                    ind = PA.index[dil]
+                    if type(ind)==int:
+                        self.removed_replicates += 1
+                    if ind != 'Fail':
+                        self.log.write(dil + ' Measurements : ' + str(PA.Cq[dil])+'\n')
+                        if PA.poped_dilutes[dil]:
+                            self.log.write('Removed measurement: ' + str(PA.poped_dilutes[dil]) + '\n')
+                if PA.failed_sample:
+                    self.failed_samples +=1
                 else:
-                    self.failed_arts +=1
+                    passed = PA.set_udfs()
+                    if passed:
+                        self.passed_arts +=1
+                    else:
+                        self.failed_arts +=1
+            except:
+                self.log.write('Could not make calculations for this sample. Some data might be missing in the dilution file.\n')
 
 
 class PerArtifact():
