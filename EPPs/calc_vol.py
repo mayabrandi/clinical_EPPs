@@ -49,7 +49,7 @@ class EBVolume():
                 elif amount_needed == 1100:
                     artifact.udf[udf] = 55 - samp_vol
                 elif amount_needed == 200:
-                    artifact.udf[udf] = 50 - samp_vol
+                    artifact.udf[udf] = 25 - samp_vol
                 else:
                     sys.exit('"Amount needed (ng)" must have one of the values: 3000, 1100 or 200.')
                 artifact.put()
