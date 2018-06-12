@@ -41,7 +41,7 @@ class SumReadsRML():
         pool_representative = pool.samples[0]
         #all outputs from sequencing where pool_representative was part
         out_arts = lims.get_artifacts(samplelimsid = pool_representative.id,
-                   process_type = ["CG002 - Illumina Sequencing (Illumina SBS)"])
+                   process_type = ["CG002 - Illumina Sequencing (Illumina SBS)",'CG002 - Illumina Sequencing (HiSeq X)'])
         out_arts = list(set(out_arts))
 
         #all inputs to all sequecing processes where pool_representative was part
