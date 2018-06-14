@@ -24,9 +24,9 @@ api.setup( USERNAME, PASSWORD )
 DESC = """
 Script to pass samples and pools to next step. Sort of specific script:
 
-Single arts                                 --> Next Step
-RML-Pools                                   --> Next Step
-Non RML-Pools --> split in uniq sample arts --> Next Step
+Single arts                                       --> Next Step
+Cust001 - Pools --> split to pools from sort step --> Next Step
+Non RML - Pools --> split in uniq sample arts     --> Next Step
 
 Uniq sample arts are derived by 
     1.  geting the sample list of the pool
@@ -59,7 +59,7 @@ class PassSamples():
             if len(art.samples)==1:
                 ## this is a sample and will be passed to next step
                 self.send_to_next_step.append(art)
-            elif art.samples[0].udf['Sequencing Analysis'][0:3]=='RML': 
+            elif art.samples[0].udf['customer'] == 'cust001':
                 ## this is a RML - get pools from sort step
                 self._get_RML_arts(art)
                 self.remove_from_WF.append(art)
@@ -75,7 +75,7 @@ class PassSamples():
         all_arts_in_sort=[]
         for sample in pool.samples:
             sample_id = sample.id
-            out_arts = lims.get_artifacts(samplelimsid = sample_id, 
+            out_arts = lims.get_artifacts(samplelimsid = sample_id,
                             process_type = ["CG002 - Sort HiSeq Samples", "CG002 - Sort HiSeq X Samples (HiSeq X)"])
             all_arts_in_sort += out_arts   ##---> will give manny duplicates
         # Make uniqe. Also esure there are no replicates of the same RML. 
@@ -120,7 +120,7 @@ class PassSamples():
     def assign_arts(self):
         for art in self.send_to_next_step:
             #newURI = art.uri[ : art.uri.rfind('?state') ]
-            self.rXML.append( '<assign stage-uri="' + self.next_step_stage + '">' ) 
+            self.rXML.append( '<assign stage-uri="' + self.next_step_stage + '">' )
             self.rXML.append( '<artifact uri="' + art.uri + '"/>' )#### KANSKE newURI IST F art.uri
             self.rXML.append( '</assign>' )
 
@@ -137,8 +137,8 @@ class PassSamples():
             responseXML = api.POST( routeXML, APIURI + "route/artifacts/" )
             if 'exception' in responseXML:
                 sys.exit('XML routing error. Contact Lims Developer. '+responseXML)
-            self.passed=True        
-            
+            self.passed=True
+
 def main(lims, args):
     process = Process(lims, id = args.pid)
     PS = PassSamples(process)
@@ -163,3 +163,4 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
+
