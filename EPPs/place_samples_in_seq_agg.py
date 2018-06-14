@@ -9,6 +9,7 @@ import logging
 import sys
 import glsapiutil
 import platform
+import xml.etree.ElementTree as ET
 
 HOSTNAME = platform.node()
 VERSION = 'v2'
@@ -45,49 +46,46 @@ class PassSamples():
         self.input_arts = self.process.all_inputs(unique=True)
         self.remove_from_WF = []
         self.send_to_next_step = []
-        self.next_step = 'CG002 - Sequence Aggregation'
+        self.next_step = ['CG002 - Sequence Aggregation']
         self.current_WF = ''
         self.next_step_stage = ''
         self.rXML = []
         self.uniq_artifacts = {}
+        self.uniqe_RML_arts = {}
         self.abstract = ''
 
     def get_artifacts(self):
         for art in self.input_arts:
-            if art.samples[0].udf['Sequencing Analysis'][0:3]=='RML' or len(art.samples)==1:
-                ## this is a sample or a RML and will be passed to next step
-                self.send_to_next_step.append(art)  
-                print 'pass'
-                print art.id
+            if len(art.samples)==1:
+                ## this is a sample and will be passed to next step
+                self.send_to_next_step.append(art)
+            elif art.samples[0].udf['Sequencing Analysis'][0:3]=='RML': 
+                ## this is a RML - get pools from sort step
+                self._get_RML_arts(art)
+                self.remove_from_WF.append(art)
             else:
                 ## this is a pool and we want to pass its samples to next step
-                print 'split'
-                print art.id
                 self._get_individual_artifacts(art)
                 self.remove_from_WF.append(art)
-        print self.uniq_artifacts
         self.send_to_next_step += self.uniq_artifacts.values()
+        self.send_to_next_step += self.uniqe_RML_arts.values()
         self.send_to_next_step = list(set(self.send_to_next_step))
 
-    def _get_individual_artifacts_(self, pool):
-        for sample in pool.samples: 
+    def _get_RML_arts(self, pool):
+        all_arts_in_sort=[]
+        for sample in pool.samples:
             sample_id = sample.id
-            ## get anyone - there are result files
-            out_art = lims.get_artifacts(samplelimsid = sample_id, process_type = ['CG002 - Reception Control','CG002 - Reception Control (Dev)'])[0]
-            ## get in_arts - these are analytes
-            for a in out_art.input_artifact_list():
-                if a.samples[0].id==sample_id:
-                    art=a
-                    break
-            if not art:
-                sys.exit('Pool '+pool+' did not go through CG002 - Reception Control. Contact lims developer.')
-            if sample_id in self.uniq_artifacts.keys():
-                ## if the same sample occured in sevaral pools in the process, make sure we are piking only
-                ## one artifact, and the right one, for that sample:
-                if self.uniq_artifacts[sample_id].parent_process.date_run < art.parent_process.date_run:
-                    self.uniq_artifacts[sample_id] = art
-            else:
-                self.uniq_artifacts[sample_id] = art
+            out_arts = lims.get_artifacts(samplelimsid = sample_id, 
+                            process_type = ["CG002 - Sort HiSeq Samples", "CG002 - Sort HiSeq X Samples (HiSeq X)"])
+            all_arts_in_sort += out_arts   ##---> will give manny duplicates
+        # Make uniqe. Also esure there are no replicates of the same RML. 
+        # OBS doenst matter wich one we pick as long as it is a representative for the RML:
+        for rml in all_arts_in_sort:
+            rml_sample_key = [s.id for s in rml.samples]
+            rml_sample_key = '_'.join(list(set(rml_sample_key)))
+            ## Could put check here to make sure one sample doesnt occur in several RMLs. 
+            ## But that shouldnt be possible. If thst happens. Tha lab has mixed tings up.
+            self.uniqe_RML_arts[rml_sample_key] = rml
 
     def _get_individual_artifacts(self, pool):
         ## Assuming first artifact is allways named sample.id + 'PA1. Not sure if true. Need to check
@@ -112,11 +110,12 @@ class PassSamples():
 
     def get_next_step_stage_URI(self):
         for stage in self.current_WF.stages:
-            if stage.name == self.next_step:
+            print stage.name
+            if stage.name in self.next_step:
                 self.next_step_stage = stage.uri
                 break
         if not self.next_step_stage:
-            sys.exit('Could not get the current Work Flow Stage. Contact lims developer.')
+            sys.exit('Could not get the next step Stage. Contact lims developer.')
 
     def assign_arts(self):
         for art in self.send_to_next_step:
@@ -135,12 +134,11 @@ class PassSamples():
         routeXML = "".join( self.rXML )
         if len(routeXML) > 0:
             routeXML = '<rt:routing xmlns:rt="http://genologics.com/ri/routing">' + routeXML + '</rt:routing>'
-            responseXML = api.POST( routeXML, APIURI + "route/artifacts/" )##how catch fail? Ask ciara.
-            logging.debug( responseXML )
+            responseXML = api.POST( routeXML, APIURI + "route/artifacts/" )
+            if 'exception' in responseXML:
+                sys.exit('XML routing error. Contact Lims Developer. '+responseXML)
             self.passed=True        
             
-
-
 def main(lims, args):
     process = Process(lims, id = args.pid)
     PS = PassSamples(process)
@@ -151,14 +149,10 @@ def main(lims, args):
     PS.remove_arts()
     PS.rout()
 
-    if PS.passed:
-        abstract = 'Probably no errors. Maybe passed '+str(len(PS.send_to_next_step))+' arts to next step.'
-        if PS.remove_from_WF:
-            abstract += ' Probably removed ' + str(len(PS.remove_from_WF))+ ' artifacts from the wf.'
-        print >> sys.stderr,abstract ## How do "flush this message in a correct way?"
-    else:
-        print >> sys.exit('FAIL') 
-  
+    abstract = 'Probably no errors. Maybe passed '+str(len(PS.send_to_next_step))+' arts to next step.'
+    if PS.remove_from_WF:
+        abstract += ' Probably removed ' + str(len(PS.remove_from_WF))+ ' artifacts from the wf.'
+    print >> sys.stdout,abstract ## How do "flush this message in a correct way?"
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
