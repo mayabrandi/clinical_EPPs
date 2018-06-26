@@ -22,19 +22,6 @@ api.setup( USERNAME, PASSWORD )
 
 
 DESC = """
-Script to pass samples and pools to next step. Sort of specific script:
-
-Single arts                                       --> Next Step
-Cust001 - Pools --> split to pools from sort step --> Next Step
-Non RML - Pools --> split in uniq sample arts     --> Next Step
-
-Uniq sample arts are derived by 
-    1.  geting the sample list of the pool
-    2.  picking the input artifact to the Reception Control step, for 
-        each sample in the list. This assuems the inputs will be one per 
-        sample, wich is allways true since the Reception Control step is 
-        the first step of any WF.
-
 Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 """
 
