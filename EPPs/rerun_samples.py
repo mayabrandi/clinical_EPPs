@@ -36,7 +36,7 @@ class PassSamples():
         self.current_WF = self._get_current_WF() 
         self.rerun_step =  ['CG002 - Sort HiSeq X Samples (HiSeq X)', 'CG002 - Sort HiSeq Samples']
         self.rerun_stage = self._get_next_step_stage_URI(self.rerun_step)
-        #self.continue_stage = self._get_next_step_stage_URI(['CG002 - Delivery'])
+        self.continue_stage = self._get_next_step_stage_URI(['CG002 - Delivery'])
         self.warning_duplicate_samples = []
         self.rXML = []
         self.abstract = ''
@@ -122,8 +122,8 @@ class PassSamples():
     def assign_arts(self):
         for key, art in self.rerun_samples.items():
             self.make_assig_xml(art['art'].uri, art['next_step_stage'])
-        #for art in self.continue_arts:
-        #    self.make_assig_xml(art.uri, )
+        for art in self.continue_arts:
+            self.make_assig_xml(art.uri, self.continue_stage)
 
     def make_assig_xml(self, art_uri, next_step_uri):
         self.rXML.append( '<assign stage-uri="' + next_step_uri + '">' )
