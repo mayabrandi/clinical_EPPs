@@ -29,7 +29,7 @@ class SamplePlacementMap():
         self.process = process
         self.artifacts = self._get_artifacts()
         self.dest_cont_type = self.artifacts[0].location[0].type.name 
-        self.hist_dict = make_hist_dict_no_stop(process.id)
+        self.hist_dict, dummy = make_hist_dict_no_stop(process.id)
         self.mastermap = {}
         self.udf_list = ['Sample Volume (ul)', 'Volume of sample (ul)', 'Volume of RSB (ul)', 'EB Volume (ul)',]
 
