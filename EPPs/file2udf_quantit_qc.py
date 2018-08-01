@@ -47,33 +47,35 @@ class File2UDF():
 
 
     def get_artifacts(self):
-        out_artifacts = filter(lambda a: a.output_type == "ResultFile" , self.all_artifacts)
-        for out_art in out_artifacts:
-            art =  out_art.input_artifact_list()[0]
-            well = art.location[1].replace(':','')
-            self.artifacts[well] = out_art
+        for art in self.all_artifacts:
+            try:
+                col,row = art.location[1].split(':')
+                if len(row)==1:
+                    row = '0'+row
+                well = col + row
+                self.artifacts[well] = art
+            except:
+                ## shared file - skip
+                pass
 
     def get_result_file(self, result_file):
         if os.path.isfile(result_file):
             self.result_file = result_file
         else:
-            shared_files = filter(lambda a: a.output_type == "SharedResultFile" , self.all_artifacts)
-            for shared_file in shared_files:
-                if shared_file.id == result_file:
-                    self.result_file = shared_file.files[0].content_location.split('scilifelab.se')[1]
-                    break
-
-
+            qubit_files = filter(lambda a: a.name == "Qubit Result File" , self.all_artifacts)
+            if len(qubit_files)>1:
+                sys.exit('more than one Qubit Result File')
+            else:
+                self.result_file = qubit_files[0].files[0].content_location.split('scilifelab.se')[1]
 
     def set_udfs(self):
-        """"""
         df = pd.read_excel(self.result_file, header=None)
         for i, row in df.iterrows():
             well = row[0]
             if well in self.artifacts:
                 art = self.artifacts[well]
                 try:
-                    art.udf['Concentration'] = row[1]
+                    art.udf['Concentration'] = row[2]
                     self.passed_arts.append(art.id)
                 except:
                     self.failed_arts.append(art.id)
@@ -104,7 +106,6 @@ def main(lims, args):
         print >> sys.stderr, abstract
 
 if __name__ == "__main__":
-    # Initialize parser with standard arguments and description
     parser = ArgumentParser(description=DESC)
     parser.add_argument('--pid',
                        help='Lims id for current Process')
