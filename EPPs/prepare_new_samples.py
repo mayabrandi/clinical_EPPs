@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import logging
@@ -47,7 +48,7 @@ class ReceptionControle():
 
     def check_samples(self):
         for samp , art in self.samples:
-            self.log.write('\n###  Checking sample ' + samp.id+', with sample name ' + samp.name +" ###\n")
+            self.log.write('\n###  Checking sample ' + samp.id+', with sample name ' + samp.name.encode('utf-8').strip() +" ###\n")
             self.set_reads_missing(samp)
             if self.sample_qc:
                 art.qc_flag = "PASSED"
