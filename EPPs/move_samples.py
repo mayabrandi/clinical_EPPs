@@ -26,7 +26,7 @@ NovaSeq = {      'WF' : 'Dev2 Nova Seq',
                 'UDF' : "NovaSeq"
                 }
 
-skip_norm = {   'WF' : 'CG001 Microbial WGS',
+skip_norm = {   'WF' : 'CG002 Microbial WGS',
                 'Stage' : 'CG002 - Sort HiSeq X Samples (HiSeq X)',
                 'UDF' : "Skip Normalization"
                 }
