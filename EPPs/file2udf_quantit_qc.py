@@ -75,6 +75,7 @@ class File2UDF():
             if well in self.artifacts:
                 art = self.artifacts[well]
                 try:
+                    conc = int(row[2]) # will fail if nan
                     art.udf['Concentration'] = row[2]
                     self.passed_arts.append(art.id)
                 except:
