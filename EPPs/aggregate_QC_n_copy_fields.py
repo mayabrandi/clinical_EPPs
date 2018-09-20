@@ -49,15 +49,19 @@ class CopyUDF():
                             qc_flag = qc_flag_update
                         for udf in self.source_step_types[source_step.type.name]:
                             try:
-                                art.udf[udf] = float(output.udf[udf])
+                                value = output.udf[udf]
+                            except:
+                                value = None
+                                self.failded_udfs.append(art.name)
+                            try:
+                                art.udf[udf] = float(value)
                             except:
                                 try:
-                                    art.udf[udf] = str(output.udf[udf])
+                                    art.udf[udf] = str(value)
                                 except:
-                                    self.failded_udfs.append(art.name)
                                     pass
-                
-            art.qc_flag = qc_flag
+            if qc_flag:
+                art.qc_flag = qc_flag
             art.put()
 
     def _get_correct_processes(self, art):
