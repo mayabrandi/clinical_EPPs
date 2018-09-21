@@ -44,8 +44,10 @@ class PassSamples():
     def __init__(self, process):
         self.process = process
         self.input_arts = self.process.all_inputs(unique=True)
+        self.samples = []
         self.remove_from_WF = []
         self.send_to_next_step = []
+        self.all_arts_in_sort = []
         self.next_step = ['CG002 - Sequence Aggregation']
         self.current_WF = ''
         self.next_step_stage = ''
@@ -54,45 +56,43 @@ class PassSamples():
         self.uniqe_RML_arts = {}
         self.abstract = ''
 
-    def get_artifacts(self):
+    def get_samples(self):
         for art in self.input_arts:
-            if len(art.samples)==1:
-                ## this is a sample and will be passed to next step
-                self.send_to_next_step.append(art)
-            elif art.samples[0].udf['customer'] == 'cust001':
+            self.samples += art.samples
+            self.remove_from_WF.append(art)
+        self.samples = list(set(self.samples))
+
+    def get_artifacts(self):
+        for sample in self.samples:
+            if sample.udf['customer'] == 'cust001':
                 ## this is a RML - get pools from sort step
-                self._get_RML_arts(art)
-                self.remove_from_WF.append(art)
+                self._get_pools_from_sort(sample)
             else:
-                ## this is a pool and we want to pass its samples to next step
-                self._get_individual_artifacts(art)
-                self.remove_from_WF.append(art)
+                ## this is a pool (or a sample) and we want to pass its samples to next step
+                self._get_individual_artifacts(sample)
+        self._make_unique_pools()
         self.send_to_next_step += self.uniq_artifacts.values()
         self.send_to_next_step += self.uniqe_RML_arts.values()
         self.send_to_next_step = list(set(self.send_to_next_step))
 
-    def _get_RML_arts(self, pool):
-        all_arts_in_sort=[]
-        for sample in pool.samples:
-            sample_id = sample.id
-            out_arts = lims.get_artifacts(samplelimsid = sample_id,
+    def _get_pools_from_sort(self, sample): ##---> will give manny duplicates
+        self.all_arts_in_sort += lims.get_artifacts(samplelimsid = sample.id,
                             process_type = ["CG002 - Sort HiSeq Samples", "CG002 - Sort HiSeq X Samples (HiSeq X)"])
-            all_arts_in_sort += out_arts   ##---> will give manny duplicates
+
+    def _make_unique_pools(self):
         # Make uniqe. Also esure there are no replicates of the same RML. 
         # OBS doenst matter wich one we pick as long as it is a representative for the RML:
-        for rml in all_arts_in_sort:
+        for rml in self.all_arts_in_sort:
             rml_sample_key = [s.id for s in rml.samples]
             rml_sample_key = '_'.join(list(set(rml_sample_key)))
             ## Could put check here to make sure one sample doesnt occur in several RMLs. 
             ## But that shouldnt be possible. If thst happens. Tha lab has mixed tings up.
             self.uniqe_RML_arts[rml_sample_key] = rml
 
-    def _get_individual_artifacts(self, pool):
-        ## Assuming first artifact is allways named sample.id + 'PA1. Not sure if true. Need to check
-        for sample in pool.samples:
-            sample_id = sample.id
-            first_sample_artifact = Artifact(lims, id = sample.id + 'PA1')
-            self.uniq_artifacts[sample_id] = first_sample_artifact
+    def _get_individual_artifacts(self, sample):
+        ## Assuming first artifact is allways named sample.id + 'PA1.
+        first_sample_artifact = Artifact(lims, id = sample.id + 'PA1')
+        self.uniq_artifacts[sample.id] = first_sample_artifact
 
     def get_current_WF(self):
         # This should be done in a better way...
@@ -110,7 +110,6 @@ class PassSamples():
 
     def get_next_step_stage_URI(self):
         for stage in self.current_WF.stages:
-            print stage.name
             if stage.name in self.next_step:
                 self.next_step_stage = stage.uri
                 break
@@ -142,6 +141,7 @@ class PassSamples():
 def main(lims, args):
     process = Process(lims, id = args.pid)
     PS = PassSamples(process)
+    PS.get_samples()
     PS.get_artifacts()
     PS.get_current_WF()
     PS.get_next_step_stage_URI()
