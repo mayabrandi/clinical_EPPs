@@ -24,6 +24,7 @@ class CheckIndex():
         self.all_artifacts = []
         self.duplicates = []
         self.index_dict = {}
+        self.all_indexes = []
         self.logfile = None
 
     def get_artifacts(self):
@@ -37,19 +38,31 @@ class CheckIndex():
                 reagent_types = lims.get_reagent_types(name=name)
                 if len(reagent_types)==1: #(Will never be morte than one. names are unique)
                     sequence = reagent_types[0].sequence
-                    if sequence in self.index_dict.keys():
-                        self.index_dict[sequence][art] = name
-                        self.duplicates.append(sequence)
+                    sequence_short = sequence.split('-')[0]
+                    self.all_indexes.append(sequence_short)
+                    if sequence_short in self.index_dict.keys():
+                        self.index_dict[sequence_short][art] = {'name':name,'sequence':sequence}
                     else:
-                        self.index_dict[sequence] = {art : name}
+                        self.index_dict[sequence_short] = {art : {'name':name,'sequence':sequence}}
+
+
+    def check_dupl(self):
+        for i, index1 in enumerate(self.all_indexes):
+            for j, index2 in enumerate(self.all_indexes):
+                if i!=j:
+                    min_lengt = min(len(index1),len(index2))
+                    if index1[:min_lengt]==index2[:min_lengt]:
+                        self.duplicates.append(index1)
+                        self.duplicates.append(index2)
+        self.duplicates=list(set(self.duplicates))
 
     def make_log(self, log_file):
         self.logfile = open(log_file, 'a')
         self.logfile.write(', '.join(['sample','index name', 'index sequence']))
-        for index in self.duplicates: 
+        for index in self.duplicates:
             art_dict = self.index_dict[index]
-            for art, index_name in art_dict.items():
-                self.logfile.write('\n'+', '.join([art.name, index_name, index]))
+            for art, index_info in art_dict.items():
+                self.logfile.write('\n'+', '.join([art.name, index_info['name'], index_info['sequence']]))
         self.logfile.close()
 
 def main(lims, args):
@@ -57,6 +70,7 @@ def main(lims, args):
     CI = CheckIndex(process)
     CI.get_artifacts()
     CI.get_samples()
+    CI.check_dupl()
 
 
     if CI.duplicates:
@@ -77,3 +91,4 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
+
