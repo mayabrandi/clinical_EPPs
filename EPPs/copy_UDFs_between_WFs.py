@@ -47,8 +47,6 @@ class CopyUDF():
             if not arts:
                 self.no_qc_step.append(target_art.id)
                 continue
-
-                #sys.exit('Some samples did not go through aggregate qc step.')
             latest_process = arts[0].parent_process
             for art in arts:
                 if art.parent_process.date_run > latest_process.date_run:
@@ -73,15 +71,15 @@ def main(lims, args):
     process = Process(lims, id = args.pid)
     CUDF = CopyUDF(process, args.udfs, args.qcstep, args.target_out)
     CUDF.copy_udfs()
-    warninng = ''
+    warning = ''
 
-    if CUDF.failded_udfs:
-        warninng += 'Failed to copy some udfs'
     if CUDF.no_qc_step:
-        warninng += 'Some samples did not go through aggregate qc step: ' + ', '.join(CUDF.no_qc_step)
+        warning += 'Some samples did not go through aggregate qc step: ' + ', '.join(CUDF.no_qc_step)
+    if CUDF.failded_udfs:
+        warning += 'Failed to copy some udfs'
 
-    if warninng:
-        sys.exit(warninng)
+    if warning:
+        sys.exit(warning)
     else:
         print >> sys.stderr, 'UDFs were succsessfully copied!'
 
