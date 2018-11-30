@@ -20,10 +20,12 @@ class CopyUDF():
         self.process = process
         self.copy_tasks = {}
         self.source_step_types = {}
-        self.failded_udfs = []
+        self.failed_udfs = []
         self.in_arts = [a for a in process.all_inputs() if a.type=='Analyte']
 
     def get_udfs(self):
+        """Geting the copy task udfs from the step level. These decides what udfs to copy
+        and from what step they should be copied"""
         for udf, value in self.process.udf.items():
             if 'Copy task' in udf:
                 k,v = udf.split('-')
@@ -38,6 +40,7 @@ class CopyUDF():
 
 
     def copy_udfs(self):
+        """Loop through all artifacts and copy udfs from the corect steps."""
         for art in self.in_arts:
             qc_flag = ''
             source_steps = self._get_correct_processes(art)
@@ -51,16 +54,17 @@ class CopyUDF():
                     for udf in self.source_step_types[source_step.type.name]:
                         value = output.udf.get(udf)
                         if isinstance(value, str):
-                            art.udf[udf] = str(value)
+                            art.udf[udf] = value
                         elif isinstance(value, float) or isinstance(value, int):
                             art.udf[udf] = float(value)
                         else:
-                            self.failded_udfs.append(art.name)
+                            self.failed_udfs.append(art.name)
             if qc_flag:
                 art.qc_flag = qc_flag
             art.put()
 
     def _get_correct_processes(self, art):
+        """Get the latest processes of the specifyed process types."""
         source_steps = {}
         processes = lims.get_processes(inputartifactlimsid=art.id)
         for process in processes:
@@ -79,8 +83,8 @@ def main(lims, args):
     CUDF.get_udfs()
     CUDF.copy_udfs()
 
-    if CUDF.failded_udfs:
-        failed = ' ,'.join(list(set(CUDF.failded_udfs)))
+    if CUDF.failed_udfs:
+        failed = ' ,'.join(list(set(CUDF.failed_udfs)))
         sys.exit('failed to copy some udfs for sample(s): '+ failed)
     else:
         print >> sys.stderr, 'UDFs were succsessfully copied!'
