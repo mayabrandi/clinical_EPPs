@@ -64,7 +64,7 @@ class CopyUDF():
             art.put()
 
     def _get_correct_processes(self, art):
-        """Get the latest processes of the specifyed process types."""
+        """Get the latest processes of the specified process types."""
         source_steps = {}
         processes = lims.get_processes(inputartifactlimsid=art.id)
         for process in processes:
