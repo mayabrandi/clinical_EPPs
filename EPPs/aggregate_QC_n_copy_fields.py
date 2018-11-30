@@ -22,7 +22,7 @@ class CopyUDF():
         self.source_step_types = {}
         self.failded_udfs = []
         self.in_arts = [a for a in process.all_inputs() if a.type=='Analyte']
-   
+
     def get_udfs(self):
         for udf, value in self.process.udf.items():
             if 'Copy task' in udf:
@@ -44,22 +44,18 @@ class CopyUDF():
             for type, source_step in source_steps.items():
                 for output in source_step.outputs_per_input(art.id):
                     qc_flag_update = Artifact(lims, id=output.id).qc_flag
-                    if not qc_flag_update == 'UNKNOWN':
-                        if not qc_flag == 'FAILED':
-                            qc_flag = qc_flag_update
-                        for udf in self.source_step_types[source_step.type.name]:
-                            try:
-                                value = output.udf[udf]
-                            except:
-                                value = None
-                                self.failded_udfs.append(art.name)
-                            try:
-                                art.udf[udf] = float(value)
-                            except:
-                                try:
-                                    art.udf[udf] = str(value)
-                                except:
-                                    pass
+                    if qc_flag_update == 'UNKNOWN':
+                        continue
+                    if not qc_flag == 'FAILED':
+                        qc_flag = qc_flag_update
+                    for udf in self.source_step_types[source_step.type.name]:
+                        value = output.udf.get(udf)
+                        if isinstance(value, str):
+                            art.udf[udf] = str(value)
+                        elif isinstance(value, float) or isinstance(value, int):
+                            art.udf[udf] = float(value)
+                        else:
+                            self.failded_udfs.append(art.name)
             if qc_flag:
                 art.qc_flag = qc_flag
             art.put()
@@ -70,7 +66,7 @@ class CopyUDF():
         for process in processes:
             process_type = process.type.name
             if process_type in self.source_step_types.keys():
-                if process_type not in source_steps.keys(): 
+                if process_type not in source_steps.keys():
                     source_steps[process_type] = process
                 elif source_steps[process_type].id < process.id:
                     source_steps[process_type] = process
@@ -99,3 +95,4 @@ if __name__ == "__main__":
     lims.check_version()
 
     main(lims, args)
+
