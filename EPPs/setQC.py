@@ -22,9 +22,9 @@ class SetQC:
         self.qc_fail = 0
         self.qc_pass = 0
 
-    def get_tresholds(self, conditions):
-        for condition in conditions:
-            udf, criteria, treshold = condition.split(',')
+    def get_tresholds(self, condition_strings):
+        for condition_string in condition_strings:
+            udf, criteria, treshold = condition_string.split(',')
             self.conditions.append({'udf': udf, 'criteria': criteria, 'treshold': treshold})
             
     def get_artifacts(self):
