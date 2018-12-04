@@ -37,7 +37,7 @@ class SamplePlacementMap():
         self.mastermap[dest_cont][dest_well] = {'source_cont' : source_cont, 'source_well' : source_well, 'sample' : sample, 'artifact' : dest_art}
 
     def build_mastermap(self):
-        """Depending on the arguments .. we get te source well location from 
+        """Depending on the arguments .. we get the source well location from 
         the output artifact from the specified step"""
         hist_dict = None
         artifacts = None
