@@ -50,6 +50,7 @@ def getStageURI( wfName, stageName ):
 
 def routeAnalytes(Inv, Seq, stop_processes):
     hist_dict = make_hist_dict(args.limsid, stop_processes)
+    hist_dict_uri = {k.uri : v.uri for k, v in hist_dict.items()}
     ANALYTES = []       ### Cache, prevents unnessesary GET calls
     GoTo_Inv = []
     GoTo_Seq = []

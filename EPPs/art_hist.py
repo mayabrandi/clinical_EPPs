@@ -75,7 +75,7 @@ def make_hist_dict(process_id, stop_processes):
         parent_process = out_art.parent_process
         while parent_process and parent_process.type.name not in stop_processes: 
             #We folow the sample history until it's parent process is the one we look for
-            parent_inputs = [a for a in parent_process.all_inputs() if a.type=='Analyte']
+            parent_inputs = parent_process.all_inputs()
             for parent_input in parent_inputs:
                 sample_names = [s.name  for s in parent_input.samples]
                 if sample in sample_names:
@@ -87,11 +87,11 @@ def make_hist_dict(process_id, stop_processes):
         else:
             # Appends the in_art to the stop_process, that corresponds to the out_art of 
             # the current_process. Assumes a 1-1 relation.
-            parent_inputs = [a for a in parent_process.all_inputs() if a.type=='Analyte']
+            parent_inputs = parent_process.all_inputs()
             for parent_input in parent_inputs:
                 sample_names = [s.name  for s in parent_input.samples]
                 if sample in sample_names:
-                    hist_dict[out_art.uri] = parent_input.uri
+                    hist_dict[out_art] = parent_input
                     break
                     #   assumes only one in_art analyte per out_art analyte, to the stop_ptocess
 
