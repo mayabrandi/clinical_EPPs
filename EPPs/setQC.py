@@ -86,6 +86,8 @@ def main(lims,args):
         abstract += str(C2QC.qc_pass) + ' samples passed QC. ' 
     if C2QC.qc_fail:
         abstract += str(C2QC.qc_fail) + ' samples failed QC. '
+    if C2QC.missing_udf:
+        abstract += 'Udfs missing for some samples.'
         
     if C2QC.qc_fail:
         sys.exit(abstract)
