@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 DESC="""EPP script to calculate amount in ng from concentration and volume 
 udf:s in Clarity LIMS. The script checks that the 'Volume (ul)' and 
-'Concentration' udf:s are defined. Sets qc-flaggs based on amount treshold
+'Concentration' udf:s are defined. 
+
+        'Amount (ng)' =  'Concentration'*'Volume (ul)'
 
 Johannes Alneberg, 
 Maya Brandi
@@ -12,101 +14,56 @@ Science for Life Laboratory, Stockholm, Sweden
 from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
-from genologics.entities import Process
-from genologics.epp import EppLogger
-from genologics.epp import set_field
-import logging
+from genologics.entities import Process, Artifact
 import sys
 
 
 
-class Amount2QC:
-    def __init__(self, process):
+class CaluclateAmount:
+    def __init__(self, process, lims):
         self.process = process
+        self.iom = self.process.input_output_maps
+        self.lims = lims
         self.artifacts = []
-        self.correct_artifacts = []
-        self.wrong_factor1 = []
-        self.wrong_factor2 = []
-        self.low_conc = 0
+        self.missing_udfs = 0
 
     def get_artifacts(self):
-        all_artifacts = self.process.all_outputs(unique=True)
-        self.artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
-        self.wrong_factor1 = self.check_udf_is_defined(self.artifacts, 'Concentration')
-        if not self.process.type.name == 'CG002 - Qubit QC (Library Validation)':
-            self.wrong_factor2 = self.check_udf_is_defined(self.correct_artifacts, 'Volume (ul)')
+        artifact_ids = [io[1]['limsid'] for io in self.iom if io[1]['output-generation-type'] == 'PerInput']
+        self.artifacts = [Artifact(self.lims, id=id) for id in artifact_ids if id is not None]
 
     def apply_calculations(self):
-        """For each result file of the process: if its corresponding inart has the udf 
-        'Dilution Fold', the result_udf: 'Amount (ng)' is calculated as
-        'Amount (ng)' =  'Concentration'*'Volume (ul)'*'Dilution Fold'
-        otherwise its calculated as
-        'Amount (ng)' =  'Concentration'*'Volume (ul)'"""
-        if self.correct_artifacts:
-            logging.info("result_udf: Amount (ng), udf1: Concentration, operator: *, udf2: Volume (ul)")
-            for artifact in self.correct_artifacts:
-                try:
-                    artifact.udf['Amount (ng)']
-                except KeyError:
-                    artifact.udf['Amount (ng)']=0 
-                try:
-                    inart = self.process.input_per_sample(artifact.samples[0].name)[0]
-                    dil_fold = inart.udf['Dilution Fold']
-                except:
-                    dil_fold = None
-                if self.process.type.name == 'CG002 - Qubit QC (Library Validation)':
-                    vol = 27
-                else:
-                    vol = artifact.udf['Volume (ul)']
-                logging.info(("Updating: Artifact id: {0}, "
-                             "result_udf: {1}, udf1: {2}, "
-                             "operator: *, udf2: {3}").format(artifact.id, 
-                                                                artifact.udf.get('Amount (ng)',0),
-                                                                artifact.udf['Concentration'],
-                                                                vol))
-                prod = eval('{0}{1}{2}'.format(artifact.udf['Concentration'],'*',vol))
-                if dil_fold:
-                    prod = eval('{0}{1}{2}'.format(prod, '*', dil_fold))
-                artifact.udf['Amount (ng)'] = prod
-                artifact.put()
-                logging.info('Updated Amount (ng) to {0}.'.format(artifact.udf['Amount (ng)']))
-                
-    def check_udf_is_defined(self, artifacts, udf):
-        """ Filter and Warn if udf is not defined for any of artifacts. """
-        incorrect_artifacts = []
-        correct_artifacts = []
-        for artifact in artifacts:
-            if (udf in artifact.udf):
-                correct_artifacts.append(artifact)
-            else:
-                logging.warning(("Found artifact for sample {0} with {1} "
-                                 "undefined/blank, skipping").format(artifact.samples[0].name, udf))
-                incorrect_artifacts.append(artifact)
-        self.correct_artifacts = correct_artifacts
-        return  incorrect_artifacts 
+        """Calcualte amount"""
 
+        if not self.artifacts:
+            return
+
+        for artifact in self.artifacts:
+            vol = artifact.udf.get('Volume (ul)')
+            conc = artifact.udf.get('Concentration')
+            if conc is not None and vol is not None:
+                artifact.udf['Amount (ng)'] = conc*vol
+                artifact.put()
+            else:
+                self.missing_udfs += 1
+                
+                
 
 def main(lims,args):
     process = Process(lims, id = args.pid)
-    A2QC = Amount2QC(process)
-    A2QC.get_artifacts()
-    A2QC.apply_calculations()
-    d = {'ca': len(A2QC.correct_artifacts),
-         'ia': len(A2QC.wrong_factor1)+ len(A2QC.wrong_factor2) }
+    CA = CaluclateAmount(process, lims)
+    CA.get_artifacts()
+    CA.apply_calculations()
+    
 
-    abstract = ("Updated {ca} artifact(s), skipped {ia} artifact(s) with "
-                "wrong and/or blank values for some udfs. ").format(**d)
-    if len(A2QC.wrong_factor1)+ len(A2QC.wrong_factor2):
-        sys.exit(abstract)
+    if CA.missing_udfs:
+        sys.exit('Udfs missing for some samples.')
     else:
-        print >> sys.stderr, abstract
+        print >> sys.stderr, 'Cacluated Amount for all samples'
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('-p', dest = 'pid',
                         help='Lims id for current Process')
-    parser.add_argument('-l', dest = 'log',
-                        help='Log file for runtime info and errors.')
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)

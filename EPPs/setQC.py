@@ -19,6 +19,7 @@ class SetQC:
         self.process = process
         self.iom = self.process.input_output_maps
         self.artifacts = []
+        self.missing_udf = 0
         self.qc_fail = 0
         self.qc_pass = 0
 
@@ -39,7 +40,8 @@ class SetQC:
             for condition in self.conditions:
                 udf = condition.get('udf')
                 if not art.udf.get(udf):
-                    sys.exit('Artifacts dont have the udf: '+ udf)
+                    self.missing_udf += 1
+                    continue
 
                 udf_value = art.udf.get(udf)
                 criteria = condition.get('criteria')
