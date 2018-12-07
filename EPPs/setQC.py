@@ -39,7 +39,7 @@ class SetQC:
             qc_flag = 'PASSED'
             for condition in self.conditions:
                 udf = condition.get('udf')
-                if not art.udf.get(udf):
+                if art.udf.get(udf) is None:
                     self.missing_udf += 1
                     continue
 
