@@ -32,7 +32,7 @@ class CalculateAmount:
         self.artifacts = [Artifact(self.lims, id=id) for id in artifact_ids if id is not None]
 
     def apply_calculations(self):
-        """Calcualte amount"""
+        """Calculate amount"""
 
         if not self.artifacts:
             return
