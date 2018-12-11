@@ -50,7 +50,7 @@ class CaluclateAmount:
 
 def main(lims,args):
     process = Process(lims, id = args.pid)
-    CA = CaluclateAmount(process, lims)
+    CA = CalculateAmount(process, lims)
     CA.get_artifacts()
     CA.apply_calculations()
     
