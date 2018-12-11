@@ -58,7 +58,7 @@ def main(lims,args):
     if CA.missing_udfs:
         sys.exit('Udfs missing for some samples.')
     else:
-        print >> sys.stderr, 'Cacluated Amount for all samples'
+        print >> sys.stderr, 'Calculated Amount for all samples'
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
