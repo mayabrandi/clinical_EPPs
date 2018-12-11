@@ -19,7 +19,7 @@ import sys
 
 
 
-class CaluclateAmount:
+class CalculateAmount:
     def __init__(self, process, lims):
         self.process = process
         self.iom = self.process.input_output_maps
