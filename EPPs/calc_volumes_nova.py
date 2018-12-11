@@ -140,9 +140,6 @@ if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('-p', dest = 'pid',
                         help='Lims id for current Process')
-    parser.add_argument('-l', dest = 'log', default=sys.stdout,
-                        help=('File name for standard log file, '
-                              'for runtime information and problems.'))
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
