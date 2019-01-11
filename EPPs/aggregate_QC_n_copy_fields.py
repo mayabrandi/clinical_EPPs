@@ -38,7 +38,6 @@ class CopyUDF():
         for copy_task , source in self.copy_tasks.items():
             self.source_step_types[source['Source Step']].append(source['Source Field'])
 
-
     def copy_udfs(self):
         """Loop through all artifacts and copy udfs from the corect steps."""
         for art in self.in_arts:
@@ -51,13 +50,14 @@ class CopyUDF():
                         continue
                     if not qc_flag == 'FAILED':
                         qc_flag = qc_flag_update
-                    for udf in self.source_step_types[source_step.type.name]:
+                    for udf in self.source_step_types[type]:
                         value = output.udf.get(udf)
-                        if isinstance(value, str):
-                            art.udf[udf] = value
-                        elif isinstance(value, float) or isinstance(value, int):
+                        try:
                             art.udf[udf] = float(value)
-                        else:
+                        except:
+                            art.udf[udf] = str(value)
+                            pass
+                        if not art.udf.get(udf):
                             self.failed_udfs.append(art.name)
             if qc_flag:
                 art.qc_flag = qc_flag
