@@ -19,6 +19,7 @@ class SetQC:
         self.process = process
         self.iom = self.process.input_output_maps
         self.artifacts = []
+        self.missing_udf = 0
         self.qc_fail = 0
         self.qc_pass = 0
 
@@ -38,8 +39,9 @@ class SetQC:
             qc_flag = 'PASSED'
             for condition in self.conditions:
                 udf = condition.get('udf')
-                if not art.udf.get(udf):
-                    sys.exit('Artifacts dont have the udf: '+ udf)
+                if art.udf.get(udf) is None:
+                    self.missing_udf += 1
+                    continue
 
                 udf_value = art.udf.get(udf)
                 criteria = condition.get('criteria')
@@ -84,6 +86,8 @@ def main(lims,args):
         abstract += str(C2QC.qc_pass) + ' samples passed QC. ' 
     if C2QC.qc_fail:
         abstract += str(C2QC.qc_fail) + ' samples failed QC. '
+    if C2QC.missing_udf:
+        abstract += 'Udfs missing for some samples.'
         
     if C2QC.qc_fail:
         sys.exit(abstract)

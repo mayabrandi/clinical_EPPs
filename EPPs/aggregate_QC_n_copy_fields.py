@@ -38,7 +38,6 @@ class CopyUDF():
         for copy_task , source in self.copy_tasks.items():
             self.source_step_types[source['Source Step']].append(source['Source Field'])
 
-
     def copy_udfs(self):
         """Loop through all artifacts and copy udfs from the corect steps."""
         for art in self.in_arts:
