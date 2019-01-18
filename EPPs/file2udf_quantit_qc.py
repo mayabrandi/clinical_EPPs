@@ -1,24 +1,11 @@
 #!/usr/bin/env python
-from __future__ import division
 from argparse import ArgumentParser
 
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
-
 from genologics.entities import Process
-from genologics.epp import EppLogger
 
-from openpyxl import load_workbook
-import json
-from statistics import mean, median
-import numpy
-from clinical_EPPs import WELL_TRANSFORMER
 import pandas as pd
-from pandas import ExcelWriter
-from pandas import ExcelFile
-
-
-import logging
 import sys
 import os
 
@@ -59,10 +46,10 @@ class File2UDF():
                 pass
 
     def get_result_file(self, result_file):
-        if os.path.isfile(result_file):
+        if result_file and os.path.isfile(result_file):
             self.result_file = result_file
         else:
-            qubit_files = filter(lambda a: a.name == "Qubit Result File" , self.all_artifacts)
+            qubit_files = filter(lambda a: a.name in ["Qubit Result File", "Quantit Result File"], self.all_artifacts)
             if len(qubit_files)>1:
                 sys.exit('more than one Qubit Result File')
             else:
@@ -115,8 +102,6 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-    if not args.result_file:
-        sys.exit('file missing!')
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
