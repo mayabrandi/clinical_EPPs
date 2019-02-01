@@ -27,10 +27,9 @@ NovaSeq = {      'WF' : 'Dev2 Nova Seq',
                 }
 
 skip_norm = {   'WF' : 'CG002 Microbial WGS',
-                'Stage' : 'CG002 - Sort HiSeq X Samples (HiSeq X)',
+                'Stage' : 'CG002 - Sort HiSeq Samples',
                 'UDF' : "Skip Normalization"
                 }
-
 
 availableStages = [ HiSeq2500, HiSeqX, skip_norm, NovaSeq]
 # Add more stages by adding to this list.
