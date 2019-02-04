@@ -63,13 +63,20 @@ class PassSamples():
         self.samples = list(set(self.samples))
 
     def get_artifacts(self):
+        missing_cust = []
         for sample in self.samples:
-            if sample.udf['customer'] == 'cust001':
+            cust = sample.udf.get('customer')
+            if not cust:
+                missing_cust.append(sample.id)
+                continue
+            elif cust == 'cust001':
                 ## this is a RML - get pools from sort step
                 self._get_pools_from_sort(sample)
             else:
                 ## this is a pool (or a sample) and we want to pass its samples to next step
                 self._get_individual_artifacts(sample)
+        if missing_cust:
+            sys.exit( 'Could not queue samples to sequence aggregation because the following samples are missing customer udfs: '+', '.join(missing_cust))
         self._make_unique_pools()
         self.send_to_next_step += self.uniq_artifacts.values()
         self.send_to_next_step += self.uniqe_RML_arts.values()
@@ -149,9 +156,9 @@ def main(lims, args):
     PS.remove_arts()
     PS.rout()
 
-    abstract = 'Probably no errors. Maybe passed '+str(len(PS.send_to_next_step))+' arts to next step.'
+    abstract = 'Passed '+str(len(PS.send_to_next_step))+' arts to next step.'
     if PS.remove_from_WF:
-        abstract += ' Probably removed ' + str(len(PS.remove_from_WF))+ ' artifacts from the wf.'
+        abstract += ' Removed ' + str(len(PS.remove_from_WF))+ ' artifacts from the wf.'
     print >> sys.stdout,abstract ## How do "flush this message in a correct way?"
 
 if __name__ == "__main__":
