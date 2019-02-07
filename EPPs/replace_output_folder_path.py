@@ -24,8 +24,6 @@ class ReplacePath():
         self.fail = ''
 
     def replace(self):
-        self.process.udf['Output Folder'] = ''
-        self.process.put()
         current_path = self.process.udf.get('Output Folder')
         if current_path:
             replace_path = '\\\\130.237.80.51\\Runs' + current_path.split('Runs')[1]
