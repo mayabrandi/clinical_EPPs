@@ -65,7 +65,7 @@ class DenaturateXP():
         Flowcell type is fetched from any input artifact 'Flowcell Type' udf. 
         The inarts will allways have this udf."""
 
-        flowcell_type = process.all_inputs()[0].udf.get('Flowcell Type')
+        flowcell_type = self.process.all_inputs()[0].udf.get('Flowcell Type')
 
         for key, val in self.process_settings[flowcell_type].items():
             self.process.udf[key] = val

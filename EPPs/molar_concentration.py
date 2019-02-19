@@ -51,9 +51,7 @@ class MolarConc():
                 factor = 1e6 / (328.3 * 2 * float(art.udf[self.size_udf]))
                 cons_nM = art.udf['Concentration'] * factor
                 art.udf['Concentration (nM)'] = cons_nM
-                if cons_nM > 2:
-                    art.qc_flag = "PASSED"
-                else:
+                if cons_nM <= 2:
                     art.qc_flag = "FAILED"
                 art.put()
                 self.passed_arts.append(art)

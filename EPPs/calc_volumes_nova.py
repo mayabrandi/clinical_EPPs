@@ -21,11 +21,12 @@ class NovaSeqSampleVolumes():
         self.minimum_per_sample_volume = None 
         self.min_sample = None
         self.bulk_pool_vol = None
+        self.adjusted_bulk_pool_vol = None
         self.final_conc = None
         self.total_sample_vol = None
         self.RSB_vol = None
         self.nr_samples = None
-        self.average_reads = None
+        self.total_reads = None
         self.artifacts = []
         self.missing_samp_udf = False
         self.run_mode_dict =  {'NovaSeq Standard' : {'S1': 100, 'S2': 150,'S4': 310},
@@ -68,11 +69,11 @@ class NovaSeqSampleVolumes():
         smallest 'Per Sample Volume (ul)')"""
 
         for art in self.artifacts:
-            fraction_of_pool = float(art.udf.get('Reads to sequence (M)', 0))/self.average_reads
+            fraction_of_pool = float(art.udf.get('Reads to sequence (M)', 0))/float(self.average_reads)
             if not art.udf.get('Concentration (nM)'):
                 self.warning.append('Concentration (nM) udf seems to be None or 0 for some smaples.')
                 continue
-            sample_vol = fraction_of_pool*(((self.final_conc * (5/1000.0) ) / art.udf['Concentration (nM)'] ) * self.bulk_pool_vol ) / self.nr_samples
+            sample_vol = fraction_of_pool*(((self.final_conc * (5/1000.0) ) / float(art.udf['Concentration (nM)']) ) * self.bulk_pool_vol ) / self.nr_samples
             art.udf['Per Sample Volume (ul)'] = sample_vol
             art.put()
 
@@ -94,19 +95,18 @@ class NovaSeqSampleVolumes():
         for art in self.artifacts:
             art.udf['Adjusted Per Sample Volume (ul)'] = art.udf.get('Per Sample Volume (ul)',0)*ratio
             art.put()
+        self.adjusted_bulk_pool_vol = self.bulk_pool_vol*ratio
 
     def calculate_RSB_volume(self):
         """Calculate RSB volume based on the total sample volume in the pool"""
         
         self.total_sample_vol = sum([art.udf['Adjusted Per Sample Volume (ul)'] for art in self.artifacts])
-        if self.total_sample_vol >= self.bulk_pool_vol:
-            self.RSB_vol = 0
-        else:
-            self.RSB_vol = self.bulk_pool_vol - self.total_sample_vol
+        self.RSB_vol = self.adjusted_bulk_pool_vol - self.total_sample_vol
 
     def set_pool_info(self):
         """Set process level UDFs"""
 
+        self.process.udf['Adjusted Bulk Pool Volume (ul)'] = self.adjusted_bulk_pool_vol
         self.process.udf['Bulk Pool Volume (ul)'] = self.bulk_pool_vol
         self.process.udf['Total Sample Volume (ul)'] = round(self.total_sample_vol, 2)
         self.process.udf['RSB Volume (ul)'] = round(self.RSB_vol, 2)
