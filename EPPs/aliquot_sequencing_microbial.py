@@ -11,7 +11,6 @@ from genologics.config import BASEURI,USERNAME,PASSWORD
 from genologics.entities import Process
 from genologics.epp import EppLogger
 
-import logging
 import sys
 
 class BufferVolume():
@@ -21,7 +20,7 @@ class BufferVolume():
         self.passed_arts = 0
         self.failed_arts = 0
         self.missing_udfs = False
-        self.high_total_volume = []
+        self.high_volume = []
         self.final_concentration = float(process.udf['Final Concentration (nM)'])
 
     def get_artifacts(self):
@@ -41,19 +40,28 @@ class BufferVolume():
     def apply_calculations(self):
         for artifact in self.artifacts:
             concentration = self.check_udfs(artifact)
-            samp_vol = 5
-            artifact.udf['Sample Volume (ul)'] = samp_vol
             if concentration and (concentration <= self.final_concentration):
                 artifact.udf['Volume Buffer (ul)'] = 0
+                artifact.udf['Sample Volume (ul)'] = 10
                 self.passed_arts +=1
             elif concentration and (concentration > self.final_concentration):
+                samp_vol = 5
                 total_volume = (concentration*samp_vol)/self.final_concentration
                 eb_volume = total_volume - samp_vol
-                artifact.udf['Volume Buffer (ul)'] = eb_volume
-                self.passed_arts +=1
+                if eb_volume > 150:
+                    self.high_volume.append(artifact.samples[0].name) #samples will always be a list of only one value
+                    artifact.qc_flag = False
+                elif eb_volume < 2:
+                    eb_volume = 2.0
+                    samp_vol = eb_volume/((concentration/self.final_concentration)-1)
+                    total_volume = eb_volume + samp_vol
+                    if samp_vol > 20:
+                        self.high_volume.append(artifact.samples[0].name)
+                        artifact.qc_flag = False
+
                 artifact.udf['Total Volume (uL)'] = total_volume
-                if eb_volume > 180:
-                    self.high_total_volume.append(artifact.samples[0].name) #samples will always be a list of only one value
+                artifact.udf['Volume Buffer (ul)'] = eb_volume
+                artifact.udf['Sample Volume (ul)'] = samp_vol  
             else:
                 self.failed_arts +=1
             artifact.put()
@@ -74,8 +82,8 @@ def main(lims,args):
         sys.exit('Could not apply calculations for all samples. "Final Concentration (nM)" and "Concentration (nM)" must be set.')
     elif BV.failed_arts:
         sys.exit(abstract)
-    elif BV.high_total_volume:
-        abstract = "Samples: " + ', '.join(BV.high_total_volume) + ", had over 180 ul total volume. " + abstract
+    elif BV.high_volume:
+        abstract = "Samples: " + ', '.join(BV.high_volume) + ", had over 180 ul EB volume. Or over 20 ul Sample Volume " + abstract
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
@@ -85,8 +93,6 @@ if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('--pid',
                         help='Lims id for current Process')
-    parser.add_argument('--log',
-                        help='Log file for runtime info and errors.')
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
