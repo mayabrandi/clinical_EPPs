@@ -34,14 +34,11 @@ class CalculationsTwist:
         for art in self.artifacts:
             amount = art.udf.get('Amount (ng)')
             concentration = art.udf.get('Concentration')
-            if None in [amount, concentration]:
+            amount_needed = art.udf.get('Amount needed (ng)')
+            if None in [amount, concentration, amount_needed]:
                 self.failed +=1
-                self.missing_udfs += ['Amount (ng)', 'Concentration']
+                self.missing_udfs += ['Amount (ng)', 'Concentration', 'Amount needed (ng)']
                 continue
-            elif amount >= 250:
-                amount_needed = 250
-            else:
-                amount_needed = amount
             art.udf['Sample Volume (ul)'] = amount_needed/float(concentration)
             art.udf['Volume H2O (ul)'] = 30 - art.udf['Sample Volume (ul)']
             art.put()
