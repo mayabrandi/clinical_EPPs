@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/glsai/miniconda2/envs/epp_master/bin/python
 from __future__ import division
 from argparse import ArgumentParser
 
@@ -10,56 +10,53 @@ from genologics.epp import EppLogger
 
 import logging
 import sys
+import numpy as np
 
-DESC = """epp script to calculate EB Volume from Concentration udf
+DESC = """epp script to calculate Average Size (bp) from a subset of the samples actual Sizes. 
+
+Average Size (bp) is then applyed to all samples
 
 Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 """
 
 
-class EBVol():
+class AverageSizeBP():
 
     def __init__(self, process):
         self.process = process
         self.artifacts = []
-        self.passed_arts = []
-        self.failed_arts = []
+        self.size_list = []
+        self.average_size = None
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
-        self.artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
+        self.artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
 
-    def apply_calculations(self):
+    def make_average_size(self):
         for art in self.artifacts:
-            udfs_ok = True
             try:
-                int(art.udf['Concentration'])
+                self.size_list.append(int(art.udf['Size (bp)']))
             except:
-                udfs_ok = False
-            if udfs_ok:
-                art.udf['Sample Volume (ul)'] = 750/art.udf['Concentration']
-                art.put()
-                self.passed_arts.append(art)
-            else:
-                self.failed_arts.append(art)            
+                pass
+        if self.size_list:  
+            self.average_size = np.mean(self.size_list)
+        else:
+            sys.exit("Set 'Size (bp)' for at least one sample")
 
+    def set_average_size(self):
+        if self.average_size:
+            for art in self.artifacts:
+                art.udf['Average Size (bp)'] = self.average_size
+                art.put()
+
+    
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    EBV = EBVol(process)
-    EBV.get_artifacts()
-    EBV.apply_calculations()
-
-
-    d = {'ca': len(EBV.passed_arts),
-         'ia': len(EBV.failed_arts)}
-
-    abstract = ("Updated {ca} artifact(s), skipped {ia} artifact(s) with "
-                "wrong and/or blank values for some udfs.").format(**d)
-
-    if EBV.failed_arts:
-        sys.exit(abstract)
-    else:
-        print >> sys.stderr, abstract
+    ASBP = AverageSizeBP(process)
+    ASBP.get_artifacts()
+    ASBP.make_average_size()
+    ASBP.set_average_size()
+    print >> sys.stderr, "'Average Size (bp)' has ben set."
 
 
 if __name__ == "__main__":

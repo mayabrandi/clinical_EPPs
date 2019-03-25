@@ -37,7 +37,7 @@ class EBVolume():
             self.missing_udfs = True
         return amount_needed, concentration
 
-    def apply_calculations(self):
+    def apply_calculations(self, udf):
         for artifact in self.artifacts:
             amount_needed, concentration = self.check_udfs(artifact)  
             if amount_needed and concentration:
@@ -45,11 +45,11 @@ class EBVolume():
                 artifact.udf['Sample Volume (ul)'] = samp_vol
       
                 if amount_needed == 3000:
-                    artifact.udf['EB Volume (ul)'] = 130 - samp_vol
+                    artifact.udf[udf] = 130 - samp_vol
                 elif amount_needed == 1100:
-                    artifact.udf['EB Volume (ul)'] = 55 - samp_vol
+                    artifact.udf[udf] = 55 - samp_vol
                 elif amount_needed == 200:
-                    artifact.udf['EB Volume (ul)'] = 50 - samp_vol
+                    artifact.udf[udf] = 25 - samp_vol
                 else:
                     sys.exit('"Amount needed (ng)" must have one of the values: 3000, 1100 or 200.')
                 artifact.put()
@@ -61,7 +61,7 @@ def main(lims,args):
     process = Process(lims,id = args.pid)
     EBV = EBVolume(process)
     EBV.get_artifacts()
-    EBV.apply_calculations()
+    EBV.apply_calculations(args.udf)
 
     d = {'ca': EBV.passed_arts,
          'ia': EBV.failed_arts}
@@ -81,6 +81,8 @@ if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('--pid',
                         help='Lims id for current Process')
+    parser.add_argument('--udf',
+                        help='Buffer UDF')
     parser.add_argument('--log',
                         help='Log file for runtime info and errors.')
     args = parser.parse_args()

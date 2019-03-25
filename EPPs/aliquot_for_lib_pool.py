@@ -29,7 +29,7 @@ class Pool2Sequence():
         self.nr_samps = None
         self.average_reads = None
         self.low_sample_vol = False
-        self.final_concentration_in_pool = 2 
+        self.final_concentration_in_pool = None
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
@@ -39,14 +39,15 @@ class Pool2Sequence():
         try:
             self.total_vol = float(self.process.udf['Total Volume (ul)'])
             self.reads_expected = self.process.udf['Number of Reads Expected']
+            self.final_concentration_in_pool = float(self.process.udf['Final Concentration (nM)'])
         except:
             sys.exit('Seems like some process udfs have not been filed in!')
 
     def calculate_stuff(self):
         total_reads = 0
-        for art in self.artifacts:  
+        for art in self.artifacts:
             try:
-                total_reads +=  int(art.udf['Reads to sequence (M)'])
+                total_reads +=  float(art.udf['Reads to sequence (M)'])
             except:
                 sys.exit("'Reads to sequence (M)' - missing for some samples!")
 
@@ -69,7 +70,7 @@ class Pool2Sequence():
                 if art.udf['Sample Volume (ul)'] < 1:
                     self.low_sample_vol = True
             except:
-                self.failed_arts.append(art)  
+                self.failed_arts.append(art)
         try:
             self.process.udf['EB Volume (ul)'] = str(round(self.total_vol - total_sample_vol, 2))
             self.process.udf['Total nr of Reads Requested (sum of reads to sequence)'] = str(total_reads)
@@ -91,8 +92,9 @@ def main(lims, args):
                 "wrong and/or blank values for some udfs. ").format(**d)
     if P2S.low_sample_vol:
         abstract += "WARNING: LOW SAMPLE VOLUME(S)!"
-
-    print >> sys.stderr, abstract 
+        sys.exit(abstract)
+    else:
+        print >> sys.stderr, abstract
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)

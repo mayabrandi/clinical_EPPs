@@ -171,9 +171,7 @@ class BCLconv():
     def get_demux_data(self):
         """Geting the demultiplex statistics from the demultiplex database csdb."""
         try:
-            f = Flowcell.query.filter_by(flowcellname = self.flowcellname).first()
-            d = Demux.query.filter_by(flowcell_id = f.flowcell_id).first()
-            self.demux_data = Unaligned.query.filter_by(demux_id = d.demux_id).all()
+            self.demux_data = Unaligned.query.join(Demux).join(Flowcell).filter(Flowcell.flowcellname == self.flowcellname).all()
         except:
             sys.exit('Error getting data from the demultiplexing database. Maybe the flowcell id is wrong: '+ self.flowcellname)
 
