@@ -29,41 +29,38 @@ class BufferVolume():
 
     def check_udfs(self, artifact):
         try:
-            #amount_needed = float(artifact.udf['Amount needed (ng)'])
             concentration = float(artifact.udf['Concentration (nM)'])
         except:
-            #amount_needed = None
             self.missing_udfs = True
-            concentration = None 
+            concentration = None
         return concentration
 
     def apply_calculations(self):
         for artifact in self.artifacts:
             concentration = self.check_udfs(artifact)
-            if concentration and (concentration <= self.final_concentration):
-                artifact.udf['Volume Buffer (ul)'] = 0
-                artifact.udf['Sample Volume (ul)'] = 10
-                self.passed_arts +=1
-            elif concentration and (concentration > self.final_concentration):
+            if not concentration:
+                self.failed_arts +=1
+                continue
+            artifact.qc_flag = 'PASSED'
+            if concentration <= self.final_concentration:
+                samp_vol = 10
+                buffer_volume = 0
+            else:
                 samp_vol = 5
-                total_volume = (concentration*samp_vol)/self.final_concentration
-                eb_volume = total_volume - samp_vol
-                if eb_volume > 150:
+                buffer_volume = ((concentration*samp_vol)/self.final_concentration) - samp_vol
+                if buffer_volume > 150:
                     self.high_volume.append(artifact.samples[0].name) #samples will always be a list of only one value
-                    artifact.qc_flag = False
-                elif eb_volume < 2:
-                    eb_volume = 2.0
-                    samp_vol = eb_volume/((concentration/self.final_concentration)-1)
-                    total_volume = eb_volume + samp_vol
+                    artifact.qc_flag = 'FAILED'
+                elif buffer_volume < 2:
+                    buffer_volume = 2.0
+                    samp_vol = buffer_volume/((concentration/self.final_concentration)-1)
                     if samp_vol > 20:
                         self.high_volume.append(artifact.samples[0].name)
-                        artifact.qc_flag = False
-
-                artifact.udf['Total Volume (uL)'] = total_volume
-                artifact.udf['Volume Buffer (ul)'] = eb_volume
-                artifact.udf['Sample Volume (ul)'] = samp_vol  
-            else:
-                self.failed_arts +=1
+                        artifact.qc_flag = 'FAILED'
+            self.passed_arts +=1
+            artifact.udf['Total Volume (uL)'] = buffer_volume + samp_vol
+            artifact.udf['Volume Buffer (ul)'] = buffer_volume
+            artifact.udf['Sample Volume (ul)'] = samp_vol
             artifact.put()
 
 def main(lims,args):
@@ -83,7 +80,7 @@ def main(lims,args):
     elif BV.failed_arts:
         sys.exit(abstract)
     elif BV.high_volume:
-        abstract = "Samples: " + ', '.join(BV.high_volume) + ", had over 180 ul EB volume. Or over 20 ul Sample Volume " + abstract
+        abstract = abstract + " Samples: " + ', '.join(BV.high_volume) + ", got high Buffer or Sample Volume."
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
@@ -99,3 +96,4 @@ if __name__ == "__main__":
     lims.check_version()
 
     main(lims, args)
+
