@@ -41,7 +41,7 @@ class SumReadsRML():
         pool_representative = pool.samples[0]
         #all outputs from sequencing where pool_representative was part
         out_arts = lims.get_artifacts(samplelimsid = pool_representative.id,
-                   process_type = ["CG002 - Illumina Sequencing (Illumina SBS)",'CG002 - Illumina Sequencing (HiSeq X)'])
+                   process_type = ["CG002 - Illumina Sequencing (Illumina SBS)",'CG002 - Illumina Sequencing (HiSeq X)', 'CG002 Illumina SBS (HiSeq 2500)'])
         out_arts = list(set(out_arts))
 
         #all inputs to all sequecing processes where pool_representative was part
@@ -67,13 +67,14 @@ class SumReadsRML():
         pool_name = pool_replicates[0].name
         nr_lanes = 0
         for pool in pool_replicates:
-            if pool.qc_flag == 'PASSED' and 'Clusters PF R1' in pool.udf:
+            if pool.qc_flag == 'PASSED' and 'Clusters PF R1' in pool.udf and pool.samples[0].udf.get('customer') == 'cust001':
                 total_reads += float(pool.udf.get('Clusters PF R1'))
                 nr_lanes +=1
         M_reads = total_reads/1000000
         for s in pool_replicates[0].samples:
-            s.udf['Total Reads (M)'] =  M_reads
-            s.put()
+            if s.udf.get('customer') == 'cust001':
+                s.udf['Total Reads (M)'] =  M_reads
+                s.put()
         return nr_lanes
 
 
@@ -147,6 +148,7 @@ def main(lims, args):
         for k, v in SRRML.passed_pool_replicates.items():
             abstract += str(k) +' from '+str(v)+' lanes, '
 
+
     print >> sys.stderr, abstract
 
 if __name__ == "__main__":
@@ -160,4 +162,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
-    main(lims, args)
+    main(lims, args) 
