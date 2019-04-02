@@ -112,7 +112,6 @@ def main(lims, args):
         SRRML.sum_reads()
         abstract += "Reads summed for: "
         for k, v in SRRML.passed_pools.items():
-            print 'jek'
             abstract += str(k) +' from '+str(v)+' lanes, '
 
 
