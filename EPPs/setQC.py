@@ -22,6 +22,7 @@ class SetQC:
         self.missing_udf = 0
         self.qc_fail = 0
         self.qc_pass = 0
+        self.unknown = 0
 
     def get_tresholds(self, condition_strings):
         for condition_string in condition_strings:
@@ -41,7 +42,8 @@ class SetQC:
                 udf = condition.get('udf')
                 if art.udf.get(udf) is None:
                     self.missing_udf += 1
-                    continue
+                    qc_flag = 'UNKNOWN'
+                    break
 
                 udf_value = art.udf.get(udf)
                 criteria = condition.get('criteria')
@@ -65,12 +67,20 @@ class SetQC:
                 elif criteria == '!=':
                     if udf_value != treshold:
                         qc_flag = "FAILED"
+                elif criteria == 'NTC>':
+                    name = art.samples[0].name
+                    if len(name)>2 and name[0:3]=='NTC':
+                        if udf_value > treshold:
+                            qc_flag = "FAILED"
+                        else:
+                            qc_flag = "PASSED"
+                        break
 
             if qc_flag=='FAILED':
                 self.qc_fail+=1
-            else:
+            elif qc_flag=='PASSED':
                 self.qc_pass+=1
-
+        
             art.qc_flag = qc_flag
             art.put()
 
@@ -89,7 +99,7 @@ def main(lims,args):
     if C2QC.missing_udf:
         abstract += 'Udfs missing for some samples.'
         
-    if C2QC.qc_fail:
+    if C2QC.qc_fail or C2QC.missing_udf:
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
