@@ -28,7 +28,7 @@ class BufferVolume():
     def apply_calculations(self):
         for artifact in self.artifacts:
             concentration = artifact.udf.get('Concentration')
-            if not concentration:
+            if concentration is None:
                 self.missing_udfs = True
                 self.failed_arts +=1
                 continue
