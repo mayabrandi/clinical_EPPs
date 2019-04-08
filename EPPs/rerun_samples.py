@@ -32,7 +32,6 @@ class PassSamples():
         self.process = process
         self.all_arts = self._get_all_arts()
         self.rerun_arts = {}
-        self.arts_to_remove = []
         self.current_WF = self._get_current_WF()
         self.rerun_steps =  ['CG002 - Sort HiSeq X Samples (HiSeq X)', 'CG002 - Sort HiSeq Samples']
         self.rerun_stage = self._get_next_step_stage_URI(self.rerun_steps)
@@ -40,6 +39,7 @@ class PassSamples():
         self.xml = []
 
     def _get_all_arts(self):
+        """Get output analytes of the process"""
         all_arts=[]
         for art in self.process.all_outputs(unique=True):
             if art.type == 'Analyte':
@@ -47,6 +47,7 @@ class PassSamples():
         return all_arts
 
     def get_artifacts(self):
+        """Get samples/pools to rerun"""
         for art in self.all_arts:
             try:
                 rerun = art.udf['Rerun']
@@ -56,6 +57,7 @@ class PassSamples():
                 self._get_rerun_arts(art)
 
     def _get_rerun_arts(self, art):
+        """For each sample/pool to rerun, find in history the artifact to rerun"""
         all_arts_in_sort=[]
         for sample in art.samples:
             sample_id = sample.id
@@ -76,23 +78,13 @@ class PassSamples():
                 self.rerun_arts[art_sample_key] = art
 
     def check_same_sample_in_many_rerun_pools(self):
+        """Check that the same sample does not occure in more than one of the pools to rerun."""
         all_samples = []
         for s in self.rerun_arts.keys():
             all_samples += s.split('_')
         for s in set(all_samples):
             all_samples.remove(s)
         self.warning_duplicate_samples = list(set(all_samples))
-
-    def get_arts_to_remove(self):
-        samples = []
-        for key, art in self.rerun_arts.items():
-            samples+=[s.id for s in art.samples]
-        samples=list(set(samples))
-        for art in self.process.all_inputs():
-            for samp in art.samples:
-                if samp.id in samples:
-                    self.arts_to_remove.append(art)
-        self.arts_to_remove=list(set(self.arts_to_remove))
 
     def _get_current_WF(self):
         art = self.process.all_inputs()[0]
@@ -120,12 +112,6 @@ class PassSamples():
         self.xml.append( '<artifact uri="' + art_uri + '"/>' )
         self.xml.append( '</assign>' )
 
-    def remove_arts(self):
-        for art in self.arts_to_remove:
-            self.xml.append( '<unassign workflow-uri="' + self.current_WF.uri + '">' )
-            self.xml.append( '<artifact uri="' + art.uri + '"/>' )
-            self.xml.append( '</unassign>' )
-
     def rout(self):
         routeXML = "".join( self.xml )
         if len(routeXML) > 0:
@@ -139,14 +125,10 @@ def main(lims, args):
     PS = PassSamples(process)
     PS.get_artifacts()
     PS.check_same_sample_in_many_rerun_pools()
-    PS.get_arts_to_remove()
     PS.assign_arts()
-    PS.remove_arts()
     PS.rout()
 
     abstract = ''
-    if PS.arts_to_remove:
-        abstract += ' Removed ' + str(len(PS.arts_to_remove))+ ' artifacts from the wf.'
     if PS.rerun_arts:
         abstract += str(len(PS.rerun_arts)) + ' artifacts were sent for rerun: '+', '.join(PS.rerun_arts.keys())+'.'
     if PS.warning_duplicate_samples:
