@@ -18,7 +18,7 @@ class NovaSeqSampleVolumes():
     def __init__(self, process):
         self.warning = []
         self.process = process
-        self.minimum_per_sample_volume = None 
+        self.minimum_per_sample_volume = None
         self.min_sample = None
         self.bulk_pool_vol = None
         self.adjusted_bulk_pool_vol = None
@@ -54,14 +54,13 @@ class NovaSeqSampleVolumes():
             self.bulk_pool_vol = self.run_mode_dict[self.protocol_type][self.flowcell_type] + 30
         elif self.protocol_type == 'NovaSeq Xp':
             nr_lanes = 4 if self.flowcell_type == 'S4' else 2
-            self.bulk_pool_vol = nr_lanes * self.run_mode_dict[self.protocol_type][self.flowcell_type] + 30            
+            self.bulk_pool_vol = nr_lanes * self.run_mode_dict[self.protocol_type][self.flowcell_type] + 30
 
     def calculate_average_reads_to_sequence(self):
         all_reads = [float(art.udf.get('Reads to sequence (M)', 0)) for art in self.artifacts]
         if 0 in all_reads:
             self.warning.append('Reads to sequence seems to be None or 0 for some samples!')
-        total_reads =  sum(all_reads)
-        self.average_reads = total_reads/self.nr_samples
+        self.total_reads =  sum(all_reads)
 
 
     def calculate_per_sample_volume(self):
@@ -69,11 +68,11 @@ class NovaSeqSampleVolumes():
         smallest 'Per Sample Volume (ul)')"""
 
         for art in self.artifacts:
-            fraction_of_pool = float(art.udf.get('Reads to sequence (M)', 0))/float(self.average_reads)
+            fraction_of_pool = float(art.udf.get('Reads to sequence (M)', 0))/float(self.total_reads)
             if not art.udf.get('Concentration (nM)'):
                 self.warning.append('Concentration (nM) udf seems to be None or 0 for some smaples.')
                 continue
-            sample_vol = fraction_of_pool*(((self.final_conc * (5/1000.0) ) / float(art.udf['Concentration (nM)']) ) * self.bulk_pool_vol ) / self.nr_samples
+            sample_vol = fraction_of_pool*(((self.final_conc * (5/1000.0) ) / float(art.udf['Concentration (nM)']) ) * self.bulk_pool_vol )
             art.udf['Per Sample Volume (ul)'] = sample_vol
             art.put()
 
@@ -99,7 +98,7 @@ class NovaSeqSampleVolumes():
 
     def calculate_RSB_volume(self):
         """Calculate RSB volume based on the total sample volume in the pool"""
-        
+
         self.total_sample_vol = sum([art.udf['Adjusted Per Sample Volume (ul)'] for art in self.artifacts])
         self.RSB_vol = self.adjusted_bulk_pool_vol - self.total_sample_vol
 
@@ -112,7 +111,7 @@ class NovaSeqSampleVolumes():
         self.process.udf['RSB Volume (ul)'] = round(self.RSB_vol, 2)
         self.process.put()
 
-        
+
 
 
 
@@ -127,7 +126,7 @@ def main(lims, args):
     NSSV.calculate_adjusted_per_sample_volume()
     NSSV.calculate_RSB_volume()
     NSSV.set_pool_info()
-    
+
 
     if NSSV.warning:
         unique_warnings = list(set(NSSV.warning))
@@ -144,3 +143,4 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
+
