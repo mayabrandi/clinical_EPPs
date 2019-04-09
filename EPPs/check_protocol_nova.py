@@ -21,14 +21,14 @@ class CheckNovaSettings():
     def __init__(self, process):
         self.process = process
         self.artifacts = []
-        self.standard = 'Make Bulk Pool for NovaSeq Standard (NovaSeq 6000 v2.0)'
-        self.xp = 'Make Bulk Pool for NovaSeq Xp (NovaSeq 6000 v2.0)'
+        self.standard = 'STANDARD Make Pool and Denature (Nova Seq)'
+        self.xp = 'Xp Make Pool (Nova Seq)'
         self.parent_process = process.all_inputs()[0].parent_process
-        self.flowcell_type = self.parent_process.udf.get('Flowcell Type') 
+        self.flowcell_type = self.parent_process.udf.get('Flowcell Type')
         self.protocol_type = self.parent_process.udf.get('Protocol type')
         self.denaturation_volumes =  {'S1': {'Volume of Pool to Denature (ul)': 100.0,
                                                     'NaOH Volume (ul)' : 25.0,
-                                                    'Tris-HCl Volume (ul)': 25.0} , 
+                                                    'Tris-HCl Volume (ul)': 25.0} ,
                                       'S2': {'Volume of Pool to Denature (ul)': 150.0,
                                                     'NaOH Volume (ul)' : 37.5,
                                                     'Tris-HCl Volume (ul)': 37.5},
@@ -50,13 +50,13 @@ class CheckNovaSettings():
             sys.exit('Wrong protocol type')
 
     def set_volumes_for_standard(self):
-        """Sets the denatudation volumes for Standard samples."""        
+        """Sets the denatudation volumes for Standard samples."""
 
         if self.protocol_type == 'NovaSeq Standard':
             for key, val in self.denaturation_volumes[self.flowcell_type].items():
                 self.process.udf[key] = val
             self.process.put()
-      
+
     def set_udfs(self):
         """Sets 'Flowcell Type' and 'Loading Workflow Type' on the artifacts. Needed in next step."""
 
@@ -83,3 +83,4 @@ if __name__ == "__main__":
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
     main(lims, args)
+
