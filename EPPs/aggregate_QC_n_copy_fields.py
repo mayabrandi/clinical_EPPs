@@ -52,7 +52,7 @@ class CopyUDF():
                         qc_flag = qc_flag_update
                     for udf in self.source_step_types[type]:
                         value = output.udf.get(udf)
-                        if value:
+                        if value or value==0:
                             try:
                                 art.udf[udf] = float(value)
                             except:
