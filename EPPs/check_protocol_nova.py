@@ -28,13 +28,16 @@ class CheckNovaSettings():
         self.protocol_type = self.parent_process.udf.get('Protocol type')
         self.denaturation_volumes =  {'S1': {'Volume of Pool to Denature (ul)': 100.0,
                                                     'NaOH Volume (ul)' : 25.0,
-                                                    'Tris-HCl Volume (ul)': 25.0} ,
+                                                    'Tris-HCl Volume (ul)': 25.0,
+                                                    'PhiX Volume (ul)': 0.6} ,
                                       'S2': {'Volume of Pool to Denature (ul)': 150.0,
-                                                    'NaOH Volume (ul)' : 37.5,
-                                                    'Tris-HCl Volume (ul)': 37.5},
+                                                    'NaOH Volume (ul)' : 37,
+                                                    'Tris-HCl Volume (ul)': 38,
+                                                    'PhiX Volume (ul)': 0.9},
                                       'S4': {'Volume of Pool to Denature (ul)': 310,
-                                                    'NaOH Volume (ul)' : 77.5,
-                                                    'Tris-HCl Volume (ul)': 77.5}}
+                                                    'NaOH Volume (ul)' : 77,
+                                                    'Tris-HCl Volume (ul)': 78,
+                                                    'PhiX Volume (ul)': 1.9}}
 
     def get_artifacts(self):
         """Get output artifacts"""
