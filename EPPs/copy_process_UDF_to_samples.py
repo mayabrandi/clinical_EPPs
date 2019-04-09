@@ -21,9 +21,9 @@ class CopyUdfs():
         self.samples = []
 
     def get_samples(self):
-        all_artifacts = self.process.all_outputs(unique=True)
+        all_artifacts = self.process.all_inputs()
         for art in all_artifacts: self.samples += art.samples
-        self.samples = list(set(samples))
+        self.samples = list(set(self.samples))
 
     def set_date(self):
         for sample in self.samples:
