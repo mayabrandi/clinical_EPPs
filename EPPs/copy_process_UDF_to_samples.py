@@ -21,7 +21,7 @@ class CopyUDF():
         self.samples = []
 
     def _get_date(self):
-        date = process.udf.get('Date delivered')
+        date = self.process.udf.get('Date delivered')
         if not date:
             sys.exit('Date delivered is not set.')
         return date
@@ -37,7 +37,7 @@ class CopyUDF():
             sample.udf['Delivered'] = self.date
             sample.put()
 
-def main(lims, args):
+def main(args):
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
 
