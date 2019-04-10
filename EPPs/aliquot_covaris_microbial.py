@@ -19,7 +19,7 @@ class BufferVolume():
         self.failed_arts = 0
         self.missing_udfs = False
         self.buffer_out_of_range = []
-        self.final_concentration = float(process.udf['Final Concentration (ng/ul)'])
+        self.final_concentration = 2
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
@@ -32,18 +32,26 @@ class BufferVolume():
                 self.missing_udfs = True
                 self.failed_arts +=1
                 continue
-            artifact.qc_flag = 'PASSED'
-            if concentration <= self.final_concentration:
+            if artifact.samples[0].name[0:6] == 'NTC-CG':
+                buffer_volume = 15
+                samp_vol = 0
+            elif concentration < 2:
                 samp_vol = 15
                 buffer_volume = 0
-            else:
+                total_volume = buffer_volume + samp_vol
+            elif 2 <= concentration <= 7.5:
+                total_volume = 15
+                samp_vol = float(self.final_concentration * total_volume )/concentration
+                buffer_volume = total_volume - samp_vol
+                if buffer_volume < 2:
+                    samp_vol = 15
+                    buffer_volume = 0
+            elif 7.5 < concentration <= 60:
                 samp_vol = 4
-                buffer_volume = float(concentration*samp_vol)/self.final_concentration - samp_vol
-                if not 2 < buffer_volume < 180:
-                    self.buffer_out_of_range.append(artifact.samples[0].name)
-                    artifact.qc_flag = 'FAILED'
+                total_volume = float(concentration * samp_vol)/self.final_concentration
+                buffer_volume = total_volume - samp_vol
             self.passed_arts +=1
-            artifact.udf['Total Volume (uL)'] = buffer_volume + samp_vol
+            artifact.udf['Total Volume (ul)'] = buffer_volume + samp_vol
             artifact.udf['Volume Buffer (ul)'] = buffer_volume
             artifact.udf['Sample Volume (ul)'] = samp_vol
             artifact.put()
@@ -61,7 +69,7 @@ def main(lims,args):
                 "wrong and/or blank values for some udfs. ").format(**d)
 
     if BV.missing_udfs:
-        sys.exit('Could not apply calculations for all samples. "Final Concentration (ng/ul)" and "Concentration" must be set.')
+        sys.exit('Could not apply calculations for all samples. "Concentration" must be set.')
     elif BV.failed_arts:
         sys.exit(abstract)
     elif BV.buffer_out_of_range:
