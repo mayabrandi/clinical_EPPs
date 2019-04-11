@@ -38,20 +38,23 @@ class DenaturateXP():
                                         'Flowcell Type' : 'S1',
                                         'BP Aliquot Volume (ul)': 18,
                                         'Mastermix per Lane (ul)': 63,
-                                        'NaOH Volume (ul)': 4.5,
-                                        'Tris-HCl Volume (ul)': 4.5},
+                                        'NaOH Volume (ul)': 4,
+                                        'Tris-HCl Volume (ul)': 5,
+                                        'PhiX Volume (ul)' : 0.7},
                                  'S2': {'Loading Workflow Type': 'NovaSeq Xp',
                                         'Flowcell Type' : 'S2',
                                         'BP Aliquot Volume (ul)': 22,
                                         'Mastermix per Lane (ul)': 77,
-                                        'NaOH Volume (ul)': 5.5,
-                                        'Tris-HCl Volume (ul)': 5.5},
+                                        'NaOH Volume (ul)': 5,
+                                        'Tris-HCl Volume (ul)': 6,
+                                        'PhiX Volume (ul)' : 0.8},
                                  'S4': {'Loading Workflow Type': 'NovaSeq Xp',
                                         'Flowcell Type' : 'S4',
                                         'BP Aliquot Volume (ul)': 30,
                                         'Mastermix per Lane (ul)': 105,
-                                        'NaOH Volume (ul)': 7.5,
-                                        'Tris-HCl Volume (ul)': 7.5}}
+                                        'NaOH Volume (ul)': 7,
+                                        'Tris-HCl Volume (ul)': 8,
+                                        'PhiX Volume (ul)' : 1.1}}
     
     def get_artifacts(self):
         """Get output artifacts"""
