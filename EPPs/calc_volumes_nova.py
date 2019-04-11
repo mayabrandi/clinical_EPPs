@@ -49,12 +49,7 @@ class NovaSeqSampleVolumes():
 
     def calculate_bulk_volume(self):
         """Bulk volume is depending on flowcell type and protocol type."""
-
-        if self.protocol_type == 'NovaSeq Standard':
-            self.bulk_pool_vol = self.run_mode_dict[self.protocol_type][self.flowcell_type] + 30
-        elif self.protocol_type == 'NovaSeq Xp':
-            nr_lanes = 4 if self.flowcell_type == 'S4' else 2
-            self.bulk_pool_vol = nr_lanes * self.run_mode_dict[self.protocol_type][self.flowcell_type] + 30            
+        self.bulk_pool_vol = self.run_mode_dict[self.protocol_type][self.flowcell_type] + 30
 
     def calculate_average_reads_to_sequence(self):
         all_reads = [float(art.udf.get('Reads to sequence (M)', 0)) for art in self.artifacts]
