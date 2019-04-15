@@ -51,7 +51,11 @@ class MolarConc():
                 factor = 1e6 / (328.3 * 2 * float(art.udf[self.size_udf]))
                 cons_nM = art.udf['Concentration'] * factor
                 art.udf['Concentration (nM)'] = cons_nM
-                if cons_nM <= 2:
+                sample = art.samples[0]
+                if sample.name[0:3] == 'NTC' and sample.udf['Sequencing Analysis'][0:2] == 'MW':
+                    if cons_nM > 0.1:
+                        art.qc_flag = "FAILED"
+                elif cons_nM <= 2:
                     art.qc_flag = "FAILED"
                 art.put()
                 self.passed_arts.append(art)
