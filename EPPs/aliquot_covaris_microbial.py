@@ -51,7 +51,7 @@ class BufferVolume():
                 total_volume = float(concentration * samp_vol)/self.final_concentration
                 buffer_volume = total_volume - samp_vol
             self.passed_arts +=1
-            artifact.udf['Total Volume (ul)'] = buffer_volume + samp_vol
+            artifact.udf['Total Volume (uL)'] = buffer_volume + samp_vol
             artifact.udf['Volume Buffer (ul)'] = buffer_volume
             artifact.udf['Sample Volume (ul)'] = samp_vol
             artifact.put()
