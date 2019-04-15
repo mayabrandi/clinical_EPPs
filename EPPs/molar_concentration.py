@@ -53,7 +53,7 @@ class MolarConc():
                 art.udf['Concentration (nM)'] = cons_nM
                 sample = art.samples[0]
                 if sample.name[0:3] == 'NTC' and sample.udf['Sequencing Analysis'][0:2] == 'MW':
-                    if cons_nM <= 0.1:
+                    if cons_nM > 0.1:
                         art.qc_flag = "FAILED"
                 elif cons_nM <= 2:
                     art.qc_flag = "FAILED"
