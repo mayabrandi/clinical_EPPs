@@ -78,7 +78,7 @@ if __name__ == "__main__":
                               'for runtime information and problems.'))
     parser.add_argument('-u', dest = 'udfs', nargs='+', 
                         help=(''))
-    parser.add_argument('-q', dest = 'qcstep', 
+    parser.add_argument('-q', dest = 'qcstep', nargs='+', 
                         help=(''))
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
