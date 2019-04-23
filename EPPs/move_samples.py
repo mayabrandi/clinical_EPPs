@@ -21,8 +21,8 @@ HiSeqX = {      'WF' : 'CG003 WGS PCR free',
                 'UDF' : "HiseqX"
                 }
 
-NovaSeq = {      'WF' : 'Dev2 Nova Seq',
-                'Stage' : 'CG001 - Sort Nova Seq Samples',
+NovaSeq = {     'WF' : 'NovaSeq v1',
+                'Stage' : 'Define Run Format and Calculate Volumes (Nova Seq)',
                 'UDF' : "NovaSeq"
                 }
 
