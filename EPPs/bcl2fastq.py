@@ -150,7 +150,7 @@ class BCLconv():
         for input_output in self.process.input_output_maps:
             inpt = input_output[0]
             outpt = input_output[1]
-            if outpt['output-type'] == 'ResultFile':
+            if outpt['output-generation-type'] != 'PerAllInputs':
                 art = outpt['uri']
                 sampname = art.samples[0].id  
                 well = inpt['uri'].location[1][0]
