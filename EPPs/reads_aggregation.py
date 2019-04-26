@@ -63,7 +63,7 @@ class SumReads():
         total_reads = 0.0
         arts = lims.get_artifacts(samplelimsid = sample.id, process_type = PROCESS_TYPES)
         for art in arts:
-            if art.qc_flag == 'PASSED' and '# Reads' in art.udf:
+            if art.qc_flag == 'PASSED' and '# Reads' in art.udf and art.name != 'Script Log Details':
                 total_reads += float(art.udf.get('# Reads'))
         return total_reads/1000000
 
