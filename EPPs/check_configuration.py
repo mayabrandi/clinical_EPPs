@@ -27,14 +27,14 @@ class CheckConfigurations():
         """Get the names of all active workflows, protocols and steps. 
         These are the names to search for in configurations and step UDFs."""
         
-        logging.info("Searching for active workflows, protocols and steps.")
+        logging.info("Searching for active workflows, protocols and steps.\n")
         workflows=self.lims.get_workflows(status='ACTIVE')
         for workflow in workflows:
             self.workflows.append(workflow.name)
             for protocol in workflow.protocols:
                 self.protocols.append(protocol.name)
-            for step in workflow.stages:
-                self.steps.append(step.name)
+                for step in protocol.steps:
+                    self.steps.append(step.name)
         self.steps = set(self.steps)
         self.protocols = set(self.protocols)
         self.workflows = set(self.workflows)
@@ -46,17 +46,17 @@ class CheckConfigurations():
 
         self._get_active()
 
-        logging.info("Searching automations and step udfs for ACTIVE STEP NAMES.")
+        logging.info("\n\n\nSearching automations and step udfs for ACTIVE STEP NAMES.\n")
         for step in self.steps:
             self.search_automations(search_by=step)
             self.search_steps_for_udf(search_by=step)
 
-        logging.info("Searching automations and step udfs for ACTIVE PROTOCOL NAMES.")
+        logging.info("\n\n\nSearching automations and step udfs for ACTIVE PROTOCOL NAMES.\n")
         for protocol in self.protocols:
             self.search_automations(search_by=protocol)
             self.search_steps_for_udf(search_by=protocol)
 
-        logging.info("Searching automations and step udfs for ACTIVE WORKFLOW NAMES.")
+        logging.info("\n\n\nSearching automations and step udfs for ACTIVE WORKFLOW NAMES.\n")
         for workflow in self.workflows:
             self.search_automations(search_by=workflow)
             self.search_steps_for_udf(search_by=workflow)
@@ -72,11 +72,13 @@ class CheckConfigurations():
             self.automations = self.lims.get_automations()
         for automation in self.automations:
             bash_string = automation.string
-            if bash_string.find(search_by) != -1:
-                logging.info("AUTOMATION: Searching for '%s'." % (search_by))
-                logging.info("Button: %s" % (automation.name))
-                logging.info("Bash string: %s" % (bash_string))
-                logging.info("Processes: %s \n" % (automation.process_types))
+            for process_type in automation.process_types:
+                if process_type.name[0:8]!='obsolete' and bash_string.find(search_by) != -1:
+                    logging.info("AUTOMATION: Searching for '%s'." % (search_by))
+                    logging.info("Button: %s" % (automation.name))
+                    logging.info("Bash string: %s" % (bash_string))
+                    logging.info("Processes: %s \n" % (automation.process_types))
+                    break
 
 
     def search_steps_for_udf(self, search_by=None):
@@ -90,7 +92,7 @@ class CheckConfigurations():
             self.udfs = self.lims.get_udfs(attach_to_category='ProcessType')
 
         for udf in self.udfs:
-            if udf.presets and search_by in udf.presets:
+            if udf.presets and (search_by in udf.presets) and (udf.attach_to_name[0:8] != 'obsolete'):
                 logging.info("PROCESS UDF PRESTES: Searching for '%s'" % (search_by))
                 logging.info( "Process Name: %s" % (udf.attach_to_name))
                 logging.info( "Udf: %s" % (udf.name))
@@ -110,7 +112,6 @@ def main(args):
     if args.udf_preset:
         CC.search_steps_for_udf(search_by=args.udf_preset)
     elif args.automation_string:
-        print(args.automation_string)
         CC.search_automations(search_by=args.automation_string)
     elif args.print_all_bash:
         CC.print_all_bash()
