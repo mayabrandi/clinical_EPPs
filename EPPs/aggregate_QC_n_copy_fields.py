@@ -51,18 +51,19 @@ class CopyUDF():
                     if not qc_flag == 'FAILED':
                         qc_flag = qc_flag_update
                     for udf in self.source_step_types[type]:
-                        value = output.udf.get(udf)
-                        if value is None:
+                        try:
+                            value = output.udf.get(udf)
+                        except:
                             self.failed_udfs.append(art.name)
-                        else:
-                            try:
-                                art.udf[udf] = float(value)
-                            except:
-                                art.udf[udf] = str(value)
-                                pass
-    
-                            if art.udf.get(udf) is None:
-                                self.failed_udfs.append(art.name)
+                            continue
+                        try:
+                            art.udf[udf] = float(value)
+                        except:
+                            art.udf[udf] = str(value)
+                            pass
+
+                        if art.udf.get(udf) is None:
+                            self.failed_udfs.append(art.name)
             if qc_flag:
                 art.qc_flag = qc_flag
             art.put()
