@@ -52,7 +52,7 @@ class CopyUDF():
                         qc_flag = qc_flag_update
                     for udf in self.source_step_types[type]:
                         try:
-                            value = output.udf.get(udf)
+                            value = output.udf[udf]
                         except:
                             self.failed_udfs.append(art.name)
                             continue
