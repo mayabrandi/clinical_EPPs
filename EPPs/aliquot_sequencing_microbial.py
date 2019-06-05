@@ -20,7 +20,7 @@ class BufferVolume():
         self.passed_arts = 0
         self.failed_arts = 0
         self.missing_udfs = False
-        self.high_volume = []
+        self.volume_warning = []
         self.final_concentration = float(process.udf['Final Concentration (nM)'])
 
     def get_artifacts(self):
@@ -49,14 +49,17 @@ class BufferVolume():
                 samp_vol = 5
                 buffer_volume = ((concentration*samp_vol)/self.final_concentration) - samp_vol
                 if buffer_volume > 150:
-                    self.high_volume.append(artifact.samples[0].name) #samples will always be a list of only one value
+                    self.volume_warning.append(artifact.samples[0].name) #samples will always be a list of only one value
                     artifact.qc_flag = 'FAILED'
                 elif buffer_volume < 2:
                     buffer_volume = 2.0
                     samp_vol = buffer_volume/((concentration/self.final_concentration)-1)
                     if samp_vol > 20:
-                        self.high_volume.append(artifact.samples[0].name)
+                        self.volume_warning.append(artifact.samples[0].name)
                         artifact.qc_flag = 'FAILED'
+                if buffer_volume + samp_vol < 10:
+                    self.volume_warning.append(artifact.samples[0].name)
+                    artifact.qc_flag = 'FAILED' 
             self.passed_arts +=1
             artifact.udf['Total Volume (uL)'] = buffer_volume + samp_vol
             artifact.udf['Volume Buffer (ul)'] = buffer_volume
@@ -79,8 +82,8 @@ def main(lims,args):
         sys.exit('Could not apply calculations for all samples. "Final Concentration (nM)" and "Concentration (nM)" must be set.')
     elif BV.failed_arts:
         sys.exit(abstract)
-    elif BV.high_volume:
-        abstract = abstract + " Samples: " + ', '.join(BV.high_volume) + ", got high Buffer or Sample Volume."
+    elif BV.volume_warning:
+        abstract = abstract + " Samples: " + ', '.join(list(set(BV.volume_warning))) + ", got red QC-flags due to high or low volumes."
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
