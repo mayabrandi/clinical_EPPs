@@ -18,7 +18,7 @@ class BufferVolume():
         self.passed_arts = 0
         self.failed_arts = 0
         self.missing_udfs = False
-        self.buffer_out_of_range = []
+        self.high_concentration = False
         self.final_concentration = 2
 
     def get_artifacts(self):
@@ -28,6 +28,7 @@ class BufferVolume():
     def apply_calculations(self):
         for artifact in self.artifacts:
             concentration = artifact.udf.get('Concentration')
+            artifact.qc_flag = 'PASSED'
             if concentration is None:
                 self.missing_udfs = True
                 self.failed_arts +=1
@@ -50,6 +51,9 @@ class BufferVolume():
                 samp_vol = 4
                 total_volume = float(concentration * samp_vol)/self.final_concentration
                 buffer_volume = total_volume - samp_vol
+            else:
+                artifact.qc_flag = 'FAILED'
+                self.high_concentration = True
             self.passed_arts +=1
             artifact.udf['Total Volume (uL)'] = buffer_volume + samp_vol
             artifact.udf['Volume Buffer (ul)'] = buffer_volume
@@ -70,10 +74,9 @@ def main(lims,args):
 
     if BV.missing_udfs:
         sys.exit('Could not apply calculations for all samples. "Concentration" must be set.')
+    elif BV.high_concentration:
+        sys.exit('Concentration high for some samples. ' + abstract)
     elif BV.failed_arts:
-        sys.exit(abstract)
-    elif BV.buffer_out_of_range:
-        abstract = abstract+" Samples: " + ', '.join(BV.buffer_out_of_range) + ", got a high or low Buffer Volume."
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
@@ -89,3 +92,4 @@ if __name__ == "__main__":
     lims.check_version()
 
     main(lims, args)
+
