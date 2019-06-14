@@ -19,7 +19,6 @@ class BufferVolume():
         self.failed_arts = 0
         self.missing_udfs = False
         self.high_concentration = False
-        self.buffer_out_of_range = []
         self.final_concentration = 2
 
     def get_artifacts(self):
@@ -78,9 +77,6 @@ def main(lims,args):
     elif BV.high_concentration:
         sys.exit('Concentration high for some samples. ' + abstract)
     elif BV.failed_arts:
-        sys.exit(abstract)
-    elif BV.buffer_out_of_range:
-        abstract = abstract+" Samples: " + ', '.join(BV.buffer_out_of_range) + ", got a high or low Buffer Volume."
         sys.exit(abstract)
     else:
         print >> sys.stderr, abstract
