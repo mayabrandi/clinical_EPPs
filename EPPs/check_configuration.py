@@ -17,26 +17,25 @@ class CheckConfigurations():
 
     def __init__(self, lims):
         self.lims = lims
-        self.all_active = {'steps':[],'protocols':[],'workflows':[]}
-        self.search_results = {'steps':[],'protocols':[],'workflows':[]}
+        self.all_active = {'steps':[],'workflows':[]}
+        self.search_results = {'steps':[],'workflows':[]}
         self.automations = []
         self.udfs = []
 
     def _get_active(self):
-        """Get the names of all active workflows, protocols and steps. 
+        """Get the names of all active workflows and steps. 
         These are the names to search for in configurations and step UDFs.
         """
         
-        logging.info("Searching for active workflows, protocols and steps.\n")
-        workflows = self.lims.get_workflows(status = 'ACTIVE')
+        logging.info("Searching for active workflows and steps.\n")
+        workflows = self.lims.get_workflows()
         for workflow in workflows:
-            self.all_active['workflows'].append(workflow.name)
-            for protocol in workflow.protocols:
-                self.all_active['protocols'].append(protocol.name)
-                for step in protocol.steps:
-                    self.all_active['steps'].append(step.name)
+            if workflow.status == 'ACTIVE':
+                self.all_active['workflows'].append(workflow.name)
+                for protocol in workflow.protocols:
+                    for step in protocol.steps:
+                        self.all_active['steps'].append(step.name)
         self.all_active['steps'] = set(self.all_active['steps'])
-        self.all_active['protocols'] = set(self.all_active['protocols'])
         self.all_active['workflows'] = set(self.all_active['workflows'])
 
 
@@ -53,7 +52,7 @@ class CheckConfigurations():
 
 
     def _search_entity(self, entity):
-        """Searches automations and step udfs for given entity (workflows, protocols or steps).
+        """Searches automations and step udfs for given entity (workflows or steps).
         Saves results to csv.
 
         Argument:
@@ -72,13 +71,12 @@ class CheckConfigurations():
 
 
     def serarch_all_active(self):
-        """Search all automations and step udfs for all active workflow, protocol and step names.
+        """Search all automations and step udfs for all active workflow and step names.
         """
 
         self._get_active()
 
         self._search_entity('steps')
-        self._search_entity('protocols')
         self._search_entity('workflows')
 
 
@@ -168,7 +166,7 @@ if __name__ == "__main__":
                         help = 'Search automation by automation_string. Any subset of the automation bash string is valid. Could be a script name, eg: bcl2fastq.py, or a script argument, eg: CG002 - Aggregate QC (Library Validation) ')
     Parser.add_argument('-p', action='store_true', dest='print_all_bash', help = 'Print all automations')
     Parser.add_argument('-u', dest='udf_preset', help = 'Search Process UDFs by udf_preset')
-    Parser.add_argument('-a', action='store_true', dest='all_active', help = 'Check all active step, protocol and workflow names')
+    Parser.add_argument('-a', action='store_true', dest='all_active', help = 'Check all active step and workflow names')
 
     args = Parser.parse_args()
     main(args)
