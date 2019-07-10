@@ -86,7 +86,7 @@ class PassSamples():
 
     def _get_pools_from_sort(self, sample): ##---> will give manny duplicates
         self.all_arts_in_sort += lims.get_artifacts(samplelimsid = sample.id,
-                            process_type = self.process_types)
+                            process_type = self.process_types, type='Analyte')
 
     def _make_unique_pools(self):
         # Make uniqe. Also esure there are no replicates of the same RML. 
