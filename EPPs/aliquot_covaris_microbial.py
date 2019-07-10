@@ -54,6 +54,7 @@ class BufferVolume():
             else:
                 artifact.qc_flag = 'FAILED'
                 self.high_concentration = True
+                continue
             self.passed_arts +=1
             artifact.udf['Total Volume (uL)'] = buffer_volume + samp_vol
             artifact.udf['Volume Buffer (ul)'] = buffer_volume
