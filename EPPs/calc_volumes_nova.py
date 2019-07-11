@@ -104,6 +104,7 @@ class NovaSeqSampleVolumes():
         self.process.udf['Bulk Pool Volume (ul)'] = self.bulk_pool_vol
         self.process.udf['Total Sample Volume (ul)'] = round(self.total_sample_vol, 2)
         self.process.udf['RSB Volume (ul)'] = round(self.RSB_vol, 2)
+        self.process.udf['Total nr of Reads Requested (sum of reads to sequence)'] = str(self.total_reads)
         self.process.put()
 
 
