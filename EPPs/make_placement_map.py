@@ -123,7 +123,6 @@ class SamplePlacementMap():
                     well_location = str(rowname) + ":" + str( col )
                     if well_location in container_info:
                         well_info = container_info[ well_location ]
-                        print well_info['source_cont'].name
                         # This only happens if there is an artifact in the well
                         # This assumes that all artifacts have the required UDFs
                         html.append( '<td class="well" style="background-color: #CCC;">' )
