@@ -129,6 +129,7 @@ class SamplePlacementMap():
                         html.append('Project : ' + well_info['sample'].project.name + '<br>')
                         html.append('Sample Name : ' + well_info['sample'].name+ '<br>')
                         html.append('Sample ID : ' + well_info['sample'].id+ '<br>')
+                        html.append('Source Container : ' + well_info['source_cont'].name + '<br>')
                         html.append('Source Well : ' + well_info['source_well'] + '<br>')
                         for udf in self.udf_list:
                             try:
