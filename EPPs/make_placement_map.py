@@ -123,12 +123,14 @@ class SamplePlacementMap():
                     well_location = str(rowname) + ":" + str( col )
                     if well_location in container_info:
                         well_info = container_info[ well_location ]
+                        print well_info['source_cont'].name
                         # This only happens if there is an artifact in the well
                         # This assumes that all artifacts have the required UDFs
                         html.append( '<td class="well" style="background-color: #CCC;">' )
                         html.append('Project : ' + well_info['sample'].project.name + '<br>')
                         html.append('Sample Name : ' + well_info['sample'].name+ '<br>')
                         html.append('Sample ID : ' + well_info['sample'].id+ '<br>')
+                        html.append('Source Container : ' + well_info['source_cont'].name + '<br>')
                         html.append('Source Well : ' + well_info['source_well'] + '<br>')
                         for udf in self.udf_list:
                             try:
