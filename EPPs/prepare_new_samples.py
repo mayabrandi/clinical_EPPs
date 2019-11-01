@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import sys
-import logging
 
 from argparse import ArgumentParser
 from genologics.lims import Lims
@@ -12,78 +10,59 @@ from genologics.entities import Process
 from clinical_EPPs.config import CG_URL
 from cgface.api import CgFace
 
-DESC = """"""
+DESC = """Script to set the Reads Missing (M) udf for all samples befor they go 
+into any workflow. The Reads Missing (M) is at this point defined only by the 
+Sequencing Analysis. Numers are fetched from cgface"""
 
-class ReceptionControle():
+class SetMissingReads():
     def __init__(self, process):
         self.process = process
         self.samples = []
-        self.log = None
         self.failed_samples = 0
         self.cgface_obj = CgFace(url=CG_URL)
-        self.sample_qc = True
 
-    def set_reads_missing(self, sample):
+    def get_samples(self):
+        artifacts = self.process.all_outputs(unique=True)
+        for a in artifacts:
+            if len(a.samples)==1:
+                self.samples.append((a.samples[0], a))
+
+    def set_reads_missing(self, sample, art):
         """Sets the 'Reads missing (M)' udf, based on the application tag"""
         try:
             app_tag = sample.udf['Sequencing Analysis']
             target_amount = self.cgface_obj.apptag(tag_name = app_tag, key = 'target_reads')
             sample.udf['Reads missing (M)'] = target_amount/1000000
-            sample.put()
-            sample_qc = True
+            art.qc_flag = "PASSED"
         except:
-            self.log.write("Failed to get 'Reads missing' from Application tag: "+app_tag)
-            self.sample_qc = False
-
-    def reception_control_log(self, res_file):
-        try:
-            self.log = open(res_file, 'a')
-        except:
-            sys.exit('Could not open log file')
-
-    def get_samples(self):
-        all_artifacts = self.process.all_inputs(unique=True)
-        artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
-        self.samples = [(a.samples[0], a) for a in artifacts]
+            self.failed_samples += 1
+            art.qc_flag = "FAILED"
+        art.put()
+        sample.put()
 
     def check_samples(self):
         for samp , art in self.samples:
-            self.log.write('\n###  Checking sample ' + samp.id+', with sample name ' + samp.name.encode('utf-8').strip() +" ###\n")
-            self.set_reads_missing(samp)
-            if self.sample_qc:
-                art.qc_flag = "PASSED"
-            else:
-                self.failed_samples +=1
-                art.qc_flag = "FAILED"
-            self.sample_qc = True
-            art.put()
+            self.set_reads_missing(samp, art)
 
-def main(lims, pid, res_file):
+def main(lims, pid):
     process = Process(lims, id = pid)
-    RC = ReceptionControle(process)
-    RC.reception_control_log(res_file)
-    RC.get_samples()
-    RC.check_samples()
-    RC.log.close()
+    SMR = SetMissingReads(process)
+    SMR.get_samples()
+    SMR.check_samples()
 
 
-    if RC.failed_samples:
-        sys.exit(str(RC.failed_samples)+' failed preparation. See Log, for details.')
+    if SMR.failed_samples:
+        sys.exit('Faild to get missing reads for '+str(SMR.failed_samples)+' sample.')
     else:
-        print >> sys.stderr, 'All samples pased preparation.'
+        print >> sys.stderr, 'Reads Missing has been set for all samples.'
 
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('-p', default = None , dest = 'pid',
                         help='Lims id for current Process')
-    parser.add_argument('-l', default = None , dest = 'log',
-                        help='Log file')
-    parser.add_argument('-r', default = None , dest = 'res',
-                        help='Reception Contol - log file')
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
     lims.check_version()
-    logging.basicConfig(filename= args.log,level=logging.DEBUG)
-    main(lims, args.pid, args.res)
+    main(lims, args.pid)
 
