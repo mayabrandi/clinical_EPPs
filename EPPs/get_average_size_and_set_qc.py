@@ -24,14 +24,15 @@ class AverageSizeBP():
     def __init__(self, process, treshold):
         self.treshold = treshold
         self.process = process
+        self.all_artifacts = []
         self.artifacts = []
         self.size_list = []
         self.qc_flag = None
         self.average_size = None
 
     def get_artifacts(self):
-        all_artifacts = self.process.all_inputs(unique=True)
-        for art in all_artifacts:
+        self.all_artifacts = self.process.all_inputs(unique=True)
+        for art in self.all_artifacts:
             if not art.name[0:3] == 'NTC':
                 self.artifacts.append(art)
 
@@ -50,7 +51,7 @@ class AverageSizeBP():
 
     def set_average_size(self):
         if self.average_size:
-            for art in self.artifacts:
+            for art in self.all_artifacts:
                 art.udf['Average Size (bp)'] = str(self.average_size)
                 if art.qc_flag == 'PASSED':
                     art.qc_flag = self.qc_flag
