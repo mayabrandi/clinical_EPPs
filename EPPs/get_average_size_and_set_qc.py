@@ -21,13 +21,14 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 
 class AverageSizeBP():
 
-    def __init__(self, process, treshold):
-        self.treshold = treshold
+    def __init__(self, process, lower_treshold, upper_treshold):
+        self.lower_treshold = lower_treshold
+        self.upper_treshold = upper_treshold
         self.process = process
         self.all_artifacts = []
         self.artifacts = []
         self.size_list = []
-        self.qc_flag = None
+        self.qc_flag = 'PASSED'
         self.average_size = None
 
     def get_artifacts(self):
@@ -46,8 +47,10 @@ class AverageSizeBP():
             self.average_size = np.mean(self.size_list)
         else:
             sys.exit("Set 'Size (bp)' for at least one sample")
-
-        self.qc_flag = 'PASSED' if int(self.average_size) >= int(self.treshold) else 'FAILED'
+        if self.lower_treshold is not None and int(self.average_size) < int(self.lower_treshold):
+            self.qc_flag = 'FAILED'
+        elif self.upper_treshold and int(self.average_size) > int(self.upper_treshold):
+            self.qc_flag = 'FAILED'
 
     def set_average_size(self):
         if self.average_size:
@@ -60,7 +63,7 @@ class AverageSizeBP():
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    ASBP = AverageSizeBP(process, args.tres)
+    ASBP = AverageSizeBP(process, args.lower_tres, args.upper_tres)
     ASBP.get_artifacts()
     ASBP.make_average_size()
     ASBP.set_average_size()
@@ -71,7 +74,10 @@ if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('-p', dest = 'pid',
                         help='Lims id for current Process')
-    parser.add_argument('-t', dest = 'tres', help='Treshold for qc flags')
+    parser.add_argument('-lt', dest = 'lower_tres', default = None,
+                        help='Treshold for qc flags')
+    parser.add_argument('-ut', dest = 'upper_tres', default = None,
+                        help='Treshold for qc flags')
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
