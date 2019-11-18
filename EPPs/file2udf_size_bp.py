@@ -63,7 +63,7 @@ class File2UDF():
         """Reads the csv and sets the average size bp for each sample"""
 
         with open(self.result_file) as f:
-            d = DictReader(f, delimiter=';')
+            d = DictReader(f, delimiter=',')
             l = list(d)
         for sample in l:
             well = sample.get('WellId')
