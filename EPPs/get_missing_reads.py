@@ -47,8 +47,13 @@ class MissingReads():
                 except:
                     sys.exit("Could not find application tag: "+app_tag+' in database.')
                 target_amount = target_amount_reads/1000000
-                reads_min = 0.92*target_amount
-                reads_missing = reads_min - reads_total
+                if app_tag[0:3]=='WGS' or app_tag[0:3]=='WGT':
+                    reads_min = 0.92*target_amount
+                    reads_missing = reads_min - reads_total
+                else:
+                    target_amount = target_amount_reads/1000000
+                    reads_min = 0.75*target_amount
+                    reads_missing = reads_min - reads_total
                 if reads_missing > 0:
                     for sample in samples:
                         sample.udf['Reads missing (M)'] = target_amount - reads_total
