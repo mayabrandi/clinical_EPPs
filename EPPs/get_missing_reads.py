@@ -46,13 +46,9 @@ class MissingReads():
                     target_amount_reads = self.cgface_obj.apptag(tag_name = app_tag, key = 'target_reads')
                 except:
                     sys.exit("Could not find application tag: "+app_tag+' in database.')
-                if app_tag[0:3]=='WGS' or app_tag[0:3]=='WGT':
-                    target_amount = 650
-                    reads_missing = target_amount - reads_total
-                else:
-                    target_amount = target_amount_reads/1000000
-                    reads_min = 0.75*target_amount
-                    reads_missing = reads_min - reads_total
+                target_amount = target_amount_reads/1000000
+                reads_min = 0.92*target_amount
+                reads_missing = reads_min - reads_total
                 if reads_missing > 0:
                     for sample in samples:
                         sample.udf['Reads missing (M)'] = target_amount - reads_total
