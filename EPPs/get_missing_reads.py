@@ -48,7 +48,7 @@ class MissingReads():
                     sys.exit("Could not find application tag: "+app_tag+' in database.')
                 target_amount = target_amount_reads/1000000
                 if app_tag[0:3]=='WGS' or app_tag[0:3]=='WGT':
-                    reads_min = 0.92*target_amount
+                    reads_min = target_amount
                     reads_missing = reads_min - reads_total
                 else:
                     target_amount = target_amount_reads/1000000
