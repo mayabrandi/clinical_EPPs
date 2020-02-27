@@ -29,8 +29,8 @@ class CalculateDilution():
         for art in self.out_analytes:
             sample_conc = art.udf.get('Concentration')
             qc_flag='FAILED'
-            if sample_conc is None:
-                logging.exception('Missing concentration') 
+            if sample_conc is None or sample_conc<4:
+                logging.exception('Low or Missing concentration') 
                 self.failed_arts.append(art)
                 continue
             elif sample_conc<20:
@@ -49,7 +49,6 @@ class CalculateDilution():
                 continue
             final_vol=sample_vol*art.udf['Concentration']/self.final_conc
             if final_vol<self.min_final_vol:
-                #??????
                 self.failed_arts.append(art)
                 continue
             else:
