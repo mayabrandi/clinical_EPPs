@@ -67,6 +67,11 @@ class CalculationsTwist:
                 fract_of_pool = reads/float(total_reads)
                 amount = pool_size * fract_of_pool
                 vol = amount/concentration
+                if vol>15:
+                    vol=15
+                    art.qc_flag='FAILED'
+                else:
+                    art.qc_flag='PASSED'
                 art.udf['Volume of sample (ul)'] = vol
                 art.put()            
                 total_volume += vol
