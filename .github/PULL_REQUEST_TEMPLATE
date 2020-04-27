@@ -4,8 +4,10 @@ This PR adds/fixes ...
 - [ ] ssh to clinical-lims-stage and become glsai user
 - [ ] install the branch in the epp_master env.
 
-```cd /home/glsai/opt/clinical_EPPs
-pip install -e .```
+```
+cd /home/glsai/opt/clinical_EPPs
+pip install -e .
+```
 
 **How to test**:
 - [ ] login to https://clinical-lims-stage.scilifelab.se
