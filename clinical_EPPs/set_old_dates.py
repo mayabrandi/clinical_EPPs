@@ -85,6 +85,26 @@ def set_rec_dates(lims):
                 samp.put()
 
 
+def set_deliv_dates(lims):
+    process_types = ['CG002 - Delivery', 'Delivery v1']
+
+    steps = lims.get_processes(type=process_types)
+    print(len(steps))
+    for i, step in enumerate(steps):
+        print(i)
+        date = step.udf.get('Date delivered')
+        if not date:
+            date = datetime.strptime(step.date_run, '%Y-%m-%d').date()
+        for art in step.all_inputs():
+            for samp in art.samples:
+                old_date = samp.udf.get('Delivered at')
+                print(old_date, date)
+                if old_date and old_date >= date:
+                    print('skipping')
+                    continue
+                samp.udf['Delivered at'] = date
+                samp.put()
+
 def main(lims, args):
     if args.prep:
         set_prep_dates(lims)
@@ -92,6 +112,8 @@ def main(lims, args):
         set_seq_dates(lims)
     if args.rec:
         set_rec_dates(lims)
+    if args.deliv:
+        set_deliv_dates(lims)
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
@@ -101,6 +123,8 @@ if __name__ == "__main__":
                         help='Set sequencing date. (Last seq step if seq qc ok)')
     parser.add_argument('-r', dest='rec', action='store_true', default=False,
                         help='Set received date. (First reception comtrol step)')
+    parser.add_argument('-d', dest='deliv', action='store_true', default=False,
+                        help='Set delivered date. (Last delivery step)')
 
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
