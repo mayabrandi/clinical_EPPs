@@ -46,6 +46,8 @@ def set_seq_dates(lims):
     for i, step in enumerate(steps):
         print(i)
         date = step.udf.get('Finish Date')
+        if not date:
+            date = datetime.strptime(step.date_run, '%Y-%m-%d').date()
         for art in step.all_inputs():
             for samp in art.samples:
                 if not samp.udf.get( 'Passed Sequencing QC'):
@@ -58,9 +60,30 @@ def set_seq_dates(lims):
                 samp.udf['Sequencing Finished'] = date
                 samp.put()
 
+
 def set_rec_dates(lims):
-    process_types = []
+    process_types = ['CG002 - Reception Control (Dev)', 
+                   'CG002 - Reception Control', 
+                   'Reception Control TWIST v1',
+                   'Reception Control no placement v1',
+                   'Reception Control (RNA) v1']
     steps = lims.get_processes(type=process_types)
+    print(len(steps))
+    for i, step in enumerate(steps):
+        print(i)
+        date = step.udf.get('date arrived at clinical genomics')
+        if not date:
+            date = datetime.strptime(step.date_run, '%Y-%m-%d').date()
+        for art in step.all_inputs():
+            for samp in art.samples:
+                old_date = samp.udf.get('Recived at')
+                print(old_date, date)
+                if old_date and old_date >= date:
+                    print('skipping')
+                    continue
+                samp.udf['Recived at'] = date
+                samp.put()
+
 
 def main(lims, args):
     if args.prep:
