@@ -76,12 +76,12 @@ def set_rec_dates(lims):
             date = datetime.strptime(step.date_run, '%Y-%m-%d').date()
         for art in step.all_inputs():
             for samp in art.samples:
-                old_date = samp.udf.get('Recived at')
+                old_date = samp.udf.get('Received at')
                 print(old_date, date)
                 if old_date and old_date >= date:
                     print('skipping')
                     continue
-                samp.udf['Recived at'] = date
+                samp.udf['Received at'] = date
                 samp.put()
 
 
