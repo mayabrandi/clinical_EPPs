@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+from __future__ import division
+from argparse import ArgumentParser
+
+from genologics.lims import Lims
+from genologics.config import BASEURI,USERNAME,PASSWORD
+from datetime import datetime
+
+import logging
+import sys
+
+DESC = """
+Script to set dates on sample level. 
+
+Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
+"""
+
+def set_prep_dates(lims):
+    process_types = ['CG002 - Aggregate QC (Library Validation) (Dev)',
+                  'CG002 - Aggregate QC (Library Validation)',
+                  'Aggregate QC (Library Validation) TWIST v1',
+                  'Aggregate QC (Library Validation) (RNA) v2',
+                  'Aggregate QC (Library Validation)']
+    steps = lims.get_processes(type=process_types)
+    print(len(steps))
+    for i, step in enumerate(steps):
+        print(i)
+        date = datetime.strptime(step.date_run, '%Y-%m-%d').date()
+        for art in step.all_inputs():
+            for samp in art.samples:
+                old_date = samp.udf.get('Library Prep Finished')
+                print(old_date, date)
+                if old_date and old_date >= date:
+                    print('skipping')
+                    continue
+                samp.udf['Library Prep Finished'] = date
+                samp.put()
+        
+
+def set_seq_dates(lims):
+    process_types = []
+    steps = lims.get_processes(type=process_types)
+
+def set_rec_dates(lims):
+    process_types = []
+    steps = lims.get_processes(type=process_types)
+
+def main(lims, args):
+    if args.prep:
+        set_prep_dates(lims)
+    if args.seq:
+        set_seq_dates(lims)
+    if args.rec:
+        set_rec_dates(lims)
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description=DESC)
+    parser.add_argument('-p', dest='prep', action='store_true', default=False,
+                        help='Set prepared date. (Last prep step if prep qc ok)')
+    parser.add_argument('-s', dest='seq' , action='store_true', default=False, 
+                        help='Set sequencing date. (Last seq step if seq qc ok)')
+    parser.add_argument('-r', dest='rec', action='store_true', default=False,
+                        help='Set received date. (First reception comtrol step)')
+
+    args = parser.parse_args()
+    lims = Lims(BASEURI, USERNAME, PASSWORD)
+    main(lims, args)
