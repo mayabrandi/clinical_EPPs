@@ -38,8 +38,25 @@ def set_prep_dates(lims):
         
 
 def set_seq_dates(lims):
-    process_types = []
+    process_types = ['CG002 - Illumina Sequencing (HiSeq X)',
+                  'CG002 - Illumina Sequencing (Illumina SBS)',
+                  'AUTOMATED - NovaSeq Run']
     steps = lims.get_processes(type=process_types)
+    print(len(steps)) 
+    for i, step in enumerate(steps):
+        print(i)
+        date = step.udf.get('Finish Date')
+        for art in step.all_inputs():
+            for samp in art.samples:
+                if not samp.udf.get( 'Passed Sequencing QC'):
+                    continue
+                old_date = samp.udf.get('Sequencing Finished')
+                print(old_date, date)
+                if old_date and old_date >= date:
+                    print('skipping')
+                    continue
+                samp.udf['Sequencing Finished'] = date
+                samp.put()
 
 def set_rec_dates(lims):
     process_types = []
