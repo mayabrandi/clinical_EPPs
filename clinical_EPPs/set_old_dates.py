@@ -24,6 +24,8 @@ def set_prep_dates(lims):
     steps = lims.get_processes(type=process_types)
     print(len(steps))
     for i, step in enumerate(steps):
+        if not step.date_run:
+            continue
         print(i)
         date = datetime.strptime(step.date_run, '%Y-%m-%d').date()
         for art in step.all_inputs():
@@ -44,6 +46,8 @@ def set_seq_dates(lims):
     steps = lims.get_processes(type=process_types)
     print(len(steps)) 
     for i, step in enumerate(steps):
+        if not step.date_run:
+            continue
         print(i)
         date = step.udf.get('Finish Date')
         if not date:
@@ -70,6 +74,8 @@ def set_rec_dates(lims):
     steps = lims.get_processes(type=process_types)
     print(len(steps))
     for i, step in enumerate(steps):
+        if not step.date_run:
+            continue
         print(i)
         date = step.udf.get('date arrived at clinical genomics')
         if not date:
@@ -91,6 +97,8 @@ def set_deliv_dates(lims):
     steps = lims.get_processes(type=process_types)
     print(len(steps))
     for i, step in enumerate(steps):
+        if not step.date_run:
+            continue
         print(i)
         date = step.udf.get('Date delivered')
         if not date:
