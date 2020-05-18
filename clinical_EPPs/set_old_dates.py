@@ -10,7 +10,7 @@ import logging
 import sys
 
 DESC = """
-Script to set dates on sample level. 
+One time script to set historical dates on samples. 
 
 Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 """
