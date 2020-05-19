@@ -75,7 +75,7 @@ if __name__ == "__main__":
     parser.add_argument('--sudf',
                         help='UDF on sample to set.')
     parser.add_argument('--pudf',
-                        help='UDF on process to fetch. If None, process.date_run will be used.')
+                        help='UDF on process to fetch. If None, todays date will be used.')
     parser.add_argument('--sequencing_date', action='store_true',
                         help='Special conditions when setting the sequencing date.')
     args = parser.parse_args()
