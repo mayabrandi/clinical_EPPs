@@ -61,6 +61,7 @@ def set_seq_dates(lims):
                     continue
                 samp.udf['Sequencing Finished'] = date
                 samp.put()
+                print(samp.id)
 
 
 def set_rec_dates(lims):
