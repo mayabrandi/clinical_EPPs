@@ -8,7 +8,7 @@ from genologics.entities import Process
 import sys
 from datetime import datetime as dt
 
-DESC = """Script to copy udf from process to samples
+DESC = """Script to set dates on sample from process
 
 Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 """
@@ -21,10 +21,12 @@ class CopyUDF():
         self.pudf = pudf
         self.sudf = sudf
         self.out = out
+        self.artifacts = self._get_artifacts()
         self.date = self._get_date()
         self.samples = []
 
     def _get_date(self):
+        """Get date."""
         if self.pudf:
             date = self.process.udf.get(self.pudf)
         else:
@@ -33,20 +35,22 @@ class CopyUDF():
             sys.exit(self.pudf + ' is not set.')
         return date
 
-    def get_artifacts(self):
+    def _get_artifacts(self):
         if self.out:
-            self.artifacts = [a for a in self.process.all_outputs() if a.type=='Analyte']
+            return [a for a in self.process.all_outputs() if a.type=='Analyte']
         else:
-            self.artifacts = self.process.all_inputs()        
+            return self.process.all_inputs()        
 
     def get_samples(self):
+        """Get samples."""
         for art in self.artifacts: 
-            if art.qc_flag=='FAILED':
+            if self.out and art.qc_flag=='FAILED':
                 continue
             self.samples += art.samples
         self.samples = set(self.samples)
 
     def set_date(self):
+        """Set the date on sample level."""
         for sample in self.samples:
             sample.udf[self.sudf] = self.date
             sample.put()
@@ -58,7 +62,6 @@ def main(args):
     process = Process(lims, id = args.pid)
 
     CUDF = CopyUDF(process, args.pudf, args.sudf, args.out)
-    CUDF.get_artifacts()
     CUDF.get_samples()
     CUDF.set_date()
 
@@ -66,12 +69,12 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('--pid',
-                        help='Lims id for current Process')
+                        help='Lims id for current Process.')
     parser.add_argument('--sudf',
-                        help='UDF on sample to set')
+                        help='UDF on sample to set.')
     parser.add_argument('--pudf',
-                        help='UDF on process to fetch. If none, use date_run')
+                        help='UDF on process to fetch. If None, process.date_run will be used.')
     parser.add_argument('--out', action='store_true',
-                        help='check QC flags on output artifacts.')
+                        help='Check QC flags on output artifacts. Default is input artifacts.')
     args = parser.parse_args()
     main(args)
