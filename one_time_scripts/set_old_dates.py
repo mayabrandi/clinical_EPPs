@@ -40,9 +40,7 @@ def set_prep_dates(lims):
         
 
 def set_seq_dates(lims):
-    process_types = ['CG002 - Illumina Sequencing (HiSeq X)',
-                  'CG002 - Illumina Sequencing (Illumina SBS)',
-                  'AUTOMATED - NovaSeq Run']
+    process_types = ['CG002 - Sequence Aggregation']
     steps = lims.get_processes(type=process_types)
     print(len(steps)) 
     for i, step in enumerate(steps):
