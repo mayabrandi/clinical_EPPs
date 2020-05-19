@@ -14,56 +14,58 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 """
 
 
-class CopyUDF():
+class SampleDatesSetter():
 
-    def __init__(self, process, pudf, sudf, out):
+    def __init__(self, process, pudf, sudf):
         self.process = process
-        self.pudf = pudf
         self.sudf = sudf
-        self.out = out
-        self.artifacts = self._get_artifacts()
-        self.date = self._get_date()
+        self.date = self._get_date(pudf)
         self.samples = []
 
-    def _get_date(self):
-        """Get date."""
-        if self.pudf:
-            date = self.process.udf.get(self.pudf)
+
+    def _get_date(self, pudf):
+        """Get date from process udf. If no pudf return todays date."""
+
+        if pudf:
+            date = self.process.udf.get(pudf)
         else:
             date = dt.today().date()
         if not date:
-            sys.exit(self.pudf + ' is not set.')
+            sys.exit(pudf + ' is not set.')
         return date
 
-    def _get_artifacts(self):
-        if self.out:
-            return [a for a in self.process.all_outputs() if a.type=='Analyte']
-        else:
-            return self.process.all_inputs()        
 
-    def get_samples(self):
-        """Get samples."""
-        for art in self.artifacts: 
-            if self.out and art.qc_flag=='FAILED':
+    def get_samples(self, artifacts, check_qc=False):
+        """Get samples. If check_qc, ignore failed samples."""
+
+        for art in artifacts: 
+            if check_qc and art.qc_flag=='FAILED':
                 continue
             self.samples += art.samples
         self.samples = set(self.samples)
 
+
     def set_date(self):
         """Set the date on sample level."""
+
         for sample in self.samples:
             sample.udf[self.sudf] = self.date
             sample.put()
 
+
 def main(args):
     lims = Lims(BASEURI, USERNAME, PASSWORD)
-    lims.check_version()
-
     process = Process(lims, id = args.pid)
+    SDS = SampleDatesSetter(process, args.pudf, args.sudf)
 
-    CUDF = CopyUDF(process, args.pudf, args.sudf, args.out)
-    CUDF.get_samples()
-    CUDF.set_date()
+    if args.sequencing_date:
+        artifacts = [a for a in process.all_outputs() if a.type=='Analyte']
+        SDS.get_samples(artifacts, check_qc=True)
+    else:
+        artifacts = process.all_inputs()
+        SDS.get_samples(artifacts)
+
+    SDS.set_date()
 
 
 if __name__ == "__main__":
@@ -74,7 +76,7 @@ if __name__ == "__main__":
                         help='UDF on sample to set.')
     parser.add_argument('--pudf',
                         help='UDF on process to fetch. If None, process.date_run will be used.')
-    parser.add_argument('--out', action='store_true',
-                        help='Check QC flags on output artifacts. Default is input artifacts.')
+    parser.add_argument('--sequencing_date', action='store_true',
+                        help='Special conditions when setting the sequencing date.')
     args = parser.parse_args()
     main(args)
