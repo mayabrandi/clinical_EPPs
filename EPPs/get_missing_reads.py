@@ -39,6 +39,7 @@ class MissingReads():
             try:
                 reads_total = samples[0].udf['Total Reads (M)']
                 app_tag = samples[0].udf['Sequencing Analysis']
+                data_analysis = samples[0].udf.get('Data Analysis')
             except:
                 udfs_ok = False
             if udfs_ok:
@@ -47,13 +48,13 @@ class MissingReads():
                 except:
                     sys.exit("Could not find application tag: "+app_tag+' in database.')
                 target_amount = target_amount_reads/1000000
-                if app_tag[0:3]=='WGS' or app_tag[0:3]=='WGT':
+                if data_analysis=='MIP':
+                    reads_min = 0.92*target_amount
+                elif app_tag[0:3]=='WGS' or app_tag[0:3]=='WGT':
                     reads_min = target_amount
-                    reads_missing = reads_min - reads_total
                 else:
-                    target_amount = target_amount_reads/1000000
                     reads_min = 0.75*target_amount
-                    reads_missing = reads_min - reads_total
+                reads_missing = reads_min - reads_total
                 if reads_missing > 0:
                     for sample in samples:
                         sample.udf['Reads missing (M)'] = target_amount - reads_total
