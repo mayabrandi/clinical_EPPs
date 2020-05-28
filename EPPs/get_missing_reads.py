@@ -54,7 +54,7 @@ class MissingReads():
                         # minimum reads is 92% of target reads for MIP samples
                         reads_min = 0.92*target_amount
                     else:
-                        # minimum reads is 100% of target reads for WGS and WGT samples
+                        # minimum reads is 100% of target reads for other WGS and WGT samples
                         reads_min = target_amount
                 else:
                     # minimum reads is 75% of target reads for all other samples
