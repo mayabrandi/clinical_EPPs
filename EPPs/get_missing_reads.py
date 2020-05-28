@@ -48,13 +48,14 @@ class MissingReads():
                 except:
                     sys.exit("Could not find application tag: "+app_tag+' in database.')
                 # Converting from reads to milion reads, as all ather vareables are in milions.
-                target_amount = target_amount_reads/1000000
-                if data_analysis=='MIP':
-                    # minimum reads is 92% of target reads for MIP samples
-                    reads_min = 0.92*target_amount
+                target_amount = target_amount_reads/1000000                  
                 elif app_tag[0:3]=='WGS' or app_tag[0:3]=='WGT':
-                    # minimum reads is 100% of target reads for WGS and WGT samples
-                    reads_min = target_amount
+                    if data_analysis=='MIP':
+                        # minimum reads is 92% of target reads for MIP samples
+                        reads_min = 0.92*target_amount
+                    else:
+                        # minimum reads is 100% of target reads for WGS and WGT samples
+                        reads_min = target_amount
                 else:
                     # minimum reads is 75% of target reads for all other samples
                     reads_min = 0.75*target_amount
