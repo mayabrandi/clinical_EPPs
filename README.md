@@ -6,10 +6,6 @@ The External Program Plug-in (EPP) is a script that is configuerd to be run from
 Clinical Genomics LIMS is using both scripts that are developed and maintained by Genologics, and scripts that are developed by developers at Clinical Genomics. Scripts developed and maintained by Clinical Genomics are collected in this repocitory.
 
 
-## Support
-
-Please see IT manual on how to contact Genologics Clarity LIMS support.
-
 ## Branching model
 
 clinical_EPPs is using github flow branching model as described in our development manual.
