@@ -111,7 +111,7 @@ Klick the LAB WORK tab and select a step in which you have enabeled the EPP.
 Choose STEP or MASTER STEP, and scroll down to the AUTOMATION section. The new EPP should be seen there. 
 ![](img/step_setings.png)
 
-Select Trigger Socation - at what point in the step the script should be run, and Trigger Style - how the script should be triggered.
+Select Trigger Location - at what point in the step the script should be run, and Trigger Style - how the script should be triggered.
 
 Add the new EPP to the Clinical-Genomics/clinical_EPPs repo first when you are sure it works on the stage server. 
 Read more about EPPs in the Clarity LIMS API Cookbook
