@@ -3,7 +3,7 @@
 
 The External Program Plug-in (EPP) is a script that is configuerd to be run from within a lims step.
 
-In the Clinical Genomics lims we are using both scripts that are developed and maintained by Genologics, and scripts that are developed by developers at Clinical Genomics. Script developed and maintained by Clinical Genomics are collected in this repocitory.
+Clinical Genomics LIMS is using both scripts that are developed and maintained by Genologics, and scripts that are developed by developers at Clinical Genomics. Scripts developed and maintained by Clinical Genomics are collected in this repocitory.
 
 
 ## Support
