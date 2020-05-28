@@ -11,30 +11,7 @@ Clinical Genomics LIMS is using both scripts that are developed and maintained b
 clinical_EPPs is using github flow branching model as described in our development manual.
 
 
-
-## Scripts in production
-
-The production lims system is set up on (thalamus).
-
-To log in, do:
-`ssh gls@clinical-lims.scilifelab.se`
-
-Programs written and maintained by genologics are located in
-
-`/opt/gls/clarity/`
-
-Don't touch this directory if you dont know exactly what you are doing.
-
-Programs written and maintained by Clinical Genomics are installed by the glsai user under the conda environment epp_master:    
-```
-/home/glsai/miniconda2/envs/epp_master.
-
-sudo -iu glsai
-
-source activate epp_master
-```
-
-### Config files
+## Config files
 
 The following config files are requiered.
 
@@ -65,23 +42,39 @@ URL=https://clinical-api.scilifelab.se/api/v1
 
 ```
 
-## Setting up a new EPP - brief overview
+## Production and Stage
+
+The production lims system is set up on (thalamus) and the stage lims system is set up on ...
+
+Testing of a new scripts is done on the stage server.
+
+The procedure for installing is the same on both servers
+
+ssh into the server:
+`ssh gls@clinical-lims-stage.scilifelab.se`
+
+or if you are deploying to productuion:
+`ssh gls@clinical-lims.scilifelab.se`
 
 
-Do the testing of your new EPP on the stage server:
-
+clinical_EPPs is cloned into `opt/nknknjk` and installed by the glsai user under the conda environment epp_master.
 
 ```
-ssh gls@clinical-lims-stage.scilifelab.se
 sudo -iu glsai
 source activate epp_master
 
+cd opt/clinical_EPPs
+git pull <branch name>
+python setup.py install
+
 ```
+the branch that has been installed is now avalibe from within the lims web interface. 
 
 
-Its set up in the same way as the production server. 
 
-EPPs can be run from the command as well as from the step itself.
+## Setting up a new EPP - brief overview
+
+
 When adding a new EPP to a step, go to the CONFIGURATON tab in the web interface and the select the AUTOMATION tab.
 
 Klick the NEW AUTOMATON button.
