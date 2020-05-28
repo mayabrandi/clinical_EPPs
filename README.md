@@ -1,14 +1,20 @@
 # clinical_EPPs 
 ## About
 
-The External Program Plug-in (EPP) is a script that is configuerd to be run from within a lims step. To meet the need of cutomization.... bla bla help
+The External Program Plug-in (EPP) is a script that is configuerd to be run from within a lims step.
 
-In the Clinical Genomics lims we are using both scripts that are developed and maintained by Genologics, and scripts that are developed by developers at Clinical Genomics. Script developed and maintained by Clinical Genomics are collected in the Clinical_EPPs directory on github. There you can also find a table showing witch scripts are in production and on witch LIMS steps each particular script is used.
+In the Clinical Genomics lims we are using both scripts that are developed and maintained by Genologics, and scripts that are developed by developers at Clinical Genomics. Script developed and maintained by Clinical Genomics are collected in this repocitory.
 
 
 ## Support
 
 Please see IT manual on how to contact Genologics Clarity LIMS support.
+
+## Branching model
+
+clinical_EPPs is using github flow branching model as described in our development manual.
+
+
 
 ## Scripts in production
 
@@ -31,12 +37,6 @@ sudo -iu glsai
 
 source activate epp_master
 ```
-
-### Dependencies
-
-depending on SciLifeLab/genologics
-Cloned into `/home/glsai/opt` and installed under epp_master environment.
-
 
 ### Config files
 
@@ -69,16 +69,10 @@ URL=https://clinical-api.scilifelab.se/api/v1
 
 ```
 
-## Branching model
-
-clinical_EPPs is using github flow branching model as described in our development manual.
-
-
 ## Setting up a new EPP - brief overview
 
 
 Do the testing of your new EPP on the stage server:
-
 
 
 ```
