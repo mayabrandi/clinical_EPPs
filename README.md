@@ -47,11 +47,26 @@ the branch that has been installed is now avalibe from within the [lims web inte
 
 The branch with the new script has been installed and you want ot test the script through the web interface. (Or deploy it on production. The procedure is the same.)
 
-Go to the CONFIGURATON tab in the web interface and the select the AUTOMATION tab. Klick the NEW AUTOMATON button.
+Say the new script is bcl2fastq.py. Running it from the commandline looks like this:
+
+```
+(epp_master)glsai@clinical-lims-stage:~/opt/clinical_EPPs/EPPs$ python bcl2fastq.py --help
+
+usage: bcl2fastq.py [-h] [-p PID] [-l LOG]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -p PID      Lims id for current Process
+  -l LOG      File name for standard log file, for runtime information and
+              problems.
+```
+
+To make it avalible in the web interface, go to the [CONFIGURATON tab](https://clinical-lims-stage.scilifelab.se/clarity/configuration/lab-work) and then select the AUTOMATION tab. Klick the NEW AUTOMATON button.
 
 - Choose a Automation Name
-- Channel Name should always be limsserver.
-- Enter the command line string. If you need help selecting a token for an argument, klick the TOKENS tab.
+- Channel Name should always be `limsserver`.
+- Enter the command line string. If you need help selecting a token for an argument, klick the TOKENS tab. In this care the string is
+`bash -c "/home/glsai/miniconda2/envs/epp_master/bin/bcl2fastq.py -p {processLuid} -l {compoundOutputFileLuid0}"`
 - Under AUTOMATION USE, select master step(s) in which the new EPP should be available.
 - Save
 
