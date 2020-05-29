@@ -93,6 +93,8 @@ Select Trigger Location - at what point in the step the script should be run, an
 
 The script is now avalible from within the step. Queue some samples to the step to try it!
 
+![](img/record_details_view.png)
+
 Read more about EPPs in the [Clarity LIMS API Cookbook](https://genologics.zendesk.com/hc/en-us/restricted?return_to=https%3A%2F%2Fgenologics.zendesk.com%2Fhc%2Fen-us%2Fcategories%2F201688743-Clarity-LIMS-API-Cookbook)
 
 
