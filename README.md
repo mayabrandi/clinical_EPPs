@@ -11,37 +11,6 @@ Clinical Genomics LIMS is using both scripts that are developed and maintained b
 clinical_EPPs is using github flow branching model as described in our development manual.
 
 
-## Config files
-
-The following config files are requiered.
-
-#### ~/.genologicsrc
-   
-This config file contains user info to give access to the lims database and is requiered for the SciLifeLab/genologics package.
-Its content must look like this:
-
-```
-[genologics]
-BASEURI=
-USERNAME=
-PASSWORD=
-```
-
-#### ~/.clinical_eppsrc 
-
-This config file contains userinfo to give access to cgstats which contins information about demultiplexing data. The config is used by one of the scripts in the Clinical-Genomics/clinical_EPPs package; bcl2fastq.py
-
-Its content must look like this:
-
-```
-[demultiplex data]
-
-SQLALCHEMY_DATABASE_URI=mysql+pymysql://remoteuser:<password>@127.0.0.1:<port>/cgstats
-[CgFace]
-URL=https://clinical-api.scilifelab.se/api/v1
-
-```
-
 ## Production and Stage
 
 Development of new EPPs is preferably be done locally but the final testing is done on the stage server.
@@ -101,4 +70,36 @@ Select Trigger Location - at what point in the step the script should be run, an
 The script is now avalible from within the step. Queue some samples to the step to try it!
 
 Read more about EPPs in the [Clarity LIMS API Cookbook](https://genologics.zendesk.com/hc/en-us/restricted?return_to=https%3A%2F%2Fgenologics.zendesk.com%2Fhc%2Fen-us%2Fcategories%2F201688743-Clarity-LIMS-API-Cookbook)
+
+
+## Config files
+
+The following config files are requiered for the package to work at all.
+
+**~/.genologicsrc**
+   
+This config file contains user info to give access to the lims database and is requiered for the SciLifeLab/genologics package.
+Its content must look like this:
+
+```
+[genologics]
+BASEURI=
+USERNAME=
+PASSWORD=
+```
+
+**~/.clinical_eppsrc**
+
+This config file contains userinfo to give access to cgstats which contins information about demultiplexing data. The config is used by one of the scripts in the Clinical-Genomics/clinical_EPPs package; bcl2fastq.py
+
+Its content must look like this:
+
+```
+[demultiplex data]
+
+SQLALCHEMY_DATABASE_URI=mysql+pymysql://remoteuser:<password>@127.0.0.1:<port>/cgstats
+[CgFace]
+URL=https://clinical-api.scilifelab.se/api/v1
+
+```
 
