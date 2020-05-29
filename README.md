@@ -23,7 +23,7 @@ ssh into the servers:
 
 `ssh gls@clinical-lims.scilifelab.se`
 
-You will need a password wich is keppt in the safety locker at clinical genomics.
+You will need a password wich is kept in the safety locker at clinical genomics.
 
 ## Insalling
 The procedure for installing is the same on both servers.
