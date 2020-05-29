@@ -44,18 +44,22 @@ URL=https://clinical-api.scilifelab.se/api/v1
 
 ## Production and Stage
 
-The production lims system is set up on (thalamus) and the stage lims system is set up on ...
+Development of new EPPs is preferably be done locally but the final testing is done on the stage server.
 
-Testing of a new scripts is done on the stage server.
+The production lims system is set up on hippocampus and the stage lims system is set up on amygdala.
 
-The procedure for installing is the same on both servers
+ssh into the stage servers:
 
-ssh into the server:
+stage
 `ssh gls@clinical-lims-stage.scilifelab.se`
 
-or if you are deploying to productuion:
+productuion
 `ssh gls@clinical-lims.scilifelab.se`
 
+You will need a password wich is keppt in the safety locker at clinical genomics.
+
+## Insalling
+The procedure for installing is the same on both servers.
 
 clinical_EPPs is cloned into `opt/nknknjk` and installed by the glsai user under the conda environment epp_master.
 
