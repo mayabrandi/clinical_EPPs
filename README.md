@@ -45,7 +45,7 @@ the branch that has been installed is now avalibe from within the [lims web inte
 
 ## Setting up a new EPP
 
-The branch with the new script has been installed and you want ot test the script through the web interface. (Or deploy it on production. The procedure is the same.)
+The branch with the new script has been installed and you want to test the script through the web interface. (Or deploy it to production. The procedure is the same.)
 
 Say the new script is bcl2fastq.py. Running it from the commandline looks like this:
 
