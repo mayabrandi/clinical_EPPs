@@ -48,12 +48,10 @@ Development of new EPPs is preferably be done locally but the final testing is d
 
 The production lims system is set up on hippocampus and the stage lims system is set up on amygdala.
 
-ssh into the stage servers:
+ssh into the servers:
 
-stage
 `ssh gls@clinical-lims-stage.scilifelab.se`
 
-productuion
 `ssh gls@clinical-lims.scilifelab.se`
 
 You will need a password wich is keppt in the safety locker at clinical genomics.
