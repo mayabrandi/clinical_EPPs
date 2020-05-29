@@ -61,11 +61,13 @@ optional arguments:
               problems.
 ```
 
-To make it avalible in the [web interface](https://clinical-lims-stage.scilifelab.se/clarity), go to the `CONFIGURATON` tab and then select `AUTOMATION`. Klick the `NEW AUTOMATON` button.
+When the script is configured in the lims step, arguments bust be replaced by `tokens` wich function as placeholders that are replaced with actual values at runtime. You can read more about tokens [here](https://genologics.zendesk.com/hc/en-us/articles/213988783-Derived-Sample-Naming-Convention-Tokens).
+
+To make the new script avalible in the [web interface](https://clinical-lims-stage.scilifelab.se/clarity), go to the `CONFIGURATON` tab and then select `AUTOMATION`. Klick the `NEW AUTOMATON` button.
 
 - Choose a Automation Name
 - Channel Name should always be `limsserver`.
-- Enter the command line string. If you need help selecting a token for an argument, klick the TOKENS tab. In this case the string is
+- Enter the command line string. If you need help selecting a token for an argument, klick the `TOKENS` tab wich will show the list of avalible tokens. In this case the string is
 `bash -c "/home/glsai/miniconda2/envs/epp_master/bin/bcl2fastq.py -p {processLuid} -l {compoundOutputFileLuid0}"`
 - Under AUTOMATION USE, select master step(s) in which the new EPP should be available.
 - Save
@@ -76,14 +78,14 @@ To make it avalible in the [web interface](https://clinical-lims-stage.scilifela
 
 Once the EPP is in place on the master step you need to configure its usage. This can be done both on master step and on step level. 
 
-Klick the LAB WORK tab and select a step in which you have enabeled the EPP. 
+Klick the `LAB WORK` tab and select a step in which you have enabeled the EPP. 
 
 
 ![](img/configuration_labwork.png)
 
 
 
-Choose STEP or MASTER STEP, and scroll down to the AUTOMATION section. The new EPP should be seen there. 
+Choose `STEP` or `MASTER STEP`, and scroll down to the `AUTOMATION` section. The new EPP should be seen there. 
 
 
 ![](img/step_settings.png)
