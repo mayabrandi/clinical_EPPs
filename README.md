@@ -71,7 +71,7 @@ To make it avalible in the [web interface](https://clinical-lims-stage.scilifela
 - Save
 
 
-![](img/automation_settings.png)
+![](img/Automation_details.png)
 
 
 Once the EPP is in place on the master step you need to configure its usage. This can be done both on master step and on step level. 
@@ -86,7 +86,7 @@ Klick the LAB WORK tab and select a step in which you have enabeled the EPP.
 Choose STEP or MASTER STEP, and scroll down to the AUTOMATION section. The new EPP should be seen there. 
 
 
-![](img/step_setings.png)
+![](img/step_settings.png)
 
 
 Select Trigger Location - at what point in the step the script should be run, and Trigger Style - how the script should be triggered.
