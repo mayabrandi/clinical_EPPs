@@ -74,11 +74,10 @@ Read more about EPPs in the [Clarity LIMS API Cookbook](https://genologics.zende
 
 ## Config files
 
-The following config files are requiered for the package to work at all.
-
 **~/.genologicsrc**
    
-This config file contains user info to give access to the lims database and is requiered for the SciLifeLab/genologics package.
+This config file contains user info to give access to the lims database and is requiered for the SciLifeLab/genologics package. All EPPs depend on this config.
+
 Its content must look like this:
 
 ```
@@ -90,7 +89,7 @@ PASSWORD=
 
 **~/.clinical_eppsrc**
 
-This config file contains userinfo to give access to cgstats which contins information about demultiplexing data. The config is used by one of the scripts in the Clinical-Genomics/clinical_EPPs package; bcl2fastq.py
+This config file contains userinfo to give access to cgstats which contains information about demultiplexing data. The config is used by one of the scripts in the Clinical-Genomics/clinical_EPPs package; bcl2fastq.py
 
 Its content must look like this:
 
