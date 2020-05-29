@@ -70,25 +70,25 @@ git pull <branch name>
 python setup.py install
 
 ```
-the branch that has been installed is now avalibe from within the lims web interface. 
+the branch that has been installed is now avalibe from within the [lims web interface](https://clinical-lims-stage.scilifelab.se/clarity/).
 
 
 
-## Setting up a new EPP - brief overview
+## Setting up a new EPP
 
+The branch with the new script has been installed and you want ot test the script through the web interface. (Or deploy it on production. The procedure is the same.)
 
-When adding a new EPP to a step, go to the CONFIGURATON tab in the web interface and the select the AUTOMATION tab.
-
-Klick the NEW AUTOMATON button.
+Go to the CONFIGURATON tab in the web interface and the select the AUTOMATION tab. Klick the NEW AUTOMATON button.
 
 - Choose a Automation Name
 - Channel Name should always be limsserver.
 - Enter the command line string. If you need help selecting a token for an argument, klick the TOKENS tab.
 - Under AUTOMATION USE, select master step(s) in which the new EPP should be available.
 - Save
+
 ![](img/automation_settings.png)
 
-Once the EPP is in place on the paster step you need to configure its usage. This can be done both on master step and on step level. 
+Once the EPP is in place on the master step you need to configure its usage. This can be done both on master step and on step level. 
 
 Klick the LAB WORK tab and select a step in which you have enabeled the EPP. 
 ![](img/configuration_labwork.png)
@@ -98,6 +98,7 @@ Choose STEP or MASTER STEP, and scroll down to the AUTOMATION section. The new E
 
 Select Trigger Location - at what point in the step the script should be run, and Trigger Style - how the script should be triggered.
 
-Add the new EPP to the Clinical-Genomics/clinical_EPPs repo first when you are sure it works on the stage server. 
+The script is now avalible from within the step. Queue some samples to the step to try it!
+
 Read more about EPPs in the Clarity LIMS API Cookbook
 
