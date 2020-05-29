@@ -23,7 +23,7 @@ class SamplePlacementMap():
         self.other_source = other_source
         self.process = process
         self.mastermap = {}
-        self.udf_list = ['Sample Volume (ul)', 'Volume of sample (ul)', 'Volume of RSB (ul)', 'EB Volume (ul)',]
+        self.udf_list = ['Sample Volume (ul)', 'Volume of sample (ul)', 'Volume of RSB (ul)', 'EB Volume (ul)', 'PCR Plate', 'Ligation Master Mix']
 
 
     def _make_source_dest_dict(self, source_art, dest_art):
@@ -136,7 +136,11 @@ class SamplePlacementMap():
                         html.append('Source Well : ' + well_info['source_well'] + '<br>')
                         for udf in self.udf_list:
                             try:
-                                html.append(udf + ' : ' + str(round(well_info['artifact'].udf[udf],2))+ '<br>')
+                                udf_val = well_info['artifact'].udf[udf]
+                                if isinstance(udf_val, float) or isinstance(udf_val, int):
+                                    html.append(udf + ' : ' + str(round(udf_val,2))+ '<br>')
+                                elif isinstance(udf_val, str):
+                                    html.append(udf + ' : ' +udf_val+ '<br>')
                             except:
                                 pass
                     else:

@@ -31,30 +31,36 @@ class ToCSV():
 
     def get_amount(self, sample_id):
         amount_arts = lims.get_artifacts(process_type=self.amount_step, samplelimsid=sample_id)
+        amount_arts = filter(lambda a: a.output_type == "Analyte" , amount_arts)
         amount_art = amount_arts[0]
         for art in amount_arts:
-            if art.output_type != "Analyte":
-                continue
             if art.parent_process.date_run >= amount_art.parent_process.date_run:
                 amount_art = art
-        return amount_art.udf.get('Amount (ng)')
+        return amount_art.udf.get('Amount needed (ng)')
             
 
     def make_file(self, hamilton_file):
         hamilton_file = hamilton_file + '_'+'KAPA_Hamilton.txt'
-        hamilton_csv = open( hamilton_file , 'wb')
+        hamilton_csv = open( hamilton_file , 'w')
         wr = csv.writer(hamilton_csv)
         wr.writerow(['LIMS ID', 'Sample Well', 'Ligation Master Mix', 'Index Well', 'PCR Plate'])
         for art in self.artifacts:
-            sample = art.samples[0].id
+            sample = art.samples[0].id  
+            if art.reagent_labels:
+                reagent_label = art.reagent_labels[0]
+            else:
+                reagent_label = '-'
             well = art.location[1].replace(':','')
             amount = self.get_amount(sample)
             if amount<=10:
                 amount=10
             mix_plate = self.translate_amount.get(amount)
             if mix_plate:
-                row_list = [sample ,well ,mix_plate['Ligation Master Mix'],'-' ,mix_plate['PCR Plate']]
+                row_list = [sample ,well ,mix_plate['Ligation Master Mix'],reagent_label ,mix_plate['PCR Plate']]
                 wr.writerow(row_list)
+                art.udf['Ligation Master Mix'] = mix_plate['Ligation Master Mix']
+                art.udf['PCR Plate'] = mix_plate['PCR Plate']
+                art.put()
             else:
                 self.failed_samples.append(sample)
 
@@ -65,10 +71,9 @@ def main(lims, args):
     TCSV.make_file(args.hamilton_file)
 
     if TCSV.failed_samples:
-        abstract = 'samples missed amount data: '+ ', '.join(TCSV.failed_samples)
+        sys.exit( 'Could not find Amount needed (ng) for samples: '+ ', '.join(TCSV.failed_samples))
     else:
-        abstract = "Bravo CSV sucsessfully generated."
-    print >> sys.stderr, abstract
+        print >> sys.stderr, "Hamilton file sucsessfully generated."
 
 
 if __name__ == "__main__":
