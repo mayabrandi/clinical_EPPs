@@ -65,7 +65,7 @@ To make it avalible in the [web interface](https://clinical-lims-stage.scilifela
 
 - Choose a Automation Name
 - Channel Name should always be `limsserver`.
-- Enter the command line string. If you need help selecting a token for an argument, klick the TOKENS tab. In this care the string is
+- Enter the command line string. If you need help selecting a token for an argument, klick the TOKENS tab. In this case the string is
 `bash -c "/home/glsai/miniconda2/envs/epp_master/bin/bcl2fastq.py -p {processLuid} -l {compoundOutputFileLuid0}"`
 - Under AUTOMATION USE, select master step(s) in which the new EPP should be available.
 - Save
