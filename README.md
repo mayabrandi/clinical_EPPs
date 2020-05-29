@@ -55,15 +55,24 @@ Go to the CONFIGURATON tab in the web interface and the select the AUTOMATION ta
 - Under AUTOMATION USE, select master step(s) in which the new EPP should be available.
 - Save
 
+
 ![](img/automation_settings.png)
+
 
 Once the EPP is in place on the master step you need to configure its usage. This can be done both on master step and on step level. 
 
 Klick the LAB WORK tab and select a step in which you have enabeled the EPP. 
+
+
 ![](img/configuration_labwork.png)
 
+
+
 Choose STEP or MASTER STEP, and scroll down to the AUTOMATION section. The new EPP should be seen there. 
+
+
 ![](img/step_setings.png)
+
 
 Select Trigger Location - at what point in the step the script should be run, and Trigger Style - how the script should be triggered.
 
