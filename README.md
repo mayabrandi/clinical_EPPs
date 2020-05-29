@@ -13,7 +13,7 @@ clinical_EPPs is using github flow branching model as described in our developme
 
 ## Production and Stage
 
-Development of new EPPs is preferably be done locally but the final testing is done on the stage server.
+Development of new EPPs is preferably done locally but the final testing is done on the stage server.
 
 The production lims system is set up on hippocampus and the stage lims system is set up on amygdala.
 
@@ -127,4 +127,3 @@ SQLALCHEMY_DATABASE_URI=mysql+pymysql://remoteuser:<password>@127.0.0.1:<port>/c
 URL=https://clinical-api.scilifelab.se/api/v1
 
 ```
-
