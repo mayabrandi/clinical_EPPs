@@ -61,7 +61,7 @@ optional arguments:
               problems.
 ```
 
-To make it avalible in the web interface, go to the [CONFIGURATON tab](https://clinical-lims-stage.scilifelab.se/clarity/configuration/lab-work) and then select the AUTOMATION tab. Klick the NEW AUTOMATON button.
+To make it avalible in the [web interface](https://clinical-lims-stage.scilifelab.se/clarity), go to the CONFIGURATON tab and then select  AUTOMATION. Klick the NEW AUTOMATON button.
 
 - Choose a Automation Name
 - Channel Name should always be `limsserver`.
