@@ -69,7 +69,7 @@ To make the new script avalible in the [web interface](https://clinical-lims-sta
 - Channel Name should always be `limsserver`.
 - Enter the command line string. If you need help selecting a token for an argument, klick the `TOKENS` tab wich will show the list of avalible tokens. In this case the string is
 `bash -c "/home/glsai/miniconda2/envs/epp_master/bin/bcl2fastq.py -p {processLuid} -l {compoundOutputFileLuid0}"`
-- Under AUTOMATION USE, select master step(s) in which the new EPP should be available.
+- Under `AUTOMATION USE`, select master step(s) in which the new EPP should be available.
 - Save
 
 
