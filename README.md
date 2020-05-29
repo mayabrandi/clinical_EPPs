@@ -28,13 +28,13 @@ You will need a password wich is keppt in the safety locker at clinical genomics
 ## Insalling
 The procedure for installing is the same on both servers.
 
-clinical_EPPs is cloned into `opt/nknknjk` and installed by the glsai user under the conda environment epp_master.
+clinical_EPPs is cloned into `/home/glsai/opt/` and installed by the glsai user under the conda environment epp_master.
 
 ```
 sudo -iu glsai
 source activate epp_master
 
-cd opt/clinical_EPPs
+cd /home/glsai/opt/clinical_EPPs
 git pull <branch name>
 python setup.py install
 
