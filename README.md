@@ -129,3 +129,51 @@ SQLALCHEMY_DATABASE_URI=mysql+pymysql://remoteuser:<password>@127.0.0.1:<port>/c
 URL=https://clinical-api.scilifelab.se/api/v1
 
 ```
+
+## Trouble shooting
+
+When a script is failing, usually as a developer, you will get this information from the lims user who has run the script from within a specific lims step. Its easiest to trouble shoot if the step is still opened.
+
+![](img/debug_step.png)
+
+* Ask the user to keep the step opened for you to trouble shoot, if possible. (Sometimes they need to continue the step)
+* Go to the step to see what EPP was failing. The name of the blue buttom. In this case: **1. Copy UDFs from AggregateQC - Twist**
+* Go to configuration/automation in the web interface and search for the button name. There might be many buttons with the same name. Find the button that is active in the masterstep tht you are debugging. 
+
+![](img/debug_automation.png)
+![](img/debug_automation_string.png)
+
+* The issue can be in how the script has been configured, the "command line" text box, it can be some bug in the script, or it can be the the script is expecting the artifacts/process/samples/containers or whatever has some fields or features that are not in place. 
+* One way to debug is to run the script from command line. ssh into productuoin as described above and run the script with the same argument that are given in the "command line" text box. The process id {processLuid} is allmost allways asked for. 
+
+`{processLuid} = <magic number>-<the last section of the url of the step>` 
+
+In this case: 24-144356. 
+  
+The magic number can be: 24, 151 or 122.
+
+cd /home/glsai/opt/clinical_EPPs/EPPs/
+python copyUDFs_from_aggregateQC.py -p '24-144356' -l testlog -u 'Concentration' 'Amount (ng)' -q 'Aggregate QC (DNA) TWIST v1'
+
+
+
+
+
+
+
+### Scripts developt by Illumina
+In our Clinical Genomics lims system we are also using a fiew scripts that are developed and maintained by Illumina.
+Programs written and maintained by Illumina are located in
+
+Java scripts:
+/opt/gls/clarity/extensions/ngs-common/
+
+Python scripts:
+/opt/gls/clarity/customextensions
+
+
+Don't thouch these directories. Insted, if a script developed by Illumina is failing, contact them for help support. 
+
+
+
+
