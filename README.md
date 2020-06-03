@@ -136,7 +136,7 @@ When a script is failing, usually as a developer, you will get this information 
 
 ![](img/debug_step.png)
 
-Trouble shooting - step by step:
+**Trouble shooting - step by step:**
 * Ask the user to keep the step opened for you to trouble shoot, if possible. (Sometimes they need to continue the step)
 * Go to the step to see what EPP was failing. The name of the blue buttom. In this case: **1. Copy UDFs from AggregateQC - Twist**
 * Go to configuration/automation in the web interface and search for the button name. There might be many buttons with the same name. Find the button that is active in the masterstep tht you are debugging. 
