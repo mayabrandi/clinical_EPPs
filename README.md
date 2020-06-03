@@ -162,11 +162,10 @@ In our Clinical Genomics lims system we are also using a fiew scripts that are d
 Programs written and maintained by Illumina are located in
 
 Java scripts:
-/opt/gls/clarity/extensions/ngs-common/
+`/opt/gls/clarity/extensions/ngs-common/`
 
 Python scripts:
-/opt/gls/clarity/customextensions
-
+`/opt/gls/clarity/customextensions`
 
 Don't thouch these directories. Insted, if a script developed by Illumina is failing, contact them for help support. 
 
