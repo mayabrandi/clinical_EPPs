@@ -151,13 +151,10 @@ In this case: 24-144356.
   
 The magic number can be: 24, 151 or 122.
 
+```
 cd /home/glsai/opt/clinical_EPPs/EPPs/
 python copyUDFs_from_aggregateQC.py -p '24-144356' -l testlog -u 'Concentration' 'Amount (ng)' -q 'Aggregate QC (DNA) TWIST v1'
-
-
-
-
-
+```
 
 
 ### Scripts developt by Illumina
