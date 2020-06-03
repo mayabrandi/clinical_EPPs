@@ -141,7 +141,6 @@ When a script is failing, usually as a developer, you will get this information 
 * Go to configuration/automation in the web interface and search for the button name. There might be many buttons with the same name. Find the button that is active in the masterstep tht you are debugging. 
 
 ![](img/debug_automation.png)
-![](img/debug_automation_string.png)
 
 * The issue can be in how the script has been configured, the "command line" text box, it can be some bug in the script, or it can be the the script is expecting the artifacts/process/samples/containers or whatever has some fields or features that are not in place. 
 * One way to debug is to run the script from command line. ssh into productuoin as described above and run the script with the same argument that are given in the "command line" text box. The process id {processLuid} is allmost allways asked for. 
