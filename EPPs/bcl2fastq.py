@@ -9,7 +9,6 @@ from clinical_EPPs.config import SQLALCHEMY_DATABASE_URI
 from genologics.entities import Process
 from genologics.epp import EppLogger
 
-import logging
 import sys
 
 from BeautifulSoup import BeautifulSoup, Comment
@@ -34,6 +33,8 @@ db = SQLAlchemy(app)
 ##--------------------------------------------------------------------------------
 ##----------------------------------MODELS----------------------------------------
 ##--------------------------------------------------------------------------------
+
+
 
 class Project(db.Model):
     __tablename__ = 'project'
@@ -139,18 +140,20 @@ class BCLconv():
     def __init__(self, process):
         self.process = process
         self.artifacts = {}
-        self.passed_arts = 0
+        self.updated_arts = 0
+        self.q30treshhold = process.udf.get('Threshold for % bases >= Q30')
+        self.reads_treshold = 1000
         all_artifacts = self.process.all_outputs(unique=True)
-        self.total_nr_arts = len(filter(lambda a: a.output_type == "ResultFile" , all_artifacts))
         self.demux_data = []
-
+        self.not_updated_arts = len(filter(lambda a: len(a.samples) == 1 , all_artifacts))
+        self.failed_arts = 0
 
     def get_artifacts(self):
         """Prepparing output artifact dict."""
         for input_output in self.process.input_output_maps:
             inpt = input_output[0]
             outpt = input_output[1]
-            if outpt['output-generation-type'] != 'PerAllInputs':
+            if outpt['output-generation-type'] == 'PerReagentLabel':
                 art = outpt['uri']
                 sampname = art.samples[0].id  
                 well = inpt['uri'].location[1][0]
@@ -160,8 +163,7 @@ class BCLconv():
                     self.artifacts[sampname][well] = art         
 
     def get_fc_id(self):
-        """Gettning FC id of the seq-run.
-        Can't come up with a better way of doing this..."""
+        """Gettning FC id of the seq-run. Assuming only all samples come from only one flowcell"""
         try:
             self.flowcellname = self.process.all_inputs()[0].container.name
         except:
@@ -169,30 +171,39 @@ class BCLconv():
 
 
     def get_demux_data(self):
-        """Geting the demultiplex statistics from the demultiplex database csdb."""
+        """Geting the demultiplex statistics from the demultiplex database cgstats."""
         try:
             self.demux_data = Unaligned.query.join(Demux).join(Flowcell).filter(Flowcell.flowcellname == self.flowcellname).all()
         except:
             sys.exit('Error getting data from the demultiplexing database. Maybe the flowcell id is wrong: '+ self.flowcellname)
 
+    def get_qc(self, q30, reads):
+        if q30 >= self.q30treshhold and reads >= self.reads_treshold:
+            return 'PASSED'
+        else:
+            return 'FAILED'
+            self.failed_arts += 1
+        
     def set_udfs(self):
         """Setting the demultiplex udfs"""
         for samp in self.demux_data:
             #The sample.samplename in the demux database corresponds to the LIMS <sample.id>_<index>
             sample_name = samp.sample.samplename.split('_')[0]
-            try:
-                art = self.artifacts[sample_name][str(samp.lane)]
+            if sample_name in self.artifacts:
+                art = self.artifacts[sample_name].get(str(samp.lane))
                 art.udf['% Perfect Index Read'] =  float(samp.perfect_indexreads_pct)
                 art.udf['# Reads'] =  samp.readcounts
                 art.udf['% Bases >=Q30'] =  float(samp.q30_bases_pct)
+                art.qc_flag = self.get_qc(float(samp.q30_bases_pct), samp.readcounts)
                 art.put()
-                self.passed_arts += 1
-            except:
-                pass
+                self.updated_arts += 1
+                self.not_updated_arts -= 1
 
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
+    if not 'Threshold for % bases >= Q30' in process.udf:
+        sys.exit('Threshold for % bases >= Q30 has not ben set.')
     BCL = BCLconv(process)
     BCL.get_fc_id()
     BCL.get_artifacts()
@@ -200,18 +211,21 @@ def main(lims, args):
     BCL.set_udfs()
 
 
-    d = {'ca': BCL.passed_arts,'wa' : BCL.total_nr_arts - BCL.passed_arts}
-    abstract = ("Updated {ca} artifact(s). Skipped {wa} due to missing data in the demultiplex database.").format(**d)
+    d = {'ca': BCL.updated_arts, 'wa' : BCL.not_updated_arts}
+    abstract = ("Updated {ca} artifact(s). Skipped {wa} due to missing data in the demultiplex database. ").format(**d)
 
-    print >> sys.stderr, abstract
+    if BCL.failed_arts:
+        abstract = abstract + str(BCL.failed_arts) + ' failed QC!'
+
+    if BCL.failed_arts or BCL.not_updated_arts:
+        sys.exit(abstract)
+    else:
+        print >> sys.stderr, abstract
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('-p', dest = 'pid',
                         help='Lims id for current Process')
-    parser.add_argument('-l', dest = 'log', default=sys.stdout,
-                        help=('File name for standard log file, '
-                              'for runtime information and problems.'))
 
     args = parser.parse_args()
     lims = Lims(BASEURI, USERNAME, PASSWORD)
