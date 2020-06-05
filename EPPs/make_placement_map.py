@@ -18,12 +18,12 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 
 class SamplePlacementMap():
 
-    def __init__(self, process, original_source, other_source):
+    def __init__(self, process, original_source, other_source, udf_list):
         self.original_source = original_source
         self.other_source = other_source
         self.process = process
         self.mastermap = {}
-        self.udf_list = ['Sample Volume (ul)', 'Volume of sample (ul)', 'Volume of RSB (ul)', 'EB Volume (ul)', 'PCR Plate', 'Ligation Master Mix']
+        self.udf_list = udf_list 
 
 
     def _make_source_dest_dict(self, source_art, dest_art):
@@ -208,7 +208,7 @@ class SamplePlacementMap():
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    SPM = SamplePlacementMap(process, args.orig, args.other_source)
+    SPM = SamplePlacementMap(process, args.orig, args.other_source, args.udfs)
     SPM.build_mastermap()
     if args.dest_96well:
         SPM.make_html(args.res)
@@ -229,6 +229,14 @@ if __name__ == "__main__":
                         help=("The source well step if other than this or original."))
     parser.add_argument('--dest_96well', action='store_true',
                         help=("Use this tag if destination is 96 well plate"))
+    parser.add_argument('--udfs', nargs='+', 
+                        help='udfs to show in placement map',
+                        default = ['Sample Volume (ul)', 
+                                   'Volume of sample (ul)', 
+                                   'Volume of RSB (ul)', 
+                                   'EB Volume (ul)', 
+                                   'PCR Plate', 
+                                   'Ligation Master Mix'])
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)

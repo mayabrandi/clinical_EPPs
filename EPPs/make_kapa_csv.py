@@ -56,7 +56,7 @@ class ToCSV():
                 amount=10
             mix_plate = self.translate_amount.get(amount)
             if mix_plate:
-                row_list = [sample ,well ,mix_plate['Ligation Master Mix'],reagent_label ,mix_plate['PCR Plate']]
+                row_list = [sample ,well ,mix_plate['Ligation Master Mix'],reagent_label.split(' ')[0] ,mix_plate['PCR Plate']]
                 wr.writerow(row_list)
                 art.udf['Ligation Master Mix'] = mix_plate['Ligation Master Mix']
                 art.udf['PCR Plate'] = mix_plate['PCR Plate']

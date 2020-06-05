@@ -32,13 +32,21 @@ class CalculationsTwist:
 
     def calculate_volumes_for_aliquot(self):
         for art in self.artifacts:
-            amount = art.udf.get('Amount (ng)')
             concentration = art.udf.get('Concentration')
-            amount_needed = art.udf.get('Amount needed (ng)')
-            if None in [amount, concentration, amount_needed]:
+            amount = art.udf.get('Amount (ng)')
+            if None in [amount, concentration]:
                 self.failed +=1
-                self.missing_udfs += ['Amount (ng)', 'Concentration', 'Amount needed (ng)']
+                self.missing_udfs += ['Amount (ng)', 'Concentration']
                 continue
+            if amount >=250: 
+                amount_needed=250
+            elif 250> amount >=50: 
+                amount_needed=50 
+            elif 50> amount >=10:
+                amount_needed=10
+            else:
+                amount_needed=amount
+            art.udf['Amount needed (ng)'] = amount_needed
             art.udf['Sample Volume (ul)'] = amount_needed/float(concentration)
             art.udf['Volume H2O (ul)'] = 30 - art.udf['Sample Volume (ul)']
             art.put()
