@@ -138,7 +138,7 @@ When a script is failing, usually as a developer, you will get this information 
 
 **Trouble shooting - step by step:**
 * Ask the user to keep the step opened for you to trouble shoot, if possible. (Sometimes they need to continue the step)
-* Go to the step to see what EPP was failing. The name of the blue buttom. In this case: **1. Copy UDFs from AggregateQC - Twist**
+* Go to the step to see what EPP was failing. The name of the EPP is the label on blue button. In this case: **1. Copy UDFs from AggregateQC - Twist**
 * Go to configuration/automation in the web interface and search for the button name. There might be many buttons with the same name. Find the button that is active in the masterstep tht you are debugging. 
 * The issue can be in how the script has been configured (the "command line" text box), it can be some bug in the script, or it can be that the script is expecting the artifacts/process/samples/containers or whatever has some fields or features that are not in place. 
 * One way to debug is to run the script from command line. ssh into productuoin as described above and run the script with the same argument that are given in the "command line" text box. The process id {processLuid} is allmost allways asked for. 
@@ -169,6 +169,5 @@ Python scripts:
 `/opt/gls/clarity/customextensions`
 
 Don't thouch these directories. Insted, if a script developed by Illumina is failing, contact them for help support. 
-
 
 
