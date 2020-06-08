@@ -146,11 +146,17 @@ When a script is failing, usually as a developer, you will get this information 
 ![](img/debug_automation.png)
 
 
-`{processLuid} = <magic number>-<the last section of the url of the step>` 
+`{processLuid} = <prefix>-<the last section of the url of the step>` 
 
 In this case: 24-144356. 
   
-The magic number can be: 24, 151 or 122.
+Prefixes:
+
+24- for configured processes
+
+122- for pooling processes
+
+151- for indexing/reagent tag processes
 
 ```
 cd /home/glsai/opt/clinical_EPPs/EPPs/
