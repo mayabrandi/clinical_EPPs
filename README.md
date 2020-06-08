@@ -132,7 +132,7 @@ URL=https://clinical-api.scilifelab.se/api/v1
 
 ## Trouble shooting
 
-When a script is failing, usually as a developer, you will get this information from the lims user who has run the script from within a specific lims step. Its easiest to trouble shoot if the step is still opened.
+When a script is failing, usually as a developer, you will get this information from the lims user who has run the script from within a specific lims step. It´s easiest to trouble shoot if the step is still opened.
 
 ![](img/debug_step.png)
 
@@ -169,7 +169,6 @@ Python scripts:
 `/opt/gls/clarity/customextensions`
 
 Don't thouch these directories. Insted, if a script developed by Illumina is failing, contact them for help support. 
-
 
 
 
