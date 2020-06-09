@@ -16,7 +16,7 @@ def check_amounts(process):
     out_analytes = [a for a in process.all_outputs() if a.type=='Analyte']
     for art in out_analytes:
         amount = art.udf.get('Amount needed (ng)')
-        if amount not in [50, 250, 10] and amount >10:
+        if amount is None or (amount not in [50, 250, 10] and amount >10):
             sys.exit('Amount needed (ng) must be within [50, 250, <10]')
 
 def main(lims, args):

@@ -21,9 +21,9 @@ class ToCSV():
         self.plate_dict = {}
         self.failed_samples = []
         self.amount_step=amount_step
-        self.translate_amount = {10: {'Ligation Master Mix':'B', 'PCR Plate': 'Plate 3'},
-                                 50: {'Ligation Master Mix':'A', 'PCR Plate': 'Plate 2'},
-                                 250: {'Ligation Master Mix':'A', 'PCR Plate': 'Plate 1'}}
+        self.translate_amount = {10: {'Ligation Master Mix':'B', 'PCR Plate': 'Plate3'},
+                                 50: {'Ligation Master Mix':'A', 'PCR Plate': 'Plate2'},
+                                 250: {'Ligation Master Mix':'A', 'PCR Plate': 'Plate1'}}
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
@@ -56,7 +56,10 @@ class ToCSV():
                 amount=10
             mix_plate = self.translate_amount.get(amount)
             if mix_plate:
-                row_list = [sample ,well ,mix_plate['Ligation Master Mix'],reagent_label.split(' ')[0] ,mix_plate['PCR Plate']]
+                index_well_col = str(int(reagent_label.split(' ')[0][1:3]))
+                index_well_row = reagent_label.split(' ')[0][0]
+                index_well = index_well_row + index_well_col
+                row_list = [sample ,well ,mix_plate['Ligation Master Mix'],index_well ,mix_plate['PCR Plate']]
                 wr.writerow(row_list)
                 art.udf['Ligation Master Mix'] = mix_plate['Ligation Master Mix']
                 art.udf['PCR Plate'] = mix_plate['PCR Plate']
