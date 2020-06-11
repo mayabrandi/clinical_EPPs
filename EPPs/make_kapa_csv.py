@@ -48,17 +48,17 @@ class ToCSV():
             sample = art.samples[0].id  
             if art.reagent_labels:
                 reagent_label = art.reagent_labels[0]
+                index_well_col = str(int(reagent_label.split(' ')[0][1:3]))
+                index_well_row = reagent_label.split(' ')[0][0]
+                index_well = index_well_row + index_well_col
             else:
-                reagent_label = '-'
+                index_well = '-'
             well = art.location[1].replace(':','')
             amount = self.get_amount(sample)
             if amount<=10:
                 amount=10
             mix_plate = self.translate_amount.get(amount)
             if mix_plate:
-                index_well_col = str(int(reagent_label.split(' ')[0][1:3]))
-                index_well_row = reagent_label.split(' ')[0][0]
-                index_well = index_well_row + index_well_col
                 row_list = [sample ,well ,mix_plate['Ligation Master Mix'],index_well ,mix_plate['PCR Plate']]
                 wr.writerow(row_list)
                 art.udf['Ligation Master Mix'] = mix_plate['Ligation Master Mix']
