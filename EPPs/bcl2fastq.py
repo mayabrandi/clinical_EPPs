@@ -181,8 +181,8 @@ class BCLconv():
         if q30 >= self.q30treshhold and reads >= self.reads_treshold:
             return 'PASSED'
         else:
-            return 'FAILED'
             self.failed_arts += 1
+            return 'FAILED'
         
     def set_udfs(self):
         """Setting the demultiplex udfs"""
