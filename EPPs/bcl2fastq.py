@@ -215,7 +215,7 @@ def main(lims, args):
     abstract = ("Updated {ca} artifact(s). Skipped {wa} due to missing data in the demultiplex database. ").format(**d)
 
     if BCL.failed_arts:
-        abstract = abstract + str(BCL.failed_arts) + ' failed QC!'
+        abstract = abstract + str(BCL.failed_arts) + ' samples failed QC!'
 
     if BCL.failed_arts or BCL.not_updated_arts:
         sys.exit(abstract)
