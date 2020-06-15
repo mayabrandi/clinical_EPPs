@@ -13,6 +13,8 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 """
 
 def check_udfs_on_samples(process):
+    """Checks udfs on sample level and exits if udf is misisng"""
+    
     for art in process.all_inputs():
         sample = art.samples[0]
         if not sample.udf.get('Reads Missing (M)'):
