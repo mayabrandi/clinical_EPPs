@@ -15,8 +15,8 @@ Written by Maya Brandi, Science for Life Laboratory, Stockholm, Sweden
 def check_udfs_on_samples(process):
     for art in process.all_inputs():
         sample = art.samples[0]
-        if not sample.udf.get('Reads Missing (M)'):
-            sys.exit('Reads Missing (M) must be set on all samples')
+        if not sample.udf.get('Reads missing (M)'):
+            sys.exit('Reads missing (M) must be set on all samples')
         if not sample.udf.get('Received at'):
             sys.exit('Recieved date must be set on all samples')
 
