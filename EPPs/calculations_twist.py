@@ -48,6 +48,7 @@ class CalculationsTwist:
     def calculate_volumes_for_pooling(self):
         all_volumes = [] 
         for pool in self.artifacts:
+            pool.qc_flag='PASSED'
             total_volume = 0
             pool_size = pool.udf.get('Total Amount (ng)')
             artifacts = pool.input_artifact_list()
@@ -66,14 +67,12 @@ class CalculationsTwist:
                     total_volume = None
                     break
                 fract_of_pool = reads/float(total_reads)
-                amount = pool_size * fract_of_pool
-                vol = amount/concentration
-                if vol>15:
-                    vol=15
-                if amount<187.5:
+                amount_to_pool = pool_size * fract_of_pool
+                vol = amount_to_pool/concentration
+                if amount_to_pool > art.udf.get('Amount (ng)'):
                     pool.qc_flag='FAILED'
                     self.amount_fail = True
-                art.udf['Amount taken (ng)'] = amount
+                art.udf['Amount taken (ng)'] = amount_to_pool
                 art.udf['Volume of sample (ul)'] = vol
                 art.put()            
                 total_volume += vol
