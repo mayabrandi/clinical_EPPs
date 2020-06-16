@@ -26,9 +26,12 @@ class VolumeBeads():
                 continue
             if samp_vol < 50:
                 vol_H2O = 50 - samp_vol
+                vol_elution = 40
             else:
                 vol_H2O = 0
+                vol_elution = 0.8*samp_vol
             vol_beads = 2*(samp_vol + vol_H2O)
+            art.udf['Volume Elution (ul)'] = vol_elution
             art.udf['Volume H2O (ul)'] = vol_H2O
             art.udf['Volume Beads (ul)'] = vol_beads
             art.put()
