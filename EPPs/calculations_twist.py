@@ -69,7 +69,7 @@ class CalculationsTwist:
                 fract_of_pool = reads/float(total_reads)
                 amount_to_pool = pool_size * fract_of_pool
                 vol = amount_to_pool/concentration
-                if amount_to_pool > art.udf.get('Amount (ng)'):
+                if amount_to_pool > art.udf.get('Amount (ng)') or amount_to_pool < 187.5:
                     pool.qc_flag='FAILED'
                     self.amount_fail = True
                 art.udf['Amount taken (ng)'] = amount_to_pool

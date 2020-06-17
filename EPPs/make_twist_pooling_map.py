@@ -72,7 +72,7 @@ class SamplePlacementMap():
             ## artifact list
             for art in artifacts:
                 sample = art.samples[0]
-                if art.udf.get('Amount taken (ng)') > art.udf.get('Amount (ng)') :
+                if art.udf.get('Amount taken (ng)') > art.udf.get('Amount (ng)') or art.udf.get('Amount taken (ng)') < 187.5:
                     html.append( '<tr><td style="background-color: #F08080; width: 7%;">' )
                 else:
                     html.append( '<tr><td style="width: 7%;">' )
