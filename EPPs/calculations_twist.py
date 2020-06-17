@@ -18,7 +18,6 @@ class CalculationsTwist:
         self.process = process
         self.iom = process.input_output_maps
         self.artifacts = []
-        self.amount_fail = False
         self.okej = 0
         self.failed = 0
         self.missing_udfs = []
@@ -55,49 +54,6 @@ class CalculationsTwist:
             art.udf['Volume H2O (ul)'] = 30 - art.udf['Sample Volume (ul)']
             art.put()
             self.okej +=1
-    
-    def calculate_volumes_for_pooling(self):
-        all_volumes = [] 
-        for pool in self.artifacts:
-            total_volume = 0
-            pool_size = pool.udf.get('Total Amount (ng)')
-            artifacts = pool.input_artifact_list()
-            total_reads = 0
-            for art in artifacts:
-                reads = art.samples[0].udf.get('Reads missing (M)')
-                if reads:
-                    total_reads += reads
-            if total_reads == 0:
-                sys.exit('All samples seem to have Missing Reads = 0. You dont want to sequence any of the samples?')
-            for art in artifacts:
-                reads = art.samples[0].udf.get('Reads missing (M)')
-                concentration = art.udf.get('Concentration')
-                if None in [reads, concentration]:
-                    self.missing_udfs += ['Reads missing (M)', 'Concentration']
-                    total_volume = None
-                    break
-                fract_of_pool = reads/float(total_reads)
-                amount = pool_size * fract_of_pool
-                vol = amount/concentration
-                if vol>15:
-                    vol=15
-                if amount<187.5:
-                    pool.qc_flag='FAILED'
-                    self.amount_fail = True
-                art.udf['Amount taken (ng)'] = amount
-                art.udf['Volume of sample (ul)'] = vol
-                art.put()            
-                total_volume += vol
-            if total_volume:
-                pool.udf['Total Volume (ul)'] = total_volume
-                all_volumes.append(total_volume)
-                self.okej +=1
-            else:
-                self.failed +=1
-        for pool in self.artifacts:
-            if pool.udf.get('Total Volume (ul)'):
-                pool.udf['Volume H2O (ul)'] = max(all_volumes) - pool.udf.get('Total Volume (ul)')
-            pool.put()
             
 
     def calcualate_amount_for_libval(self):
@@ -121,8 +77,6 @@ def main(lims,args):
     process = Process(lims, id = args.pid)
     AT = CalculationsTwist(process)
     AT.get_artifacts(args.calculate)
-    if args.calculate == 'pooling':
-        AT.calculate_volumes_for_pooling()
     elif args.calculate == 'libval':
         AT.calcualate_amount_for_libval()
     elif args.calculate == 'aliquot':
@@ -130,25 +84,20 @@ def main(lims,args):
     else:
         sys.exit('Non valid argument given. -c can take pooling/libval/aliquot')
     
-    abstract = ''
-    if AT.amount_fail:
-        abstract += 'Input amount low for samples in pool. Generate placement map for more info. '
     if AT.failed:
         missing = ', '.join( list(set(AT.missing_udfs)))
-        abstract += 'Failed to perform calculations for '+ str(AT.failed)+ ' samples. Some of the following udfs are invalid or missing: ' +   missing + '. '
-    if AT.okej:
-        abstract += 'Performed calculations for '+ str(AT.okej)+ ' samples.'
-
-    if AT.failed or AT.amount_fail:
+        abstract = 'Failed to perform calculations for '+ str(AT.failed)+ ' samples. Some of the following udfs are invalid or missing: ' +   missing + '. '
         sys.exit(abstract)
-    else:
+    if AT.okej:
+        abstract = 'Performed calculations for '+ str(AT.okej)+ ' samples.'
         print >> sys.stderr, abstract
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
     parser.add_argument('-p', dest = 'pid',
                         help='Lims id for current Process')
-    parser.add_argument("-c", dest='calculate', help = 'pooling/libval/aliquot')
+    parser.add_argument("-c", dest='calculate', help = 'libval/aliquot')
     args = parser.parse_args()
 
     lims = Lims(BASEURI, USERNAME, PASSWORD)
