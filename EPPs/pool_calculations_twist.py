@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-DESC="""EPP script to performe calculations in some different steps in the twist WF
+DESC="""EPP script to performe calculations for pools in the twist WF
 
 
 Maya Brandi
@@ -24,6 +24,7 @@ class Pool:
 
     def get_total_reads(self):
         """Get the total numer of missing reads in the pool"""
+
         for art in self.artifacts:
             reads = art.samples[0].udf.get('Reads missing (M)')
             concentration = art.udf.get('Concentration')
@@ -34,6 +35,8 @@ class Pool:
             sys.exit('All samples seem to have Missing Reads = 0. You dont want to sequence any of the samples?')
 
     def calculate_amount_and_volume(self):
+        """Perform calcualtions for the input artifacts to the pool"""
+
         for art in self.artifacts:
             reads = art.samples[0].udf.get('Reads missing (M)')
             concentration = art.udf.get('Concentration')
@@ -58,6 +61,8 @@ class CalculationsForPools:
         self.amount_fail = False
 
     def calculate_volumes_for_pooling(self):
+        """Perform calculations for each pool in the step"""
+
         for pool_art in self.pools:
             pool = Pool(pool_art)
             pool.get_total_reads()
@@ -72,6 +77,8 @@ class CalculationsForPools:
                 self.failed +=1
 
     def calculate_volume_wather(self):
+        """Perform wather calculations for each pool in the step"""
+
         for pool_art in self.pools:
             if pool_art.udf.get('Total Volume (ul)'):
                 pool_art.udf['Volume H2O (ul)'] = max(self.all_volumes) - pool_art.udf.get('Total Volume (ul)')
