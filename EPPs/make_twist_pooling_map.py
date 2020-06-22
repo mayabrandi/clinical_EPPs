@@ -25,7 +25,9 @@ class SamplePlacementMap():
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
-        self.pools = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
+        self.pools = [ (a.name, a) for a in all_artifacts if a.output_type == "Analyte"]
+        self.pools.sort()
+        
 
     def make_html(self, resultfile):
         ### HEADER ###
@@ -37,8 +39,9 @@ class SamplePlacementMap():
         html.append(self.process.type.name) #self.process.protocol_name
         html.append('</h1></div>')
         html.append('Created by: ' + USERNAME + ', ' + str(date.today().isoformat()))
-        for pool in self.pools:
-            artifacts = pool.input_artifact_list()
+        for name, pool in self.pools:
+            artifacts = [ (a.location[1], a) for a in pool.input_artifact_list()]
+            artifacts.sort()
             nr_samples = len(artifacts)
             total_amount = pool.udf.get('Total Amount (ng)')
             total_volume = round(pool.udf.get('Total Volume (ul)'),2)
@@ -70,7 +73,7 @@ class SamplePlacementMap():
             html.append( '<tbody>' )
     
             ## artifact list
-            for art in artifacts:
+            for location, art in artifacts:
                 sample = art.samples[0]
                 if art.udf.get('Amount taken (ng)') > art.udf.get('Amount (ng)') or art.udf.get('Amount taken (ng)') < 187.5:
                     html.append( '<tr><td style="background-color: #F08080; width: 7%;">' )
@@ -78,7 +81,7 @@ class SamplePlacementMap():
                     html.append( '<tr><td style="width: 7%;">' )
                 html.append( sample.id )
                 html.append( '</td><td class="" style="width: 7%;">' )
-                html.append(  art.location[1])
+                html.append(  location)
                 html.append( '</td><td class="" style="width: 7%;">' )
                 html.append( str(round(art.udf.get('Amount taken (ng)'),2)))
                 html.append( '</td><td class="" style="width: 7%;">' )

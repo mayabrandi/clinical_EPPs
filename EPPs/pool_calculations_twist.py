@@ -15,10 +15,11 @@ import sys
 
 class Pool:
     def __init__(self, pool):
-        self.qc_flag='PASSED'
+        pool.qc_flag='PASSED'
         self.total_volume = 0
         self.total_reads = 0
         self.pool = pool
+        self.amount_fail = False
         self.pool_size = pool.udf.get('Total Amount (ng)')
         self.artifacts = pool.input_artifact_list()
 

@@ -29,7 +29,7 @@ class BravoCSV():
         all_artifacts = self.process.all_outputs(unique=True)
         self.artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
 
-    def make_csv_1471(self, csv_file):
+    def make_csv_1471(self,udf, csv_file):
         csv_file = csv_file+'bravo_normalization.csv'
         with open( csv_file , 'wb') as bravo_csv:
             wr = csv.writer(bravo_csv)
@@ -40,7 +40,7 @@ class BravoCSV():
                     if well in art_dict:
                         art = art_dict[well]
                         try:
-                            row_list = [row + str(col) , str(art.udf['Volume Buffer (ul)']), str(art.udf['Sample Volume (ul)'])]
+                            row_list = [row + str(col) , str(art.udf[udf]), str(art.udf['Sample Volume (ul)'])]
                             wr.writerow(row_list)
                         except:
                             self.failed_arts.append(art.name)
@@ -74,9 +74,9 @@ def main(lims, args):
     BCSV.get_artifacts()
     if args.doc1564:
         BCSV.make_csv_1564('Sample Volume (ul)', args.sample_volume_file)
-        BCSV.make_csv_1564('Volume Buffer (ul)', args.buffer_volume_file)
+        BCSV.make_csv_1564(args.buffer_volume_udf, args.buffer_volume_file)
     if args.doc1471:
-        BCSV.make_csv_1471(args.csv)
+        BCSV.make_csv_1471(args.buffer_volume_udf, args.csv)
 
     d = {'ia': ', '.join(BCSV.failed_arts)}
 
@@ -106,6 +106,8 @@ if __name__ == "__main__":
                         help=('csv file'))
     parser.add_argument('--buffer_volume_file', default=None,
                         help=('csv file'))
+    parser.add_argument('--buffer_volume_udf', default=None,
+                        help=("udf for buffer volume (eg: 'Volume Buffer (ul)' or 'Volume H2O (ul)')"))
 
     args = parser.parse_args()
 

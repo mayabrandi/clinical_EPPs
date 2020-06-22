@@ -37,8 +37,6 @@ class CalculationsTwist:
             if not amount or not concentration:
                 self.failed +=1
                 self.missing_udfs += ['Amount (ng)', 'Concentration']
-                art.qc_flag = 'FAILED'
-                art.put()
                 continue
             if amount >=250: 
                 amount_needed=250
@@ -48,7 +46,6 @@ class CalculationsTwist:
                 amount_needed=10
             else:
                 amount_needed=amount
-            art.qc_flag = 'PASSED'
             art.udf['Amount needed (ng)'] = amount_needed
             art.udf['Sample Volume (ul)'] = amount_needed/float(concentration)
             art.udf['Volume H2O (ul)'] = 30 - art.udf['Sample Volume (ul)']
@@ -77,7 +74,7 @@ def main(lims,args):
     process = Process(lims, id = args.pid)
     AT = CalculationsTwist(process)
     AT.get_artifacts(args.calculate)
-    elif args.calculate == 'libval':
+    if args.calculate == 'libval':
         AT.calcualate_amount_for_libval()
     elif args.calculate == 'aliquot':
         AT.calculate_volumes_for_aliquot()
