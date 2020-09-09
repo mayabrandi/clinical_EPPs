@@ -1,11 +1,6 @@
 #!/usr/bin/env python
-DESC="""EPP script to calculate amount in ng from concentration and volume 
-udf:s in Clarity LIMS. The script checks that the 'Volume (ul)' and 
-'Concentration' udf:s are defined. 
+DESC="""EPP script to calculate amount 
 
-        'Amount (ng)' =  'Concentration'*'Volume (ul)'
-
-Johannes Alneberg, 
 Maya Brandi
 
 
