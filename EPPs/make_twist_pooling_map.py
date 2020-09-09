@@ -41,7 +41,8 @@ class SamplePlacementMap():
         html.append('Created by: ' + USERNAME + ', ' + str(date.today().isoformat()))
         for name, pool in self.pools:
             artifacts = [ (a.location[1], a) for a in pool.input_artifact_list()]
-            artifacts.sort()
+            #sorting on columns
+            artifacts.sort(key=lambda tup: tup[0][1])
             nr_samples = len(artifacts)
             total_amount = pool.udf.get('Total Amount (ng)')
             total_volume = round(pool.udf.get('Total Volume (ul)'),2)
