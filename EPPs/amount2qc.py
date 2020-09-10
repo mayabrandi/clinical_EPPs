@@ -36,7 +36,7 @@ class Amount2QC:
         
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
-        self.artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
+        self.artifacts = [a for a in all_artifacts if a.output_type == "ResultFile"]
         self.wrong_factor1 = self.check_udf_is_defined(self.artifacts, 'Concentration')
         if not self.process.type.name == 'CG002 - Qubit QC (Library Validation)':
             self.wrong_factor2 = self.check_udf_is_defined(self.correct_artifacts, 'Volume (ul)')
@@ -121,7 +121,7 @@ def main(lims,args):
     elif len(A2QC.wrong_factor1)+ len(A2QC.wrong_factor2):
         sys.exit(abstract)
     else:
-        print >> sys.stderr, abstract
+        print(abstract, file=sys.stderr)
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
