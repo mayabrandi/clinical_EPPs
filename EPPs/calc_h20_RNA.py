@@ -26,7 +26,7 @@ class EBVolume():
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
-        self.artifacts = [a for a in all_artifacts if a.output_type == "Analyte"]
+        self.artifacts = filter(lambda a: a.output_type == "Analyte", all_artifacts)
 
     def check_udfs(self, artifact):
         try:
@@ -70,7 +70,7 @@ def main(lims,args):
     elif EBV.failed_arts:
         sys.exit(abstract)
     else:
-        print(abstract, file=sys.stderr)
+        print >> sys.stderr, abstract
 
 
 if __name__ == "__main__":

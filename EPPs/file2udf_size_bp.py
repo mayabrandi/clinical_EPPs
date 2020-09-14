@@ -53,7 +53,7 @@ class File2UDF():
         if result_file and os.path.isfile(result_file):
             self.result_file = result_file
         else:
-            files = [a for a in self.process.all_outputs() if a.name in ["Tapestation CSV"]]
+            files = filter(lambda a: a.name in ["Tapestation CSV"], self.process.all_outputs())
             if len(files)>1:
                 sys.exit('more than one Qubit Result File')
             else:
@@ -94,7 +94,7 @@ def main(lims, args):
     if F2UDF.failed_arts:
         sys.exit(abstract)
     else:
-        print(abstract, file=sys.stderr)
+        print >> sys.stderr, abstract
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)

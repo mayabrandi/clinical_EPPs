@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import division
 from argparse import ArgumentParser
 
 from genologics.lims import Lims
@@ -40,7 +40,7 @@ def main(lims, args):
     if RP.fail:
         sys.exit(RP.fail)
     else:
-        print('Replaced path', file=sys.stderr)
+        print >> sys.stderr, 'Replaced path'
 
 
 if __name__ == "__main__":

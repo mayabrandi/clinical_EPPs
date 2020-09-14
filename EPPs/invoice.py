@@ -178,7 +178,7 @@ def main(lims, args):
         GLD.abstract = 'Invoice generated successfully! '
     if GLD.discount:
         GLD.abstract += "Discount: "+str(GLD.discount)+"%."
-    print(GLD.abstract, file=sys.stderr)
+    print >> sys.stderr, GLD.abstract
 
 
 if __name__ == "__main__":

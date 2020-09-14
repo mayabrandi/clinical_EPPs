@@ -33,7 +33,7 @@ class MolarConc():
             self.artifacts = self.process.all_inputs(unique=True)
         else:
             all_artifacts = self.process.all_outputs(unique=True)
-            self.artifacts = [a for a in all_artifacts if a.output_type == "ResultFile"]
+            self.artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
 
     def get_treshold(self):
         self.process.udf['Minimum']
@@ -77,7 +77,7 @@ def main(lims, args):
     if MC.nr_inputs > len(MC.passed_arts):
         sys.exit(abstract)
     else:
-        print(abstract, file=sys.stderr)
+        print >> sys.stderr, abstract
 
 if __name__ == "__main__":
     # Initialize parser with standard arguments and description
