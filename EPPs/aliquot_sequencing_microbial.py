@@ -25,7 +25,7 @@ class BufferVolume():
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
-        self.artifacts = [a for a in all_artifacts if a.output_type == "Analyte"]
+        self.artifacts = filter(lambda a: a.output_type == "Analyte", all_artifacts)
 
     def check_udfs(self, artifact):
         try:
@@ -86,7 +86,7 @@ def main(lims,args):
         abstract = abstract + " Samples: " + ', '.join(list(set(BV.volume_warning))) + ", got red QC-flags due to high or low volumes."
         sys.exit(abstract)
     else:
-        print(abstract, file=sys.stderr)
+        print >> sys.stderr, abstract
 
 
 if __name__ == "__main__":

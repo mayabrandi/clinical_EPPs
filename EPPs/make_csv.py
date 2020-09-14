@@ -24,7 +24,7 @@ class ToCSV():
 
     def get_artifacts(self):
         all_artifacts = self.process.all_outputs(unique=True)
-        self.artifacts = [a for a in all_artifacts if a.output_type == "Analyte"]
+        self.artifacts = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
         for art in all_artifacts:
             if art.output_type == "Analyte":
                 plate_name = art.location[0].name
@@ -73,7 +73,7 @@ def main(lims, args):
         sys.exit(abstract)
     else:
         abstract = "Bravo CSV sucsessfully generated."
-        print(abstract, file=sys.stderr)
+        print >> sys.stderr, abstract
 
 
 if __name__ == "__main__":

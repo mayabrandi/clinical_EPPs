@@ -48,7 +48,7 @@ def main(lims,args):
     if VB.failed_arts:
         sys.exit(abstract)
     else:
-        print(abstract, file=sys.stderr)
+        print >> sys.stderr, abstract
 
 
 if __name__ == "__main__":

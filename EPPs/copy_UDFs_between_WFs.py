@@ -81,7 +81,7 @@ def main(lims, args):
     if warning:
         sys.exit(warning)
     else:
-        print('UDFs were succsessfully copied!', file=sys.stderr)
+        print >> sys.stderr, 'UDFs were succsessfully copied!'
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
