@@ -17,8 +17,9 @@ DESC = """
 
 
 class CopyUDF():
-    def __init__(self, process, udfs, aggregate_qc_step):
+    def __init__(self, process, udfs, aggregate_qc_step, qc_flag):
         self.process = process
+        self. qc_flag = qc_flag
         self.udfs = udfs
         self.failded_udfs = False
         self.failed_art = []
@@ -42,12 +43,14 @@ class CopyUDF():
                                 child_processes =  lims.get_processes(type = self.aggregate_qc_step,
                                                     inputartifactlimsid = parent_input.id)
                                 if child_processes:
+                                    if self.qc_flag:
+                                        outpt.qc_flag = parent_input.qc_flag
                                     for udf in self.udfs:
                                         try:
                                             outpt.udf[udf] = parent_input.udf[udf]
-                                            outpt.put()
                                         except:
                                             self.failded_udfs = True
+                                    outpt.put()
                                     break
                                 else:
                                     parent_process = parent_input.parent_process
@@ -57,7 +60,7 @@ class CopyUDF():
 
 def main(lims, args):
     process = Process(lims, id = args.pid)
-    CUDF = CopyUDF(process, args.udfs, args.qcstep)
+    CUDF = CopyUDF(process, args.udfs, args.qcstep, args.qc)
     CUDF.get_processes()
 
     if CUDF.failed_art:
@@ -76,6 +79,8 @@ if __name__ == "__main__":
     parser.add_argument('-l', dest = 'log', default=sys.stdout,
                         help=('File name for standard log file, '
                               'for runtime information and problems.'))
+    parser.add_argument('--qc', action='store_true',
+                        help=('Copy qc flaggs as well'))
     parser.add_argument('-u', dest = 'udfs', nargs='+', 
                         help=(''))
     parser.add_argument('-q', dest = 'qcstep', nargs='+', 

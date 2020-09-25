@@ -9,55 +9,58 @@ Science for Life Laboratory, Stockholm, Sweden
 from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
-from genologics.entities import Process
+from genologics.entities import Process, Artifact
 import sys
 
 
 
-class CalculationsTwist:
-    def __init__(self, process):
+class CalculateAmount:
+    def __init__(self, process, lims):
         self.process = process
-        self.pool_size = 1500
-        self.pools = []
-        self.okej = 0
-        self.failed = 0
-        self.low_conc = 0
+        self.iom = self.process.input_output_maps
+        self.lims = lims
+        self.artifacts = []
+        self.missing_udfs = 0
 
     def get_artifacts(self):
-        all_artifacts = self.process.all_outputs(unique=True)
-        self.pools = filter(lambda a: a.output_type == "Analyte" , all_artifacts)
+        artifact_ids = [io[1]['limsid'] for io in self.iom if io[1]['output-generation-type'] == 'PerInput']
+        self.artifacts = [Artifact(self.lims, id=id) for id in artifact_ids if id is not None]
 
-    def calculate_volumes(self):
-        for pool in self.pools:
-            artifacts = pool.input_artifact_list()
-            total_reads = 0
-            for art in artifacts:
-                reads = art.samples[0].udf.get('Reads missing (M)')
-                total_reads += reads
-            for art in artifacts:
-                reads = art.samples[0].udf.get('Reads missing (M)')
-                fract_of_pool = reads/float(total_reads)
-                amount = self.pool_size * fract_of_pool
-                vol = amount/art.udf.get('Concentration')
-                art.udf['Volume of sample (ul)'] = vol
-                art.put()
+    def apply_calculations(self):
+        """Calculate amount and set qc for twist samples"""
+
+        if not self.artifacts:
+            return
+
+        for artifact in self.artifacts:
+            vol = artifact.udf.get('Volume (ul)')
+            conc = artifact.udf.get('Concentration')
+            if conc is not None and vol is not None:
+                amount = conc*vol
+                artifact.udf['Amount (ng)'] = amount
+                if amount >= 250 and 500 >= conc >= 8.33:
+                    artifact.qc_flag = 'PASSED'
+                elif 100 <= amount < 250 and 100 >= conc >= 1.66:
+                    artifact.qc_flag = 'PASSED'
+                else:
+                    artifact.qc_flag = 'FAILED'
+                artifact.put()
+            else:
+                self.missing_udfs += 1
+                
+                
 
 def main(lims,args):
     process = Process(lims, id = args.pid)
-    AT = CalculationsTwist(process)
-    AT.get_artifacts()
-    AT.calculate_volumes()
+    CA = CalculateAmount(process, lims)
+    CA.get_artifacts()
+    CA.apply_calculations()
     
-    abstract = ''
-    if AT.failed:
-        abstract += 'Failed to perform calculations for '+ str(AT.failed)+ ' samples. Some udfs are invalid or missing. '
-    if AT.okej:
-        abstract += 'Perform calculations for '+ str(AT.okej)+ ' samples.'
 
-    if AT.failed:
-        sys.exit(abstract)
+    if CA.missing_udfs:
+        sys.exit('Udfs missing for some samples.')
     else:
-        print >> sys.stderr, abstract
+        print >> sys.stderr, 'Calculated Amount for all samples'
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=DESC)
