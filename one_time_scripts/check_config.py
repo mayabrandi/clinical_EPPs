@@ -39,7 +39,7 @@ def get_status(lims, search_results):
                 if stage.step.type.id in search_results.keys():
                     for trigger in stage.step.epp_triggers:
                         if trigger['name'] in search_results[stage.step.type.id]:
-                            logging.info(trigger)
+                            logging.info(f"{stage.step.type.name}: {str(trigger)}"")
 
 
 def main(args):
