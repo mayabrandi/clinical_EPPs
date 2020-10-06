@@ -9,7 +9,6 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 from argparse import ArgumentParser
 
 
-
 def get_process_types(lims, search_by):
     logging.info(f'getting process types')
     search_results = {}
@@ -32,7 +31,8 @@ def get_status(lims, search_results):
     workflows = lims.get_workflows()
     for workflow in workflows:
         if workflow.status == 'ACTIVE':
-            logging.info(f"Serching active workflow: {workflow.name}\n")
+            print('')
+            logging.info(f"Serching active workflow: {workflow.name}")
             for stage in workflow.stages:
                 if not stage.step:
                     continue
