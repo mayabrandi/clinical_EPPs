@@ -18,7 +18,7 @@ def get_process_types(lims, search_by):
             continue
         for process_type in automation.process_types:
             if process_type.name[0:8]!='obsolete':
-                if not process_type in search_results:
+                if not process_type.id in search_results:
                     search_results[process_type.id] = [automation.name]
                 else:
                     search_results[process_type.id].append(automation.name)
@@ -39,7 +39,7 @@ def get_status(lims, search_results):
                 if stage.step.type.id in search_results.keys():
                     for trigger in stage.step.epp_triggers:
                         if trigger['name'] in search_results[stage.step.type.id]:
-                            logging.info(f"{stage.step.type.name}: {str(trigger)}"")
+                            logging.info(f"{stage.step.type.name}: {str(trigger)}")
 
 
 def main(args):
