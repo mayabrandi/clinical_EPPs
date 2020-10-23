@@ -308,7 +308,7 @@ class PerArtifact():
                 else:
                     self.index['2E03'] = int(numpy.argmax(diff_from_mean_2E03))
             else:
-                if self.index['1E03']:
+                if self.index['1E03'] is not None:
                     if control_1E03 and self.index['1E03'] != numpy.argmax(outlyer_1E03):
                         self.log.write('Distance to big. Conflicting outlyers. ')
                         self.failed_sample = True
