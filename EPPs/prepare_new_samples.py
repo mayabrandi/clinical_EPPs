@@ -8,7 +8,7 @@ from genologics.config import BASEURI, USERNAME, PASSWORD
 from genologics.entities import Process, Artifact
 
 from clinical_EPPs.config import CG_URL
-from cgface.api import CgFace
+from clinical_EPPs.cg_face import CgFace
 
 DESC = """Script to set the Reads Missing (M) udf for all samples befor they go 
 into any workflow. The Reads Missing (M) is at this point defined only by the 
