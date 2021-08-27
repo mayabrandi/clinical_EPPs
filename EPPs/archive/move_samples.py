@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from optparse import OptionParser
-import glsapiutil
+from EPPs.archive import glsapiutil
 from xml.dom.minidom import parseString
 import sys
 DEBUG = False
