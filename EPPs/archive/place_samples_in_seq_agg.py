@@ -3,13 +3,11 @@ from __future__ import division
 from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
-from genologics.entities import Process , Workflow, Stage, Artifact
+from genologics.entities import Process , Workflow, Artifact
 from xml.dom.minidom import parseString
-import logging
 import sys
-import glsapiutil
+from EPPs.archive import glsapiutil
 import platform
-import xml.etree.ElementTree as ET
 
 HOSTNAME = platform.node()
 VERSION = 'v2'

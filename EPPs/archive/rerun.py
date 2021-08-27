@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
 from argparse import ArgumentParser
-import xml.dom.minidom
-from genologics.config import BASEURI,USERNAME,PASSWORD
-import re
-import glsapiutil
+from genologics.config import USERNAME,PASSWORD
+from EPPs.archive import glsapiutil
 from xml.dom.minidom import parseString
-from art_hist import make_hist_dict
+from EPPs.art_hist import make_hist_dict
 
 DEBUG = "false"
 api = None
