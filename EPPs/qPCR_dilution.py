@@ -50,7 +50,7 @@ class QpcrDilution():
 
     def get_file(self):
         try:
-            for f in self.process.shared_result_files():
+            for f in self.process.result_files():
                 if f.name =='qPCR Result File':
                     qPCR_file = f.files[0]
             return qPCR_file.content_location.split('scilifelab.se')[1]
