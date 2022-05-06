@@ -45,6 +45,8 @@ class QpcrDilution():
         all_artifacts = self.process.all_outputs(unique=True)
         out_artifacts = filter(lambda a: a.output_type == "ResultFile" , all_artifacts)
         for a in out_artifacts:
+            if len(a.samples) > 1:
+                continue
             samp = a.samples[0].id
             self.artifacts[samp] = a
 
