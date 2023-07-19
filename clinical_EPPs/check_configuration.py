@@ -3,7 +3,6 @@ from argparse import ArgumentParser
 
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
-import sys
 import csv
 
 import logging

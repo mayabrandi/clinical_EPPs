@@ -6,19 +6,10 @@ from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
-from genologics.epp import EppLogger
 
-from openpyxl import load_workbook
-import json
-from statistics import mean, median
-import numpy
-from clinical_EPPs import WELL_TRANSFORMER
 import pandas as pd
-from pandas import ExcelWriter
-from pandas import ExcelFile
 
 
-import logging
 import sys
 
 DESC = """epp script to ...

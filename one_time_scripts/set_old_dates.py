@@ -6,8 +6,6 @@ from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 from datetime import datetime
 
-import logging
-import sys
 
 DESC = """
 One time script to set historical dates on samples. 

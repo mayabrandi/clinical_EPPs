@@ -6,10 +6,8 @@ from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
-from genologics.epp import EppLogger
 
 import sys
-import os
 
 DESC = """Getting Volume Elution from previous step of type defined by process_types.
     If volume found, setting the value Volume udf on artifact of current step."""

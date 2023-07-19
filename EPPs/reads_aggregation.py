@@ -6,10 +6,8 @@ from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
-from genologics.epp import EppLogger
 
 import sys
-import os
 
 DESC = """
 """
@@ -77,7 +75,6 @@ class SumReads():
                 self.passed_samps +=1
             except:
                 self.failed_samps +=1
-                pass
 
 class PoolsAndSamples():
     def __init__(self, process):

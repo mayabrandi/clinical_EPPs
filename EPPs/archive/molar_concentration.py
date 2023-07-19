@@ -14,7 +14,6 @@ from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
 
-import logging
 import sys
 
 

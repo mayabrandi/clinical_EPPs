@@ -554,7 +554,6 @@ class stepOutput:
         self.__type = ""
         self.__isShared = False
         self.__props = {}
-        pass
 
     def setInputLUID(self, value): self.__inputLUID = value
     def getInputLUID(self): return self.__inputLUID
@@ -647,7 +646,6 @@ class stepHelper:
         self.__processDOM = None
         self.__poolingDOM = None
         self.__reagentsDOM = None
-        pass
 
     def setStepURI( self, value ): self.__stepURI = value
     def setAPIHandler(self, object ): self.__APIHandler = object

@@ -7,7 +7,6 @@ from genologics.entities import Process
 
 from datetime import date
 
-from art_hist import make_hist_dict_no_stop, make_hist_dict
 import sys
 
 DESC = """

@@ -13,9 +13,6 @@ from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 from genologics.entities import Process, Artifact
-from genologics.epp import EppLogger
-from genologics.epp import set_field
-import logging
 import sys
 
 

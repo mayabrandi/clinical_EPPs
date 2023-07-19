@@ -5,10 +5,8 @@ from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 
-from genologics.entities import Process, ReagentType
-from genologics.epp import EppLogger
+from genologics.entities import Process
 
-import logging
 import sys
 
 DESC = """epp script to check for duplicate indexes in pools. Comparing sequences. Not index names. 

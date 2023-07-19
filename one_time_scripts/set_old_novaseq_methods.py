@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 from __future__ import division
-from argparse import ArgumentParser
 
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 from datetime import datetime
 
-import logging
-import sys
 
 DESC = """
 One time script to set historical methods on nova seq runs. 

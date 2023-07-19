@@ -1,19 +1,13 @@
 #!/usr/bin/env python
-import os
 import sys
-import logging
 
 import xlsxwriter
 from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI, USERNAME, PASSWORD
 from genologics.entities import Process
-from genologics.epp import EppLogger
-from genologics.epp import set_field
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from clinicaladmin.database import db, app, ApplicationDetails, ApplicationTagData, MethodDescription, Customers, Invoice
+from clinicaladmin.database import ApplicationDetails, Customers, Invoice
 from clinical_EPPs.invoice_templates import InvoiceTemplate
 
 from datetime import date

@@ -10,9 +10,7 @@ from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
-from genologics.epp import EppLogger
 
-import logging
 import sys
 
 class EBVolume():

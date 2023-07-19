@@ -9,7 +9,6 @@ from genologics.entities import Process
 
 import logging
 import sys
-import os
 
 
 

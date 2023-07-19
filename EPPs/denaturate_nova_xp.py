@@ -7,7 +7,6 @@ from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process
 
-import sys
 
 DESC = """Script to set denaturation volumes for NovaSeq Xp, based on flowcell type.
 The script is taylored for the Xp Denature & ExAmp step in the NovaSeq WF.

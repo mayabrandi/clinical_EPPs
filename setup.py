@@ -2,7 +2,6 @@
 
 from distutils.core import setup
 import glob
-import os
 
 setup(name='clinical_EPPs',
         version='1.0',

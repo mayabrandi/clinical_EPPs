@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from genologics.lims import Lims
 from genologics.config import BASEURI,USERNAME,PASSWORD,VERSION
-from genologics.entities import Process, Artifact
+from genologics.entities import Process
 import sys
 
 DESC="""script to make hist_dict...."""

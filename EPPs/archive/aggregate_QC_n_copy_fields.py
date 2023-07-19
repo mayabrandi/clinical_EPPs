@@ -6,7 +6,6 @@ from genologics.config import BASEURI,USERNAME,PASSWORD
 
 from genologics.entities import Process, Artifact
 
-import logging
 import sys
 
 
@@ -60,7 +59,6 @@ class CopyUDF():
                             art.udf[udf] = float(value)
                         except:
                             art.udf[udf] = str(value)
-                            pass
 
                         if art.udf.get(udf) is None:
                             self.failed_udfs.append(art.name)
